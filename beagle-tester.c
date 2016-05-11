@@ -1,7 +1,12 @@
 /*
  * beagle-tester.c
+ * 
+ * based on evtest and fb-test
  *
  * Author: Jason Kridner <jdk@ti.com>
+ * Copyright (c) 1999-2000 Vojtech Pavlik
+ * Copyright (c) 2009-2011 Red Hat, Inc
+ * Copyright (C) 2009-2012 Tomi Valkeinen
  * Copyright (C) 2016 Texas Instruments
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -2982,6 +2987,8 @@ char fontdata_8x8[] = {
 /* beagle-tester.c */
 static volatile sig_atomic_t stop = 0;
 
+void beagle_test(char *scan_value);
+
 static void do_stop(int sig)
 {
 	stop = 1;
@@ -2994,9 +3001,12 @@ int main()
 	fd_set rdfs;
 	int req_fb = 0;
 	int req_pattern = 0;
-	struct input_event ev[64];
-	int rd;
+	struct input_event ev[256];
+	int i, rd;
 	struct timeval timeout;
+	char str[36];
+	char scan_value[32];
+	int scan_i = 0;
 
 	FILE *errlog = fopen("/var/log/beagle-tester.log", "w");
 	ioctl(barcode, EVIOCGID, barcode_id);
@@ -3011,19 +3021,126 @@ int main()
 	
 	signal(SIGINT, do_stop);
 	signal(SIGTERM, do_stop);
-	timeout.tv_sec = 5;
-	timeout.tv_usec = 0;
 
 	while (!stop) {
+		timeout.tv_sec = 5;
+		timeout.tv_usec = 0;
 		rd = select(barcode + 1, &rdfs, NULL, NULL, &timeout);
 		if (stop)
 			break;
 		if (rd <= 0)
 			continue;
 		rd = read(barcode, ev, sizeof(ev));
+		if (rd < (int) sizeof(struct input_event))
+			continue;
+
+		for (i = 0; i < rd / sizeof(struct input_event); i++) {
+			unsigned int type, code, value;
+
+			type = ev[i].type;
+			code = ev[i].code;
+			value = ev[i].value;
+
+			/*sprintf(str, "%02x %02x %06x", type, code, value);
+			printf(str);
+			printf("\n");*/
+			//fb_put_string(&fb_info, 300, 30+10*i, str, 35, 0xffffff, 1, 35);
+
+			if ((type == 1) && (value == 1)) {
+				switch (code) {
+				default:
+					break;
+				case KEY_ENTER:
+					scan_value[scan_i] = 0;
+					fb_put_string(&fb_info, 20, 60, scan_value, 35, 0xffffff, 1, 35);
+					beagle_test(scan_value);
+					memset(scan_value, 0, sizeof(scan_value));
+					scan_i = 0;
+					break;
+				case KEY_0:
+					scan_value[scan_i] = '0';
+					scan_i++;
+					break;
+				case KEY_1:
+					scan_value[scan_i] = '1';
+					scan_i++;
+					break;
+				case KEY_2:
+					scan_value[scan_i] = '2';
+					scan_i++;
+					break;
+				case KEY_3:
+					scan_value[scan_i] = '3';
+					scan_i++;
+					break;
+				case KEY_4:
+					scan_value[scan_i] = '4';
+					scan_i++;
+					break;
+				case KEY_5:
+					scan_value[scan_i] = '5';
+					scan_i++;
+					break;
+				case KEY_6:
+					scan_value[scan_i] = '6';
+					scan_i++;
+					break;
+				case KEY_7:
+					scan_value[scan_i] = '7';
+					scan_i++;
+					break;
+				case KEY_8:
+					scan_value[scan_i] = '8';
+					scan_i++;
+					break;
+				case KEY_9:
+					scan_value[scan_i] = '9';
+					scan_i++;
+					break;
+				case KEY_A:
+					scan_value[scan_i] = 'A';
+					scan_i++;
+					break;
+				case KEY_B:
+					scan_value[scan_i] = 'B';
+					scan_i++;
+					break;
+				case KEY_C:
+					scan_value[scan_i] = 'C';
+					scan_i++;
+					break;
+				case KEY_D:
+					scan_value[scan_i] = 'D';
+					scan_i++;
+					break;
+				case KEY_E:
+					scan_value[scan_i] = 'E';
+					scan_i++;
+					break;
+				case KEY_F:
+					scan_value[scan_i] = 'F';
+					scan_i++;
+					break;
+				}
+			}
+		}
 	}
 
 	do_fill_screen(&fb_info, 4);
-	
+
 	return 0;
+}
+
+void beagle_test(char *scan_value)
+{
+	int r;
+	int fail = 0;
+
+	r = system("memtester 1M 1");
+	if(r == 0) {
+		fb_put_string(&fb_info, 20, 70, "memory: pass", 35, 0xffffff, 1, 35);
+	} else {
+		fb_put_string(&fb_info, 20, 70, "memory: fail", 35, 0x00ff00, 1, 35);
+		fail++;
+	}
 }

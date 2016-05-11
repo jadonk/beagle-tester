@@ -11,3 +11,6 @@ install: beagle-tester beagle-tester.service beagle-tester.rules
 	systemctl stop beagle-tester.service
 	systemctl daemon-reload
 	systemctl enable beagle-tester.service
+
+start: install
+	systemctl restart beagle-tester.service
