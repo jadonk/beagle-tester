@@ -3052,7 +3052,6 @@ int main()
 					break;
 				case KEY_ENTER:
 					scan_value[scan_i] = 0;
-					fb_put_string(&fb_info, 20, 60, scan_value, 35, 0xffffff, 1, 35);
 					beagle_test(scan_value);
 					memset(scan_value, 0, sizeof(scan_value));
 					scan_i = 0;
@@ -3135,12 +3134,27 @@ void beagle_test(char *scan_value)
 {
 	int r;
 	int fail = 0;
+	char sn[13];
+	int fd_sn;
+	char str[36];
+	const char *fmt = "%12s : %12s";
+
+	sprintf(str, fmt, "scan", scan_value);
+	fb_put_string(&fb_info, 20, 60, str, 35, 0xffffff, 1, 35);
+
+	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/at24-0/nvmem", O_RDWR);
+	lseek(fd_sn, 12, SEEK_SET);
+	r = read(fd_sn, sn, 12);
+	sn[12] = 0;
+	sprintf(str, fmt, "eeprom", sn);
+	fb_put_string(&fb_info, 20, 70, str, 35, 0xffffff, 1, 35);
 
 	r = system("memtester 1M 1");
 	if(r == 0) {
-		fb_put_string(&fb_info, 20, 70, "memory: pass", 35, 0xffffff, 1, 35);
+		sprintf(str, fmt, "memory", "pass");
+		fb_put_string(&fb_info, 20, 80, str, 35, 0xffffff, 1, 35);
 	} else {
-		fb_put_string(&fb_info, 20, 70, "memory: fail", 35, 0x00ff00, 1, 35);
+		sprintf(str, fmt, "memory", "fail");
 		fail++;
 	}
 }
