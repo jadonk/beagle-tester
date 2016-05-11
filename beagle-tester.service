@@ -1,0 +1,11 @@
+[Unit]
+Description=Beagle Self-test
+After=dev-input-event1.device
+Requires=dev-input-event1.device 
+BindsTo=dev-input-event1.device
+
+[Service]
+ExecStart=/usr/sbin/beagle-tester
+
+[Install]
+WantedBy=multi-user.target
