@@ -2989,8 +2989,11 @@ char fontdata_8x8[] = {
 #define COLOR_PASS 0xffffff
 #define COLOR_FAIL 0x00f0f0
 static volatile sig_atomic_t stop = 0;
+int fail = 0;
+int notice_line = 0;
 
 int beagle_test(char *scan_value);
+int beagle_notice(char *test, char *status);
 
 static void do_stop(int sig)
 {
@@ -3059,6 +3062,7 @@ int main()
 					fprintf(stderr, "Test returned: %d\n", r);
 					memset(scan_value, 0, sizeof(scan_value));
 					scan_i = 0;
+					fail = 0;
 					break;
 				case KEY_0:
 					scan_value[scan_i] = '0';
@@ -3142,32 +3146,23 @@ int beagle_test(char *scan_value)
 	int fd_sn;
 	char str[36];
 	char str2[36];
-	const char *fmt = "%14s : %12s";
 	FILE *fp;
 
-	sprintf(str, fmt, "scan", scan_value);
-	fb_put_string(&fb_info, 20, 60, str, 35, 0xffffff, 1, 35);
+	notice_line = 0;
+	beagle_notice("scan", scan_value);
 
 	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/at24-0/nvmem", O_RDWR);
 	lseek(fd_sn, 12, SEEK_SET);
 	r = read(fd_sn, sn, 12);
 	sn[12] = 0;
-	sprintf(str, fmt, "eeprom", sn);
-	fb_put_string(&fb_info, 20, 70, str, 35, 0xffffff, 1, 35);
+	beagle_notice("init eeprom", sn);
 
 	strcpy(str, "memtester 1M 1 > /dev/null");
 	fprintf(stderr, str);
 	fprintf(stderr, "\n");
 	fflush(stderr);
 	r = system(str);
-	if(r == 0) {
-		sprintf(str, fmt, "memory", "pass");
-		fb_put_string(&fb_info, 20, 80, str, 35, COLOR_PASS, 1, 35);
-	} else {
-		sprintf(str, fmt, "memory", "fail");
-		fb_put_string(&fb_info, 20, 80, str, 35, COLOR_FAIL, 1, 35);
-		fail++;
-	}
+	beagle_notice("memory", r ? "fail" : "pass");
 
 	fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'", "r");
 	if (fp != NULL) {
@@ -3181,27 +3176,31 @@ int beagle_test(char *scan_value)
 	fprintf(stderr, "\n");
 	fflush(stderr);
 	r = system(str);
-	if(r == 0) {
-		sprintf(str, fmt, "ethernet", "pass");
-		fb_put_string(&fb_info, 20, 90, str, 35, COLOR_PASS, 1, 35);
-	} else {
-		sprintf(str, fmt, "ethernet", "fail");
-		fb_put_string(&fb_info, 20, 90, str, 35, COLOR_FAIL, 1, 35);
-		fail++;
-	}
+	beagle_notice("ethernet", r ? "fail" : "pass");
 
 	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 192.168.7.1 > /dev/null", str2);
 	fprintf(stderr, str);
 	fprintf(stderr, "\n");
 	fflush(stderr);
 	r = system(str);
-	if(r == 0) {
-		sprintf(str, fmt, "usb client", "pass");
-		fb_put_string(&fb_info, 20, 100, str, 35, COLOR_PASS, 1, 35);
-	} else {
-		sprintf(str, fmt, "usb client", "fail");
-		fb_put_string(&fb_info, 20, 100, str, 35, COLOR_FAIL, 1, 35);
-		fail++;
-	}
+	beagle_notice("usb client", r ? "fail" : "pass");
+
 	return fail;
+}
+
+int beagle_notice(char *test, char *status)
+{
+	const char *fmt = "%14s : %12s";
+	int color = COLOR_PASS;
+	char str[36];
+
+	if(!strcmp(status, "fail")) {
+		fail++;
+		color = COLOR_FAIL;
+	} else {
+
+	}
+	sprintf(str, fmt, test, status);
+	fb_put_string(&fb_info, 20, 50+notice_line*10, str, 35, color, 1, 35);
+	notice_line++;
 }
