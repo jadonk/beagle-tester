@@ -3028,6 +3028,8 @@ int main()
 	fprintf(stderr, "Found input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
 		barcode_id[ID_BUS], barcode_id[ID_VENDOR], barcode_id[ID_PRODUCT], barcode_id[ID_VERSION]);
 	fflush(stderr);
+	
+	system("/usr/sbin/beagle-tester-config.sh");
 
 	fb_open(0, &fb_info);
 	do_fill_screen(&fb_info, 0);
