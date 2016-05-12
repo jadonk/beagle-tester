@@ -1,26 +1,24 @@
-bone101
-=======
-
-Getting started information for [BeagleBone and BeagleBone Black](http://beagleboard.org) written in
-[BoneScript](http://beagleboard.org/bonescript)
-
-The content here is presented by the default web server running with the demonstration Linux distributions
-provided on BeagleBone and BeagleBone Black. It is written in HTML and makes use of the BoneScript server running
-on the board and BoneScript JavaScript library running in these HTML pages.
-
-Directory structure
-===================
-
-* autorun - Directory to drop scripts in to run automatically on every reboot 
-* examples - Directory with scripts and demos you can run on your board
-* favicon.ico - The icon for the bone101 web pages (shows up in browser tabs)
-* index.html - The starting bone101 page that redirects to Support/bone101/index.html
-* static - Directory with non-HTML bone101 web content (javascript, css, images, etc.)
-* Support - Directory with HTML bone101 web content (directory structure matches URLs) 
-
-Style
-=====
-
-To simplify style conflicts, please use the following tools to clean-up the styles:
-* JS/CSS/HTML: https://www.npmjs.com/package/js-beautify version 1.5.10
 # beagle-tester
+
+## Setup
+
+'''
+cd /opt/source
+git clone https://github.com/jadonk/beagle-tester
+cd beagle-tester
+make && make install
+'''
+
+1 Connect HDMI to TV to see output and hear audio
+2 Connect an Ethernet device (router) with a DHCP server that has a gateway that will respond to pings
+3 (optional) Connect a wire from TP4 to ground to enable EEPROM writing of board revision and serial number
+4 Power the board
+5 Connect a USB host (to the USB client port) with RNDIS client support that will perform a DHCP request that will respond to pings
+6 Connect one of the supported barcode scanners
+7 Wait for the blue/green/red test pattern and audio playback
+8 Scan the 16 character barcode (4 character board revision and 12 character serial number) -- will be programmed if wire is included
+9 Pass or fail will be indicated by a respectively green or red box on the TV
+
+# Supported boards
+
+* BeagleBone Black
