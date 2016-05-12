@@ -3196,10 +3196,10 @@ int beagle_test(char *scan_value)
 	fflush(stderr);
 	r = system(str);
 	if(r == 0) {
-		sprintf(str, fmt, "usb", "pass");
+		sprintf(str, fmt, "usb client", "pass");
 		fb_put_string(&fb_info, 20, 100, str, 35, COLOR_PASS, 1, 35);
 	} else {
-		sprintf(str, fmt, "usb", "fail");
+		sprintf(str, fmt, "usb client", "fail");
 		fb_put_string(&fb_info, 20, 100, str, 35, COLOR_FAIL, 1, 35);
 		fail++;
 	}
