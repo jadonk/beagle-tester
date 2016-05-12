@@ -1,5 +1,5 @@
 beagle-tester: beagle-tester.c
-	gcc -O3 -o beagle-tester beagle-tester.c
+	gcc -W -Wall -Wwrite-strings -O3 -o beagle-tester beagle-tester.c
 
 clean:
 	rm beagle-tester

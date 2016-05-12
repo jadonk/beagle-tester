@@ -94,7 +94,7 @@ extern char fontdata_8x8[];
 void fb_open(int fb_num, struct fb_info *fb_info);
 void fb_update_window(int fd, short x, short y, short w, short h);
 void fb_sync_gfx(int fd);
-int fb_put_string(struct fb_info *fb_info, int x, int y, char *s, int maxlen,
+int fb_put_string(struct fb_info *fb_info, int x, int y, const char *s, int maxlen,
 		int color, int clear, int clearlen);
 
 #endif
@@ -355,7 +355,7 @@ static void fb_put_char(struct fb_info *fb_info, int x, int y, char c,
 		for (j = 0; j < 8; j++) {
 			loc = (x + j + var->xoffset) * (var->bits_per_pixel / 8)
 				+ (y + i + var->yoffset) * fix->line_length;
-			if (loc >= 0 && loc < fix->smem_len &&
+			if (loc >= 0 && loc < (int)(fix->smem_len) &&
 					((bits >> (7 - j)) & 1)) {
 				switch (var->bits_per_pixel) {
 				case 8:
@@ -376,7 +376,7 @@ static void fb_put_char(struct fb_info *fb_info, int x, int y, char c,
 	}
 }
 
-int fb_put_string(struct fb_info *fb_info, int x, int y, char *s, int maxlen,
+int fb_put_string(struct fb_info *fb_info, int x, int y, const char *s, int maxlen,
 		int color, int clear, int clearlen)
 {
 	int i;
@@ -385,7 +385,7 @@ int fb_put_string(struct fb_info *fb_info, int x, int y, char *s, int maxlen,
 	if (clear)
 		fb_clear_area(fb_info, x, y, clearlen * 8, 8);
 
-	for (i = 0; i < strlen(s) && i < maxlen; i++) {
+	for (i = 0; i < (int)strlen(s) && i < maxlen; i++) {
 		fb_put_char(fb_info, (x + 8 * i), y, s[i], color);
 		w += 8;
 	}
@@ -2992,10 +2992,10 @@ static volatile sig_atomic_t stop = 0;
 int fail = 0;
 int notice_line = 0;
 
-int beagle_test(char *scan_value);
-int beagle_notice(char *test, char *status);
+int beagle_test(const char *scan_value);
+void beagle_notice(const char *test, const char *status);
 
-static void do_stop(int sig)
+static void do_stop()
 {
 	stop = 1;
 }
@@ -3008,7 +3008,6 @@ int main()
 	struct input_event ev[256];
 	int i, r, rd;
 	struct timeval timeout;
-	char str[36];
 	char scan_value[32];
 	int scan_i = 0;
 
@@ -3025,6 +3024,7 @@ int main()
 	signal(SIGTERM, do_stop);
 
 	while (!stop) {
+		//fprintf(stderr, "."); fflush(stderr);
 		FD_ZERO(&rdfs);
 		FD_SET(barcode, &rdfs);
 		timeout.tv_sec = 5;
@@ -3032,22 +3032,24 @@ int main()
 		rd = select(barcode + 1, &rdfs, NULL, NULL, &timeout);
 		if (stop)
 			break;
-		if (rd <= 0)
+		if (rd <= 0) {
+			//fprintf(stderr, "No data: %d\n", rd); fflush(stderr);
 			continue;
+		}
 		rd = read(barcode, ev, sizeof(ev));
-		if (rd < (int) sizeof(struct input_event))
+		if (rd < (int) sizeof(struct input_event)) {
+			//fprintf(stderr, "Data too small: %d\n", rd); fflush(stderr);
 			continue;
+		}
 
-		for (i = 0; i < rd / sizeof(struct input_event); i++) {
+		for (i = 0; i < (int)(rd / sizeof(struct input_event)); i++) {
 			unsigned int type, code, value;
 
 			type = ev[i].type;
 			code = ev[i].code;
 			value = ev[i].value;
 
-			/*fprintf(stderr, "Event: %02x %02x %06x\n", type, code, value);
-			fflush(stderr);*/
-			//fb_put_string(&fb_info, 300, 30+10*i, str, 35, 0xffffff, 1, 35);
+			//fprintf(stderr, "Event: %02x %02x %06x\n", type, code, value); fflush(stderr);
 
 			if ((type == 1) && (value == 1)) {
 				switch (code) {
@@ -3060,6 +3062,7 @@ int main()
 					do_fill_screen(&fb_info, 0);
 					r = beagle_test(scan_value);
 					fprintf(stderr, "Test returned: %d\n", r);
+					fflush(stderr);
 					memset(scan_value, 0, sizeof(scan_value));
 					scan_i = 0;
 					fail = 0;
@@ -3130,6 +3133,7 @@ int main()
 					break;
 				}
 			}
+			//fprintf(stderr, "*"); fflush(stderr);
 		}
 	}
 
@@ -3138,14 +3142,14 @@ int main()
 	return 0;
 }
 
-int beagle_test(char *scan_value)
+int beagle_test(const char *scan_value)
 {
 	int r;
 	int fail = 0;
 	char sn[13];
 	int fd_sn;
-	char str[36];
-	char str2[36];
+	char str[70];
+	char str2[50];
 	FILE *fp;
 
 	notice_line = 0;
@@ -3157,6 +3161,12 @@ int beagle_test(char *scan_value)
 	sn[12] = 0;
 	beagle_notice("init eeprom", sn);
 
+	fp = fopen("/etc/dogtag", "r");
+	fgets(str, sizeof(str), fp);
+	fclose(fp);
+	str[strlen(str)-1] = 0; // remove trailing character
+	beagle_notice("dogtag", str);
+
 	strcpy(str, "memtester 1M 1 > /dev/null");
 	fprintf(stderr, str);
 	fprintf(stderr, "\n");
@@ -3164,7 +3174,7 @@ int beagle_test(char *scan_value)
 	r = system(str);
 	beagle_notice("memory", r ? "fail" : "pass");
 
-	fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'", "r");
+	fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'", "r"); // fetch gateway
 	if (fp != NULL) {
 		fgets(str2, sizeof(str2)-1, fp);
 		pclose(fp);
@@ -3178,21 +3188,22 @@ int beagle_test(char *scan_value)
 	r = system(str);
 	beagle_notice("ethernet", r ? "fail" : "pass");
 
-	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 192.168.7.1 > /dev/null", str2);
+	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 192.168.7.1 > /dev/null");
 	fprintf(stderr, str);
 	fprintf(stderr, "\n");
 	fflush(stderr);
 	r = system(str);
 	beagle_notice("usb client", r ? "fail" : "pass");
 
+	close(fd_sn);
 	return fail;
 }
 
-int beagle_notice(char *test, char *status)
+void beagle_notice(const char *test, const char *status)
 {
-	const char *fmt = "%14s : %12s";
+	const char *fmt = "%14s : %-50s";
 	int color = COLOR_PASS;
-	char str[36];
+	char str[70];
 
 	if(!strcmp(status, "fail")) {
 		fail++;
@@ -3201,6 +3212,9 @@ int beagle_notice(char *test, char *status)
 
 	}
 	sprintf(str, fmt, test, status);
-	fb_put_string(&fb_info, 20, 50+notice_line*10, str, 35, color, 1, 35);
+	fprintf(stderr, str);
+	fprintf(stderr, "\n");
+	fflush(stderr);
+	fb_put_string(&fb_info, 20, 50+notice_line*10, str, 70, color, 1, 70);
 	notice_line++;
 }
