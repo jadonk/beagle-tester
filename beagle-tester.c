@@ -95,7 +95,7 @@ void fb_open(int fb_num, struct fb_info *fb_info);
 void fb_update_window(int fd, short x, short y, short w, short h);
 void fb_sync_gfx(int fd);
 int fb_put_string(struct fb_info *fb_info, int x, int y, const char *s, int maxlen,
-		int color, int clear, int clearlen);
+		unsigned color, int clear, int clearlen);
 
 #endif
 
@@ -350,6 +350,17 @@ static void fb_put_char(struct fb_info *fb_info, int x, int y, char c,
 	struct fb_var_screeninfo *var = &fb_info->var;
 	struct fb_fix_screeninfo *fix = &fb_info->fix;
 
+	unsigned short c16;
+	unsigned r = (color >> 16) & 0xff;
+	unsigned g = (color >> 8) & 0xff;
+	unsigned b = (color >> 0) & 0xff;
+
+	r = r * 32 / 256;
+	g = g * 64 / 256;
+	b = b * 32 / 256;
+
+	c16 = (r << 11) | (g << 5) | (b << 0);
+
 	for (i = 0; i < 8; i++) {
 		bits = fontdata_8x8[8 * c + i];
 		for (j = 0; j < 8; j++) {
@@ -363,7 +374,7 @@ static void fb_put_char(struct fb_info *fb_info, int x, int y, char c,
 					*p8 = color;
 				case 16:
 					p16 = fb_info->ptr + loc;
-					*p16 = color;
+					*p16 = c16;
 					break;
 				case 24:
 				case 32:
@@ -377,7 +388,7 @@ static void fb_put_char(struct fb_info *fb_info, int x, int y, char c,
 }
 
 int fb_put_string(struct fb_info *fb_info, int x, int y, const char *s, int maxlen,
-		int color, int clear, int clearlen)
+		unsigned color, int clear, int clearlen)
 {
 	int i;
 	int w = 0;
@@ -2986,13 +2997,14 @@ char fontdata_8x8[] = {
 
 
 /* beagle-tester.c */
-#define COLOR_PASS 0xffffff
-#define COLOR_FAIL 0x00f0f0
+#define COLOR_TEXT 0xffffffu
+#define COLOR_PASS 0x00ff00u
+#define COLOR_FAIL 0xff0000u
 static volatile sig_atomic_t stop = 0;
 int fail = 0;
 int notice_line = 0;
 
-int beagle_test(const char *scan_value);
+void beagle_test(const char *scan_value);
 void beagle_notice(const char *test, const char *status);
 
 static void do_stop()
@@ -3006,7 +3018,7 @@ int main()
 	int barcode = open("/dev/beagle-barcode", O_RDONLY);
 	fd_set rdfs;
 	struct input_event ev[256];
-	int i, r, rd;
+	int i, rd;
 	struct timeval timeout;
 	char scan_value[32];
 	int scan_i = 0;
@@ -3060,8 +3072,8 @@ int main()
 					fprintf(stderr, "Got scanned value: %s\n", scan_value);
 					fflush(stderr);
 					do_fill_screen(&fb_info, 0);
-					r = beagle_test(scan_value);
-					fprintf(stderr, "Test returned: %d\n", r);
+					beagle_test(scan_value);
+					fprintf(stderr, "Test fails: %d\n", fail);
 					fflush(stderr);
 					memset(scan_value, 0, sizeof(scan_value));
 					scan_i = 0;
@@ -3131,6 +3143,86 @@ int main()
 					scan_value[scan_i] = 'F';
 					scan_i++;
 					break;
+				case KEY_G:
+					scan_value[scan_i] = 'G';
+					scan_i++;
+					break;
+				case KEY_H:
+					scan_value[scan_i] = 'H';
+					scan_i++;
+					break;
+				case KEY_I:
+					scan_value[scan_i] = 'I';
+					scan_i++;
+					break;
+				case KEY_J:
+					scan_value[scan_i] = 'J';
+					scan_i++;
+					break;
+				case KEY_K:
+					scan_value[scan_i] = 'K';
+					scan_i++;
+					break;
+				case KEY_L:
+					scan_value[scan_i] = 'L';
+					scan_i++;
+					break;
+				case KEY_M:
+					scan_value[scan_i] = 'M';
+					scan_i++;
+					break;
+				case KEY_N:
+					scan_value[scan_i] = 'N';
+					scan_i++;
+					break;
+				case KEY_O:
+					scan_value[scan_i] = 'O';
+					scan_i++;
+					break;
+				case KEY_P:
+					scan_value[scan_i] = 'P';
+					scan_i++;
+					break;
+				case KEY_Q:
+					scan_value[scan_i] = 'Q';
+					scan_i++;
+					break;
+				case KEY_R:
+					scan_value[scan_i] = 'R';
+					scan_i++;
+					break;
+				case KEY_S:
+					scan_value[scan_i] = 'S';
+					scan_i++;
+					break;
+				case KEY_T:
+					scan_value[scan_i] = 'T';
+					scan_i++;
+					break;
+				case KEY_U:
+					scan_value[scan_i] = 'U';
+					scan_i++;
+					break;
+				case KEY_V:
+					scan_value[scan_i] = 'V';
+					scan_i++;
+					break;
+				case KEY_W:
+					scan_value[scan_i] = 'W';
+					scan_i++;
+					break;
+				case KEY_X:
+					scan_value[scan_i] = 'X';
+					scan_i++;
+					break;
+				case KEY_Y:
+					scan_value[scan_i] = 'Y';
+					scan_i++;
+					break;
+				case KEY_Z:
+					scan_value[scan_i] = 'Z';
+					scan_i++;
+					break;
 				}
 			}
 			//fprintf(stderr, "*"); fflush(stderr);
@@ -3142,15 +3234,16 @@ int main()
 	return 0;
 }
 
-int beagle_test(const char *scan_value)
+void beagle_test(const char *scan_value)
 {
 	int r;
-	int fail = 0;
 	char sn[17];
 	int fd_sn;
 	char str[70];
 	char str2[50];
 	FILE *fp;
+	unsigned x, y;
+	unsigned color;
 
 	notice_line = 0;
 	beagle_notice("scan", scan_value);
@@ -3205,21 +3298,24 @@ int beagle_test(const char *scan_value)
 		beagle_notice("eeprom", strcmp(scan_value, sn) ? "fail" : "pass");
 	}
 
+	color = fail ? COLOR_FAIL : COLOR_PASS;
+	for (y = 500; y < 1000; y++) {
+		for (x = 500; x < 1000; x++)
+			draw_pixel(&fb_info, x, y, color);
+	}
+
 	close(fd_sn);
-	return fail;
 }
 
 void beagle_notice(const char *test, const char *status)
 {
 	const char *fmt = "%14s : %-50s";
-	int color = COLOR_PASS;
+	unsigned color = COLOR_TEXT;
 	char str[70];
 
 	if(!strcmp(status, "fail")) {
 		fail++;
 		color = COLOR_FAIL;
-	} else {
-
 	}
 	sprintf(str, fmt, test, status);
 	fprintf(stderr, str);
