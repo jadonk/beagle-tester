@@ -3146,7 +3146,7 @@ int beagle_test(const char *scan_value)
 {
 	int r;
 	int fail = 0;
-	char sn[13];
+	char sn[17];
 	int fd_sn;
 	char str[70];
 	char str2[50];
@@ -3157,8 +3157,8 @@ int beagle_test(const char *scan_value)
 
 	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/at24-0/nvmem", O_RDWR);
 	lseek(fd_sn, 12, SEEK_SET);
-	r = read(fd_sn, sn, 12);
-	sn[12] = 0;
+	r = read(fd_sn, sn, 16);
+	sn[16] = 0;
 	beagle_notice("init eeprom", sn);
 
 	fp = fopen("/etc/dogtag", "r");
@@ -3194,6 +3194,16 @@ int beagle_test(const char *scan_value)
 	fflush(stderr);
 	r = system(str);
 	beagle_notice("usb client", r ? "fail" : "pass");
+
+	if(!fail) {
+		lseek(fd_sn, 12, SEEK_SET);
+		r = write(fd_sn, scan_value, 16);
+		lseek(fd_sn, 12, SEEK_SET);
+		r = write(fd_sn, sn, 16);
+		sn[12] = 0;
+		beagle_notice("new eeprom", sn);
+		beagle_notice("eeprom", strcmp(scan_value, sn) ? "fail" : "pass");
+	}
 
 	close(fd_sn);
 	return fail;
