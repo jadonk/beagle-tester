@@ -1,6 +1,6 @@
 /*
  * beagle-tester.c
- * 
+ *
  * based on evtest and fb-test
  *
  * Author: Jason Kridner <jdk@ti.com>
@@ -298,7 +298,7 @@ void fb_open(int fb_num, struct fb_info *fb_info)
 	tty = open("/dev/tty1", O_RDWR);
 
 	if(ioctl(tty, KDSETMODE, KD_GRAPHICS) == -1)
-		printf("Failed to set graphics mode on tty1\n");
+		fprintf(stderr, "Failed to set graphics mode on tty1\n");
 
 	sprintf(str, "/dev/fb%d", fb_num);
 	fd = open(str, O_RDWR);
@@ -309,10 +309,11 @@ void fb_open(int fb_num, struct fb_info *fb_info)
 	IOCTL1(fd, FBIOGET_VSCREENINFO, &fb_info->var);
 	IOCTL1(fd, FBIOGET_FSCREENINFO, &fb_info->fix);
 
-	printf("fb res %dx%d virtual %dx%d, line_len %d, bpp %d\n",
+	fprintf(stderr, "fb res %dx%d virtual %dx%d, line_len %d, bpp %d\n",
 			fb_info->var.xres, fb_info->var.yres,
 			fb_info->var.xres_virtual, fb_info->var.yres_virtual,
 			fb_info->fix.line_length, fb_info->var.bits_per_pixel);
+	fflush(stderr);
 
 	void *ptr = mmap(0,
 			fb_info->var.yres_virtual * fb_info->fix.line_length,
@@ -2985,9 +2986,11 @@ char fontdata_8x8[] = {
 
 
 /* beagle-tester.c */
+#define COLOR_PASS 0xffffff
+#define COLOR_FAIL 0x00f0f0
 static volatile sig_atomic_t stop = 0;
 
-void beagle_test(char *scan_value);
+int beagle_test(char *scan_value);
 
 static void do_stop(int sig)
 {
@@ -2999,30 +3002,28 @@ int main()
 	unsigned short barcode_id[4];
 	int barcode = open("/dev/beagle-barcode", O_RDONLY);
 	fd_set rdfs;
-	int req_fb = 0;
-	int req_pattern = 0;
 	struct input_event ev[256];
-	int i, rd;
+	int i, r, rd;
 	struct timeval timeout;
 	char str[36];
 	char scan_value[32];
 	int scan_i = 0;
 
-	FILE *errlog = fopen("/var/log/beagle-tester.log", "w");
+	//FILE *errlog = fopen("/var/log/beagle-tester.log", "w");
 	ioctl(barcode, EVIOCGID, barcode_id);
-	fprintf(errlog, "Found input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
+	fprintf(stderr, "Found input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
 		barcode_id[ID_BUS], barcode_id[ID_VENDOR], barcode_id[ID_PRODUCT], barcode_id[ID_VERSION]);
+	fflush(stderr);
 
-	FD_ZERO(&rdfs);
-	FD_SET(barcode, &rdfs);
-	
-	fb_open(req_fb, &fb_info);
-	do_fill_screen(&fb_info, req_pattern);
-	
+	fb_open(0, &fb_info);
+	do_fill_screen(&fb_info, 0);
+
 	signal(SIGINT, do_stop);
 	signal(SIGTERM, do_stop);
 
 	while (!stop) {
+		FD_ZERO(&rdfs);
+		FD_SET(barcode, &rdfs);
 		timeout.tv_sec = 5;
 		timeout.tv_usec = 0;
 		rd = select(barcode + 1, &rdfs, NULL, NULL, &timeout);
@@ -3041,9 +3042,8 @@ int main()
 			code = ev[i].code;
 			value = ev[i].value;
 
-			/*sprintf(str, "%02x %02x %06x", type, code, value);
-			printf(str);
-			printf("\n");*/
+			/*fprintf(stderr, "Event: %02x %02x %06x\n", type, code, value);
+			fflush(stderr);*/
 			//fb_put_string(&fb_info, 300, 30+10*i, str, 35, 0xffffff, 1, 35);
 
 			if ((type == 1) && (value == 1)) {
@@ -3052,7 +3052,11 @@ int main()
 					break;
 				case KEY_ENTER:
 					scan_value[scan_i] = 0;
-					beagle_test(scan_value);
+					fprintf(stderr, "Got scanned value: %s\n", scan_value);
+					fflush(stderr);
+					do_fill_screen(&fb_info, 0);
+					r = beagle_test(scan_value);
+					fprintf(stderr, "Test returned: %d\n", r);
 					memset(scan_value, 0, sizeof(scan_value));
 					scan_i = 0;
 					break;
@@ -3130,14 +3134,16 @@ int main()
 	return 0;
 }
 
-void beagle_test(char *scan_value)
+int beagle_test(char *scan_value)
 {
 	int r;
 	int fail = 0;
 	char sn[13];
 	int fd_sn;
 	char str[36];
-	const char *fmt = "%12s : %12s";
+	char str2[36];
+	const char *fmt = "%14s : %12s";
+	FILE *fp;
 
 	sprintf(str, fmt, "scan", scan_value);
 	fb_put_string(&fb_info, 20, 60, str, 35, 0xffffff, 1, 35);
@@ -3149,12 +3155,53 @@ void beagle_test(char *scan_value)
 	sprintf(str, fmt, "eeprom", sn);
 	fb_put_string(&fb_info, 20, 70, str, 35, 0xffffff, 1, 35);
 
-	r = system("memtester 1M 1");
+	strcpy(str, "memtester 1M 1 > /dev/null");
+	fprintf(stderr, str);
+	fprintf(stderr, "\n");
+	fflush(stderr);
+	r = system(str);
 	if(r == 0) {
 		sprintf(str, fmt, "memory", "pass");
-		fb_put_string(&fb_info, 20, 80, str, 35, 0xffffff, 1, 35);
+		fb_put_string(&fb_info, 20, 80, str, 35, COLOR_PASS, 1, 35);
 	} else {
 		sprintf(str, fmt, "memory", "fail");
+		fb_put_string(&fb_info, 20, 80, str, 35, COLOR_FAIL, 1, 35);
 		fail++;
 	}
+
+	fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'", "r");
+	if (fp != NULL) {
+		fgets(str2, sizeof(str2)-1, fp);
+		pclose(fp);
+	} else {
+		str2[0] = 0;
+	}
+	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 %s > /dev/null", str2);
+	fprintf(stderr, str);
+	fprintf(stderr, "\n");
+	fflush(stderr);
+	r = system(str);
+	if(r == 0) {
+		sprintf(str, fmt, "ethernet", "pass");
+		fb_put_string(&fb_info, 20, 90, str, 35, COLOR_PASS, 1, 35);
+	} else {
+		sprintf(str, fmt, "ethernet", "fail");
+		fb_put_string(&fb_info, 20, 90, str, 35, COLOR_FAIL, 1, 35);
+		fail++;
+	}
+
+	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 192.168.7.1 > /dev/null", str2);
+	fprintf(stderr, str);
+	fprintf(stderr, "\n");
+	fflush(stderr);
+	r = system(str);
+	if(r == 0) {
+		sprintf(str, fmt, "usb", "pass");
+		fb_put_string(&fb_info, 20, 100, str, 35, COLOR_PASS, 1, 35);
+	} else {
+		sprintf(str, fmt, "usb", "fail");
+		fb_put_string(&fb_info, 20, 100, str, 35, COLOR_FAIL, 1, 35);
+		fail++;
+	}
+	return fail;
 }
