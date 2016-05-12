@@ -3028,7 +3028,7 @@ int main()
 	fprintf(stderr, "Found input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
 		barcode_id[ID_BUS], barcode_id[ID_VENDOR], barcode_id[ID_PRODUCT], barcode_id[ID_VERSION]);
 	fflush(stderr);
-	
+
 	system("/usr/sbin/beagle-tester-config.sh");
 
 	fb_open(0, &fb_info);
@@ -3239,7 +3239,6 @@ int main()
 void beagle_test(const char *scan_value)
 {
 	int r;
-	char sn[17];
 	int fd_sn;
 	char str[70];
 	char str2[50];
@@ -3251,10 +3250,10 @@ void beagle_test(const char *scan_value)
 	beagle_notice("scan", scan_value);
 
 	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/at24-0/nvmem", O_RDWR);
-	lseek(fd_sn, 12, SEEK_SET);
-	r = read(fd_sn, sn, 16);
-	sn[16] = 0;
-	beagle_notice("init eeprom", sn);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str, 28);
+	str[28] = 0;
+	beagle_notice("init eeprom", str);
 
 	fp = fopen("/etc/dogtag", "r");
 	fgets(str, sizeof(str), fp);
@@ -3291,13 +3290,17 @@ void beagle_test(const char *scan_value)
 	beagle_notice("usb client", r ? "fail" : "pass");
 
 	if(!fail) {
-		lseek(fd_sn, 12, SEEK_SET);
-		r = write(fd_sn, scan_value, 16);
-		lseek(fd_sn, 12, SEEK_SET);
-		r = write(fd_sn, sn, 16);
-		sn[12] = 0;
-		beagle_notice("new eeprom", sn);
-		beagle_notice("eeprom", strcmp(scan_value, sn) ? "fail" : "pass");
+		lseek(fd_sn, 0, SEEK_SET);
+		r = read(fd_sn, str, 12);
+		memcpy(&str[12], scan_value, 16);
+		str[28] = 0;
+		lseek(fd_sn, 0, SEEK_SET);
+		r = write(fd_sn, str, 28);
+		lseek(fd_sn, 0, SEEK_SET);
+		r = read(fd_sn, str2, 28);
+		str2[28] = 0;
+		beagle_notice("new eeprom", str2);
+		beagle_notice("eeprom", strcmp(str, str2) ? "fail" : "pass");
 	}
 
 	color = fail ? COLOR_FAIL : COLOR_PASS;
