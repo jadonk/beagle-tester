@@ -9,9 +9,9 @@ install: beagle-tester beagle-tester.service beagle-tester.rules beagle-tester-c
 	install -m 744 beagle-tester-config.sh /usr/sbin
 	install -m 644 beagle-tester.service /usr/lib
 	install -m 644 beagle-tester.rules /etc/udev/rules.d
-	systemctl stop beagle-tester.service
-	systemctl daemon-reload
-	systemctl enable beagle-tester.service
+	systemctl stop beagle-tester.service || true
+	systemctl daemon-reload || true
+	systemctl enable beagle-tester.service || true
 
 start: install
 	systemctl restart beagle-tester.service
