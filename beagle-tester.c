@@ -3249,7 +3249,7 @@ void beagle_test(const char *scan_value)
 	notice_line = 0;
 	beagle_notice("scan", scan_value);
 
-	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/at24-0/eeprom", O_RDWR);
+	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/eeprom", O_RDWR);
 	lseek(fd_sn, 0, SEEK_SET);
 	r = read(fd_sn, str, 28);
 	str[28] = 0;
