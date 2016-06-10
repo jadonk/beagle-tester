@@ -3015,7 +3015,7 @@ static void do_stop()
 int main()
 {
 	unsigned short barcode_id[4];
-	int barcode = open("/dev/beagle-barcode", O_RDONLY);
+	int barcode = open("/dev/input/beagle-barcode", O_RDONLY);
 	fd_set rdfs;
 	struct input_event ev[256];
 	int i, rd;

@@ -1,8 +1,8 @@
 [Unit]
 Description=Beagle Self-test
-After=dev-input-event1.device
-Requires=dev-input-event1.device 
-BindsTo=dev-input-event1.device
+After=dev-input-beagle\x2dbarcode.device
+Requires=dev-input-beagle\x2dbarcode.device 
+BindsTo=dev-input-beagle\x2dbarcode.device
 
 [Service]
 ExecStart=/usr/sbin/beagle-tester
