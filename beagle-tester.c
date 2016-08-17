@@ -3242,12 +3242,20 @@ void beagle_test(const char *scan_value)
 	int fd_sn;
 	char str[70];
 	char str2[50];
+	char model[70];
 	FILE *fp;
 	unsigned x, y;
 	unsigned color;
 
 	notice_line = 0;
 	beagle_notice("scan", scan_value);
+
+	fp = fopen("/proc/device-tree/model", "r");
+	fgets(str, sizeof(str), fp);
+	fclose(fp);
+	strcpy(model, str);
+	str[strlen(str)-1] = 0; // remove trailing character
+	beagle_notice("model", str);
 
 	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/eeprom", O_RDWR);
 	lseek(fd_sn, 0, SEEK_SET);
