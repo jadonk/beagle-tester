@@ -2997,6 +2997,11 @@ char fontdata_8x8[] = {
 
 
 /* beagle-tester.c */
+#define MODEL_BOARD "TI OMAP3 BeagleBoard"
+#define MODEL_XM    "TI OMAP3 BeagleBoard xM"
+#define MODEL_X15   "TI AM5728 BeagleBoard-X15"
+#define MODEL_BONE  "TI AM335x BeagleBone"
+#define MODEL_BLACK "TI AM335x BeagleBone Black"
 #define COLOR_TEXT 0xffffffu
 #define COLOR_PASS 0x00ff00u
 #define COLOR_FAIL 0xff0000u
@@ -3254,7 +3259,6 @@ void beagle_test(const char *scan_value)
 	fgets(str, sizeof(str), fp);
 	fclose(fp);
 	strcpy(model, str);
-	str[strlen(str)-1] = 0; // remove trailing character
 	beagle_notice("model", str);
 
 	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/eeprom", O_RDWR);
