@@ -1,0 +1,17 @@
+#!/bin/bash
+connmanctl tether wifi off
+connmanctl scan wifi
+SERVICE=`connmanctl services | grep BeagleBone | head -1 | sed 's/\s\+/,/g'`
+if [ "$SERVICE" == "" ] ; then 
+    echo "No BeagleBone tether found!" ;
+    exit -1 ;
+fi
+SSID=`echo $SERVICE | cut -d, -f2`
+HASH=`echo $SERVICE | cut -d, -f3`
+cat << EOF > /var/lib/connman/$SSID-psk.config
+[service_$HASH]
+Type = wifi
+Name = $SSID
+Passphrase = BeagleBone
+EOF
+connmanctl connect $HASH

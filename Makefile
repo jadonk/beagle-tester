@@ -7,6 +7,7 @@ clean:
 install: beagle-tester beagle-tester.service beagle-tester.rules beagle-tester-config.sh
 	install -m 755 -d $(DESTDIR)/usr/sbin
 	install -m 700 beagle-tester $(DESTDIR)/usr/sbin
+	install -m 744 connect_bb_tether $(DESTDIR)/usr/sbin
 	install -m 744 beagle-tester-config.sh $(DESTDIR)/usr/sbin
 	install -m 755 -d $(DESTDIR)/lib/systemd/system
 	install -m 644 beagle-tester.service $(DESTDIR)/lib/systemd/system
