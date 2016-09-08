@@ -1,10 +1,10 @@
 #!/bin/bash
-connmanctl tether wifi off
-connmanctl scan wifi
+connmanctl tether wifi off &> /dev/null
+connmanctl scan wifi &> /dev/null
 SERVICE=`connmanctl services | grep BeagleBone | head -1 | sed 's/\s\+/,/g'`
 if [ "$SERVICE" == "" ] ; then 
-    echo "No BeagleBone tether found!" ;
-    exit -1 ;
+	echo "No BeagleBone tether found!"
+	exit 1 ;
 fi
 SSID=`echo $SERVICE | cut -d, -f2`
 HASH=`echo $SERVICE | cut -d, -f3`
@@ -14,4 +14,5 @@ Type = wifi
 Name = $SSID
 Passphrase = BeagleBone
 EOF
-connmanctl connect $HASH
+connmanctl connect $HASH &> /dev/null
+echo $SSID

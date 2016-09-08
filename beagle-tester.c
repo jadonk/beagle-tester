@@ -3002,6 +3002,7 @@ char fontdata_8x8[] = {
 #define MODEL_X15   "TI AM5728 BeagleBoard-X15"
 #define MODEL_BONE  "TI AM335x BeagleBone"
 #define MODEL_BLACK "TI AM335x BeagleBone Black"
+#define MODEL_WIFI  "TI AM335x BeagleBone Black Wireless"
 #define COLOR_TEXT 0xffffffu
 #define COLOR_PASS 0x00ff00u
 #define COLOR_FAIL 0xff0000u
@@ -3017,13 +3018,13 @@ static void do_stop()
 	stop = 1;
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	unsigned short barcode_id[4];
 	int barcode = open("/dev/input/beagle-barcode", O_RDONLY);
 	fd_set rdfs;
 	struct input_event ev[256];
-	int i, rd;
+	int i, rd = 0;
 	struct timeval timeout;
 	char scan_value[32];
 	int scan_i = 0;
@@ -3043,6 +3044,10 @@ int main()
 	signal(SIGTERM, do_stop);
 
 	while (!stop) {
+		if(argc > 1) {
+			beagle_test(argv[1]);
+			continue;
+		} else {
 		//fprintf(stderr, "."); fflush(stderr);
 		FD_ZERO(&rdfs);
 		FD_SET(barcode, &rdfs);
@@ -3234,6 +3239,7 @@ int main()
 			}
 			//fprintf(stderr, "*"); fflush(stderr);
 		}
+		}
 	}
 
 	do_fill_screen(&fb_info, 4);
@@ -3280,6 +3286,26 @@ void beagle_test(const char *scan_value)
 	r = system(str);
 	beagle_notice("memory", r ? "fail" : "pass");
 
+	if(!strcmp(model, MODEL_WIFI)) {
+
+	fp = popen("connect_bb_tether", "r"); // connect to tether
+	if (fp != NULL) {
+		fgets(str2, sizeof(str2)-1, fp);
+		pclose(fp);
+	} else {
+		str2[0] = 0;
+	}
+	beagle_notice("tether", str2);
+
+	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I wlan0 192.168.0.1 > /dev/null");
+	fprintf(stderr, str);
+	fprintf(stderr, "\n");
+	fflush(stderr);
+	r = system(str);
+	beagle_notice("wifi", r ? "fail" : "pass");
+
+	} else {
+
 	fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'", "r"); // fetch gateway
 	if (fp != NULL) {
 		fgets(str2, sizeof(str2)-1, fp);
@@ -3293,6 +3319,8 @@ void beagle_test(const char *scan_value)
 	fflush(stderr);
 	r = system(str);
 	beagle_notice("ethernet", r ? "fail" : "pass");
+
+	}
 
 	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I usb0 192.168.7.1 > /dev/null");
 	fprintf(stderr, str);
