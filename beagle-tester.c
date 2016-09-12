@@ -3287,39 +3287,38 @@ void beagle_test(const char *scan_value)
 	beagle_notice("memory", r ? "fail" : "pass");
 
 	if(!strcmp(model, MODEL_WIFI)) {
+		fp = popen("connect_bb_tether", "r"); // connect to tether
+		if (fp != NULL) {
+			fgets(str2, sizeof(str2)-1, fp);
+			pclose(fp);
+		} else {
+			str2[0] = 0;
+		}
+		beagle_notice("tether", str2);
 
-	fp = popen("connect_bb_tether", "r"); // connect to tether
-	if (fp != NULL) {
-		fgets(str2, sizeof(str2)-1, fp);
-		pclose(fp);
-	} else {
-		str2[0] = 0;
-	}
-	beagle_notice("tether", str2);
-
-	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I wlan0 192.168.0.1 > /dev/null");
-	fprintf(stderr, str);
-	fprintf(stderr, "\n");
-	fflush(stderr);
-	r = system(str);
-	beagle_notice("wifi", r ? "fail" : "pass");
-
-	} else {
-
-	fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'", "r"); // fetch gateway
-	if (fp != NULL) {
-		fgets(str2, sizeof(str2)-1, fp);
-		pclose(fp);
-	} else {
-		str2[0] = 0;
-	}
-	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I eth0 %s > /dev/null", str2);
-	fprintf(stderr, str);
-	fprintf(stderr, "\n");
-	fflush(stderr);
-	r = system(str);
-	beagle_notice("ethernet", r ? "fail" : "pass");
-
+		sprintf(str,
+			"ping -s 8184 -i 0.01 -q -c 150 -w 2 -I wlan0 192.168.0.1 > /dev/null");
+		fprintf(stderr, str);
+		fprintf(stderr, "\n");
+		fflush(stderr);
+		r = system(str);
+		beagle_notice("wifi", r ? "fail" : "pass");
+	} else { // assume BeagleBone Black
+		fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'",
+			 "r"); // fetch gateway
+		if (fp != NULL) {
+			fgets(str2, sizeof(str2)-1, fp);
+			pclose(fp);
+		} else {
+			str2[0] = 0;
+		}
+		sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I eth0 %s > /dev/null",
+			 str2);
+		fprintf(stderr, str);
+		fprintf(stderr, "\n");
+		fflush(stderr);
+		r = system(str);
+		beagle_notice("ethernet", r ? "fail" : "pass");
 	}
 
 	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I usb0 192.168.7.1 > /dev/null");
