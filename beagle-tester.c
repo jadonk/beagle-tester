@@ -3084,6 +3084,10 @@ int main(int argc, char** argv)
 					scan_i = 0;
 					fail = 0;
 					break;
+				case KEY_MINUS:
+					scan_value[scan_i] = '-';
+					scan_i++;
+					break;
 				case KEY_0:
 					scan_value[scan_i] = '0';
 					scan_i++;
@@ -3243,11 +3247,11 @@ int main(int argc, char** argv)
 			beagle_test(scan_value);
 			fprintf(stderr, "Test fails: %d\n", fail);
 			fflush(stderr);
-			memset(scan_value, 0, sizeof(scan_value));
 			if (!strcmp(scan_value, REPEAT_SCAN_VALUE) && !stop) {
 				// pause 2 seconds and run again
 				sleep(2);
 			} else {
+				memset(scan_value, 0, sizeof(scan_value));
 				run = 0;
 			}
 		}
@@ -3339,7 +3343,7 @@ void beagle_test(const char *scan_value)
 	r = system(str);
 	beagle_notice("usb client", r ? "fail" : "pass");
 
-	if(!fail && strcmp(scan_value, REPEAT_SCAN_VALUE)) {
+	if (!fail && strcmp(scan_value, REPEAT_SCAN_VALUE)) {
 		lseek(fd_sn, 0, SEEK_SET);
 		r = read(fd_sn, str, 12);
 		memcpy(&str[12], scan_value, 16);
@@ -3354,7 +3358,7 @@ void beagle_test(const char *scan_value)
 	}
 
 	color = fail ? COLOR_FAIL : COLOR_PASS;
-	for (y = 500; y < 1000; y++) {
+	for (y = 500; y < 768; y++) {
 		for (x = 500; x < 1000; x++)
 			draw_pixel(&fb_info, x, y, color);
 	}
