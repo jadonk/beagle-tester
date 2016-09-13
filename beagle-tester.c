@@ -3006,13 +3006,15 @@ char fontdata_8x8[] = {
 #define COLOR_TEXT 0xffffffu
 #define COLOR_PASS 0x00ff00u
 #define COLOR_FAIL 0xff0000u
-#define REPEAT_SCAN_VALUE "BURN-IN"
+#define SCAN_VALUE_REPEAT "BURN-IN"
+#define SCAN_VALUE_COLORBAR "FCC"
 static volatile sig_atomic_t stop = 0;
 int fail = 0;
 int notice_line = 0;
 
 void beagle_test(const char *scan_value);
 void beagle_notice(const char *test, const char *status);
+void do_colorbar();
 
 static void do_stop()
 {
@@ -3242,12 +3244,14 @@ int main(int argc, char** argv)
 			run = 1;
 		}
 
-		if (run) {
+		if (run && !strcmp(scan_value, SCAN_VALUE_COLORBAR)) {
+			do_colorbar();
+		} else if (run) {
 			do_fill_screen(&fb_info, 0);
 			beagle_test(scan_value);
 			fprintf(stderr, "Test fails: %d\n", fail);
 			fflush(stderr);
-			if (!strcmp(scan_value, REPEAT_SCAN_VALUE) && !stop) {
+			if (!strcmp(scan_value, SCAN_VALUE_REPEAT) && !stop) {
 				// pause 2 seconds and run again
 				sleep(2);
 			} else {
@@ -3343,7 +3347,7 @@ void beagle_test(const char *scan_value)
 	r = system(str);
 	beagle_notice("usb client", r ? "fail" : "pass");
 
-	if (!fail && strcmp(scan_value, REPEAT_SCAN_VALUE)) {
+	if (!fail && strcmp(scan_value, SCAN_VALUE_REPEAT)) {
 		lseek(fd_sn, 0, SEEK_SET);
 		r = read(fd_sn, str, 12);
 		memcpy(&str[12], scan_value, 16);
@@ -3382,4 +3386,8 @@ void beagle_notice(const char *test, const char *status)
 	fflush(stderr);
 	fb_put_string(&fb_info, 20, 50+notice_line*10, str, 70, color, 1, 70);
 	notice_line++;
+}
+
+void do_colorbar()
+{
 }
