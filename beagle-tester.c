@@ -3006,6 +3006,7 @@ char fontdata_8x8[] = {
 #define COLOR_TEXT 0xffffffu
 #define COLOR_PASS 0x00ff00u
 #define COLOR_FAIL 0xff0000u
+#define REPEAT_SCAN_VALUE "BURN-IN"
 static volatile sig_atomic_t stop = 0;
 int fail = 0;
 int notice_line = 0;
@@ -3024,7 +3025,7 @@ int main(int argc, char** argv)
 	int barcode = open("/dev/input/beagle-barcode", O_RDONLY);
 	fd_set rdfs;
 	struct input_event ev[256];
-	int i, rd = 0;
+	int i, n, rd = 0, run = 0;
 	struct timeval timeout;
 	char scan_value[32];
 	int scan_i = 0;
@@ -3044,34 +3045,30 @@ int main(int argc, char** argv)
 	signal(SIGTERM, do_stop);
 
 	while (!stop) {
-		if(argc > 1) {
-			beagle_test(argv[1]);
-			continue;
-		} else {
-		//fprintf(stderr, "."); fflush(stderr);
 		FD_ZERO(&rdfs);
 		FD_SET(barcode, &rdfs);
-		timeout.tv_sec = 5;
+		timeout.tv_sec = 1;
 		timeout.tv_usec = 0;
 		rd = select(barcode + 1, &rdfs, NULL, NULL, &timeout);
 		if (stop)
 			break;
-		if (rd <= 0) {
-			//fprintf(stderr, "No data: %d\n", rd); fflush(stderr);
-			continue;
-		}
-		rd = read(barcode, ev, sizeof(ev));
-		if (rd < (int) sizeof(struct input_event)) {
-			//fprintf(stderr, "Data too small: %d\n", rd); fflush(stderr);
-			continue;
+		if (rd > 0) {
+			rd = read(barcode, ev, sizeof(ev));
 		}
 
-		for (i = 0; i < (int)(rd / sizeof(struct input_event)); i++) {
+		for (i = 0; i < rd; i += (int)sizeof(struct input_event)) {
 			unsigned int type, code, value;
 
-			type = ev[i].type;
-			code = ev[i].code;
-			value = ev[i].value;
+			if ((rd % (int) sizeof(struct input_event)) != 0) {
+				//fprintf(stderr, "Data too small: %d\n", rd); fflush(stderr);
+				break;
+			}
+
+			n = i / (int) sizeof(struct input_event);
+
+			type = ev[n].type;
+			code = ev[n].code;
+			value = ev[n].value;
 
 			//fprintf(stderr, "Event: %02x %02x %06x\n", type, code, value); fflush(stderr);
 
@@ -3083,11 +3080,7 @@ int main(int argc, char** argv)
 					scan_value[scan_i] = 0;
 					fprintf(stderr, "Got scanned value: %s\n", scan_value);
 					fflush(stderr);
-					do_fill_screen(&fb_info, 0);
-					beagle_test(scan_value);
-					fprintf(stderr, "Test fails: %d\n", fail);
-					fflush(stderr);
-					memset(scan_value, 0, sizeof(scan_value));
+					run = 1;
 					scan_i = 0;
 					fail = 0;
 					break;
@@ -3239,6 +3232,24 @@ int main(int argc, char** argv)
 			}
 			//fprintf(stderr, "*"); fflush(stderr);
 		}
+
+		if(scan_i == 0 && argc > 1) {
+			strcpy(scan_value, argv[1]);
+			run = 1;
+		}
+
+		if (run) {
+			do_fill_screen(&fb_info, 0);
+			beagle_test(scan_value);
+			fprintf(stderr, "Test fails: %d\n", fail);
+			fflush(stderr);
+			memset(scan_value, 0, sizeof(scan_value));
+			if (!strcmp(scan_value, REPEAT_SCAN_VALUE) && !stop) {
+				// pause 2 seconds and run again
+				sleep(2);
+			} else {
+				run = 0;
+			}
 		}
 	}
 
@@ -3328,7 +3339,7 @@ void beagle_test(const char *scan_value)
 	r = system(str);
 	beagle_notice("usb client", r ? "fail" : "pass");
 
-	if(!fail) {
+	if(!fail && strcmp(scan_value, REPEAT_SCAN_VALUE)) {
 		lseek(fd_sn, 0, SEEK_SET);
 		r = read(fd_sn, str, 12);
 		memcpy(&str[12], scan_value, 16);
