@@ -3390,4 +3390,5 @@ void beagle_notice(const char *test, const char *status)
 
 void do_colorbar()
 {
+	system("fbi -T 1 -a -noverbose -d /dev/fb0 /usr/share/beagle-tester/itu-r-bt1729-colorbar-16x9.png");
 }
