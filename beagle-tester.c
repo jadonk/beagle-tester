@@ -3008,6 +3008,7 @@ char fontdata_8x8[] = {
 #define COLOR_FAIL 0xff0000u
 #define SCAN_VALUE_REPEAT "BURN-IN"
 #define SCAN_VALUE_COLORBAR "FCC"
+#define SCAN_VALUE_STOP "STOP"
 static volatile sig_atomic_t stop = 0;
 int fail = 0;
 int notice_line = 0;
@@ -3240,18 +3241,25 @@ int main(int argc, char** argv)
 		}
 
 		if(scan_i == 0 && argc > 1) {
-			strcpy(scan_value, argv[1]);
+			strcpy(scan_value, argv[argc-1]);
 			run = 1;
+			argc--;
 		}
 
 		if (run && !strcmp(scan_value, SCAN_VALUE_COLORBAR)) {
 			do_colorbar();
+		} else if (!strcmp(scan_value, SCAN_VALUE_STOP)) {
+			stop = 1;
+			break;
 		} else if (run) {
 			do_fill_screen(&fb_info, 0);
 			beagle_test(scan_value);
 			fprintf(stderr, "Test fails: %d\n", fail);
 			fflush(stderr);
-			if (!strcmp(scan_value, SCAN_VALUE_REPEAT) && !stop) {
+			if (stop) {
+				run = 0;
+				break;	
+			} else if (!strcmp(scan_value, SCAN_VALUE_REPEAT)) {
 				// pause 4 seconds and run again
 				sleep(4);
 			} else {
