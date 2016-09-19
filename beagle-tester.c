@@ -3252,8 +3252,8 @@ int main(int argc, char** argv)
 			fprintf(stderr, "Test fails: %d\n", fail);
 			fflush(stderr);
 			if (!strcmp(scan_value, SCAN_VALUE_REPEAT) && !stop) {
-				// pause 2 seconds and run again
-				sleep(2);
+				// pause 4 seconds and run again
+				sleep(4);
 			} else {
 				memset(scan_value, 0, sizeof(scan_value));
 				run = 0;
@@ -3362,8 +3362,8 @@ void beagle_test(const char *scan_value)
 	}
 
 	color = fail ? COLOR_FAIL : COLOR_PASS;
-	for (y = 500; y < 768; y++) {
-		for (x = 500; x < 1000; x++)
+	for (y = fb_info.var.yres/2; y < fb_info.var.yres; y++) {
+		for (x = fb_info.var.xres/2; x < fb_info.var.xres; x++)
 			draw_pixel(&fb_info, x, y, color);
 	}
 
