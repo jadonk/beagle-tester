@@ -3007,7 +3007,7 @@ char fontdata_8x8[] = {
 #define COLOR_PASS 0x00ff00u
 #define COLOR_FAIL 0xff0000u
 #define SCAN_VALUE_REPEAT "BURN-IN"
-#define SCAN_VALUE_COLORBAR "FCC"
+#define SCAN_VALUE_COLORBAR "COLORBAR"
 #define SCAN_VALUE_STOP "STOP"
 static volatile sig_atomic_t stop = 0;
 int fail = 0;
@@ -3050,8 +3050,8 @@ int main(int argc, char** argv)
 	while (!stop) {
 		FD_ZERO(&rdfs);
 		FD_SET(barcode, &rdfs);
-		timeout.tv_sec = 1;
-		timeout.tv_usec = 0;
+		timeout.tv_sec = 0;
+		timeout.tv_usec = 4000;
 		rd = select(barcode + 1, &rdfs, NULL, NULL, &timeout);
 		if (stop)
 			break;
@@ -3398,5 +3398,30 @@ void beagle_notice(const char *test, const char *status)
 
 void do_colorbar()
 {
-	system("cat /usr/share/beagle-tester/itu-r-bt1729-colorbar-xenarc.raw > /dev/fb0");
+	static int init = 0;
+	static int cur_x = 285, cur_dir = 0;
+	int x, y;
+
+	if (!init) {
+		system("cat /usr/share/beagle-tester/itu-r-bt1729-colorbar-xenarc.raw > /dev/fb0");
+		init = 1;
+	}
+	
+	for (x = cur_x; x < cur_x+4; x++)
+		for (y = 390; y < 405; y++)
+			draw_pixel(&fb_info, x, y, 0x111414);
+			
+	if (cur_dir == 0) {
+		cur_x++;
+		if (cur_x >= 510) cur_dir = 1;
+	} else {
+		cur_x--;
+		if (cur_x <= 285) cur_dir = 0;
+	}
+
+	for (x = cur_x; x < cur_x+4; x++)
+		for (y = 390; y < 405; y++)
+			draw_pixel(&fb_info, x, y, 0xffffff);
+	
+	//usleep(4444);
 }
