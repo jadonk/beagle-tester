@@ -3042,7 +3042,7 @@ int main(int argc, char** argv)
 	system("/usr/sbin/beagle-tester-open.sh");
 
 	fb_open(0, &fb_info);
-	do_fill_screen(&fb_info, 0);
+	do_colorbar();
 
 	signal(SIGINT, do_stop);
 	signal(SIGTERM, do_stop);
@@ -3246,12 +3246,13 @@ int main(int argc, char** argv)
 			argc--;
 		}
 
-		if (run && !strcmp(scan_value, SCAN_VALUE_COLORBAR)) {
+		if (run == 0) {
 			do_colorbar();
-		} else if (!strcmp(scan_value, SCAN_VALUE_STOP)) {
+		}
+		if (!strcmp(scan_value, SCAN_VALUE_STOP)) {
 			stop = 1;
 			break;
-		} else if (run) {
+		} else if (run == 1) {
 			do_fill_screen(&fb_info, 0);
 			beagle_test(scan_value);
 			fprintf(stderr, "Test fails: %d\n", fail);
@@ -3264,7 +3265,7 @@ int main(int argc, char** argv)
 				sleep(4);
 			} else {
 				memset(scan_value, 0, sizeof(scan_value));
-				run = 0;
+				run = 2;
 			}
 		}
 	}
