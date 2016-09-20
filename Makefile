@@ -18,6 +18,7 @@ install: beagle-tester beagle-tester.service beagle-tester.rules beagle-tester-c
 	install -m 755 -d $(DESTDIR)$(prefix)/share/beagle-tester
 	install -m 644 images/itu-r-bt1729-colorbar-16x9.png $(DESTDIR)$(prefix)/share/beagle-tester
 	install -m 644 images/itu-r-bt1729-colorbar-800x600.raw $(DESTDIR)$(prefix)/share/beagle-tester
+	install -m 644 images/itu-r-bt1729-colorbar-1360x768.raw $(DESTDIR)$(prefix)/share/beagle-tester
 	install -m 644 images/itu-r-bt1729-colorbar-1920x1080.raw $(DESTDIR)$(prefix)/share/beagle-tester
 	systemctl stop beagle-tester.service || true
 	systemctl daemon-reload || true
