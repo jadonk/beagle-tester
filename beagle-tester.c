@@ -3039,7 +3039,7 @@ int main(int argc, char** argv)
 		barcode_id[ID_BUS], barcode_id[ID_VENDOR], barcode_id[ID_PRODUCT], barcode_id[ID_VERSION]);
 	fflush(stderr);
 
-	system("/usr/sbin/beagle-tester-config.sh");
+	system("/usr/sbin/beagle-tester-open.sh");
 
 	fb_open(0, &fb_info);
 	do_fill_screen(&fb_info, 0);
@@ -3270,6 +3270,7 @@ int main(int argc, char** argv)
 	}
 
 	do_fill_screen(&fb_info, 4);
+	system("/usr/sbin/beagle-tester-close.sh");
 
 	return 0;
 }
