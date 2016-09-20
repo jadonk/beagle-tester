@@ -3399,30 +3399,34 @@ void beagle_notice(const char *test, const char *status)
 void do_colorbar()
 {
 	static int init = 0;
-	static int cur_x = fb_info.var.xres/2, cur_dir = 0;
+	static int cur_x = 0, cur_dir = 0;
 	int x, y;
 
 	if (!init) {
-		system("cat /usr/share/beagle-tester/itu-r-bt1729-colorbar-xenarc.raw > /dev/fb0");
+		if (fb_info.var.xres == 800)
+			system("cat /usr/share/beagle-tester/itu-r-bt1729-colorbar-800x600.raw > /dev/fb0");
+		else if (fb_info.var.xres == 1920)
+			system("cat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1920x1080.raw > /dev/fb0");
+		else
+			system("cat /dev/zero > /dev/fb0");
 		init = 1;
 	}
 
 	for (x = cur_x; x < cur_x+4; x++)
-		for (y = (390*fb_info.var.yres)/600; y < (405*fb_info.var.yres)/600; y++)
-			draw_pixel(&fb_info, x, y, 0x111414);
+		for (y = (390*(int)fb_info.var.yres)/600; y < (405*(int)fb_info.var.yres)/600; y++)
+			draw_pixel(&fb_info, x+(int)fb_info.var.xres/2, y, 0x111414);
 
 	if (cur_dir == 0) {
 		cur_x++;
-		if (cur_x >= 115*fb_info.var.xres/400+fb_info.var.xres/2) cur_dir = 1;
+		if (cur_x >= 115*(int)fb_info.var.xres/400) cur_dir = 1;
 	} else {
 		cur_x--;
-		if (cur_x <= -115*fb_info.var.xres/400+fb_info.var.xres/2) cur_dir = 0;
+		if (cur_x <= -115*(int)fb_info.var.xres/400) cur_dir = 0;
 	}
 
 	for (x = cur_x; x < cur_x+4; x++)
-		for (y = (390*fb_info.var.yres)/600; y < (405*fb_info.var.yres)/600; y++)
-			draw_pixel(&fb_info, x, y, 0xffffff);
+		for (y = (390*(int)fb_info.var.yres)/600; y < (405*(int)fb_info.var.yres)/600; y++)
+			draw_pixel(&fb_info, x+(int)fb_info.var.xres/2, y, 0xffffff);
 	
 	//usleep(4444);
-*/
 }
