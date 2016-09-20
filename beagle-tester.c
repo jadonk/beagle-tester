@@ -3415,19 +3415,19 @@ void do_colorbar()
 	}
 
 	for (x = cur_x; x < cur_x+4; x++)
-		for (y = (390*(int)fb_info.var.yres)/600; y < (405*(int)fb_info.var.yres)/600; y++)
+		for (y = (388*(int)fb_info.var.yres)/480; y < (405*(int)fb_info.var.yres)/480; y++)
 			draw_pixel(&fb_info, x+(int)fb_info.var.xres/2, y, 0x111414);
 
 	if (cur_dir == 0) {
 		cur_x++;
-		if (cur_x >= 115*(int)fb_info.var.xres/400) cur_dir = 1;
+		if (cur_x >= 56*(int)fb_info.var.xres/400) cur_dir = 1;
 	} else {
 		cur_x--;
-		if (cur_x <= -115*(int)fb_info.var.xres/400) cur_dir = 0;
+		if (cur_x <= -58*(int)fb_info.var.xres/400) cur_dir = 0;
 	}
 
 	for (x = cur_x; x < cur_x+4; x++)
-		for (y = (390*(int)fb_info.var.yres)/600; y < (405*(int)fb_info.var.yres)/600; y++)
+		for (y = (388*(int)fb_info.var.yres)/480; y < (405*(int)fb_info.var.yres)/480; y++)
 			draw_pixel(&fb_info, x+(int)fb_info.var.xres/2, y, 0xffffff);
 	
 	//usleep(4444);
