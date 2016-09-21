@@ -3406,11 +3406,13 @@ void do_colorbar()
 
 	if (!init) {
 		if (fb_info.var.xres == 800)
-			system("cat /usr/share/beagle-tester/itu-r-bt1729-colorbar-800x600.raw > /dev/fb0");
-		if (fb_info.var.xres == 1360)
-			system("cat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1360x768.raw > /dev/fb0");
+			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-800x600.raw.xz > /dev/fb0");
+		else if (fb_info.var.xres == 1280)
+			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1280x720.raw.xz > /dev/fb0");
+		else if (fb_info.var.xres == 1360)
+			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1360x768.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 1920)
-			system("cat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1920x1080.raw > /dev/fb0");
+			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1920x1080.raw.xz > /dev/fb0");
 		else
 			system("cat /dev/zero > /dev/fb0");
 		init = 1;
