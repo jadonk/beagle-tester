@@ -1,6 +1,6 @@
 prefix := /usr
 
-all: beagle-tester images
+all: beagle-tester
 
 beagle-tester: beagle-tester.c
 	gcc -W -Wall -Wwrite-strings -O3 -o beagle-tester beagle-tester.c
