@@ -3422,7 +3422,7 @@ void do_colorbar()
 
 	for (x = cur_x; x < cur_x+4; x++)
 		for (y = (388*(int)fb_info.var.yres)/480; y < (405*(int)fb_info.var.yres)/480; y++)
-			draw_pixel(&fb_info, x+(int)fb_info.var.xres/2, y, 0x111414);
+			draw_pixel(&fb_info, x+(int)fb_info.var.xres/2, y, 0x000000);
 
 	if (cur_dir == 0) {
 		cur_x++;
