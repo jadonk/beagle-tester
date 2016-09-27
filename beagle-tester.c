@@ -3405,7 +3405,9 @@ void do_colorbar()
 	int x, y;
 
 	if (!init) {
-		if (fb_info.var.xres == 800)
+		if (fb_info.var.xres == 480)
+			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-480x272.raw.xz > /dev/fb0");
+		else if (fb_info.var.xres == 800)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-800x600.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 1280)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1280x720.raw.xz > /dev/fb0");
