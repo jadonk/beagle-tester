@@ -3319,6 +3319,7 @@ void beagle_test(const char *scan_value)
 		fp = popen("connect_bb_tether", "r"); // connect to tether
 		if (fp != NULL) {
 			fgets(str2, sizeof(str2)-1, fp);
+			str2[15] = 0;
 			pclose(fp);
 		} else {
 			str2[0] = 0;
@@ -3331,6 +3332,7 @@ void beagle_test(const char *scan_value)
 		fprintf(stderr, "\n");
 		fflush(stderr);
 		r = system(str);
+		fprintf(stderr, "ping returned: %d\n", r);
 		beagle_notice("wifi", r ? "fail" : "pass");
 	} else { // assume BeagleBone Black
 		fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'",
