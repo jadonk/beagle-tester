@@ -3411,6 +3411,8 @@ void do_colorbar()
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-480x272.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 800)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-800x600.raw.xz > /dev/fb0");
+		else if (fb_info.var.xres == 1024)
+			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1024x768.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 1280)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1280x720.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 1360)
