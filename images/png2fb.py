@@ -33,16 +33,16 @@ pixels2 = ""
 if mode == "-32":
     print "Writing in 32-bit mode"
     for i in range(0, len(pixels) - 1, pixelSize):
-        pixels2 += chr(ord(pixels[i + 1]))
         pixels2 += chr(ord(pixels[i]))
         pixels2 += chr(ord(pixels[i + 2]))
+        pixels2 += chr(ord(pixels[i + 1]))
         pixels2 += chr(0)
 elif mode == "-24":
     print "Writing in 24-bit mode"
     for i in range(0, len(pixels) - 1, pixelSize):
-        pixels2 += chr(ord(pixels[i + 1]))
         pixels2 += chr(ord(pixels[i]))
         pixels2 += chr(ord(pixels[i + 2]))
+        pixels2 += chr(ord(pixels[i + 1]))
 else:
     print "Writing in 16-bit mode"
     for i in range(0, len(pixels) - 1, pixelSize):
