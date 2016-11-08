@@ -38,7 +38,7 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
 5. Connect to the board under test USB client port from a USB host with RNDIS client support that will perform a DHCP request that will respond to pings
 6. Connect one of the supported barcode scanners
 7. Wait for the CISPR test animation and audio playback ![CISPR image][cispr]
-8. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if BeagleBone Black and wire is included)
+8. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
 9. Pass or fail will be indicated by a respectively green or red box on the TV
 
 # BeagleBone Black Wireless
@@ -60,7 +60,7 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
 5. Connect to the board under test USB client port from a USB host with RNDIS client support that will perform a DHCP request that will respond to pings
 6. Connect one of the supported barcode scanners
 7. Wait for the CISPR test animation and audio playback ![CISPR image][cispr]
-8. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if BeagleBone Black and wire is included)
+8. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
 9. Pass or fail will be indicated by a respectively green or red box on the TV
 
 # BeagleBoard-xM
