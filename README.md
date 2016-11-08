@@ -87,6 +87,7 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
 7. Connect one of the supported barcode scanners
 8. Wait for the CISPR test animation and audio playback ![CISPR image][cispr]
 9. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if BeagleBone Black and wire is included)
-10. Pass or fail will be indicated by a respectively green or red box on the TV
+10. Pass or fail will be indicated by a respectively green or red box on the TV ![xM pass image][xm-pass]
 
 [cispr]: https://raw.githubusercontent.com/jadonk/beagle-tester/master/images/itu-r-bt1729-colorbar-3200x1800.png
+[xm-pass]: https://raw.githubusercontent.com/jadonk/beagle-tester/master/images/beagleboard-xm-pass.png
