@@ -37,7 +37,7 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
 4. Power the board under test
 5. Connect a USB host (to the USB client port) with RNDIS client support that will perform a DHCP request that will respond to pings
 6. Connect one of the supported barcode scanners
-7. Wait for the CISPR test animation and audio playback
+7. Wait for the CISPR test animation and audio playback ![CISPR image][cispr]
 8. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if BeagleBone Black and wire is included)
 9. Pass or fail will be indicated by a respectively green or red box on the TV
 
@@ -59,7 +59,7 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
 4. Power the board under test
 5. Connect a USB host (to the USB client port) with RNDIS client support that will perform a DHCP request that will respond to pings
 6. Connect one of the supported barcode scanners
-7. Wait for the CISPR test animation and audio playback
+7. Wait for the CISPR test animation and audio playback ![CISPR image][cispr]
 8. Scan a barcode to begin the test
 9. Pass or fail will be indicated by a respectively green or red box on the TV
 
@@ -85,7 +85,8 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
 5. Power the board under test
 6. Connect a USB host (to the USB client port) with RNDIS client support that will perform a DHCP request that will respond to pings
 7. Connect one of the supported barcode scanners
-8. Wait for the CISPR test animation and audio playback
+8. Wait for the CISPR test animation and audio playback ![CISPR image][cispr]
 9. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if BeagleBone Black and wire is included)
 10. Pass or fail will be indicated by a respectively green or red box on the TV
 
+[cispr]: https://raw.githubusercontent.com/jadonk/beagle-tester/master/images/itu-r-bt1729-colorbar-3200x1800.png
