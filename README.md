@@ -2,9 +2,9 @@
 
 ## Supported boards
 
-* BeagleBone Black
-* BeagleBone Black Wireless
-* BeagleBoard-xM
+* [BeagleBone Black](#BeagleBone%20Black)
+* [BeagleBone Black Wireless](#BeagleBone%20Black%20Wireless)
+* [BeagleBoard-xM](#BeagleBoard-xM)
 
 ## Supported scanners
 
@@ -12,7 +12,7 @@
 
 ## Setup
 
-If not already setup, on a recent (BeagleBoard.org Debian image)[https://beagleboard.org/latest-images], perform:
+If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleboard.org/latest-images), perform:
 
     cd /opt/source
     git clone https://github.com/jadonk/beagle-tester
