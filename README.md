@@ -2,9 +2,9 @@
 
 ## Supported boards
 
-* [BeagleBone Black](#BeagleBone%20Black)
-* [BeagleBone Black Wireless](#BeagleBone%20Black%20Wireless)
-* [BeagleBoard-xM](#BeagleBoard-xM)
+* [BeagleBone Black](#beaglebone-black)
+* [BeagleBone Black Wireless](#beaglebone-black-wireless)
+* [BeagleBoard-xM](#beagleboard-xm)
 
 ## Supported scanners
 
