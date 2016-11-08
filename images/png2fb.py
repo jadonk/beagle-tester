@@ -25,17 +25,21 @@ else:
     sys.exit('not supported pixel mode: "%s"' % (im.mode))
 
 pixels = im.tobytes()
+pixels2 = ""
 if mode == "-32":
-    pixels2 = ""
     for i in range(0, len(pixels) - 1, pixelSize):
         pixels2 += chr(ord(pixels[i]))
         pixels2 += chr(ord(pixels[i + 1]))
         pixels2 += chr(ord(pixels[i + 2]))
-    out.write(pixels2)
+        pixels2 += chr(0)
+elif mode == "-24":
+    for i in range(0, len(pixels) - 1, pixelSize):
+        pixels2 += chr(ord(pixels[i]))
+        pixels2 += chr(ord(pixels[i + 1]))
+        pixels2 += chr(ord(pixels[i + 2]))
 else:
-    pixels2 = ""
     for i in range(0, len(pixels) - 1, pixelSize):
         pixels2 += chr(ord(pixels[i + 2]) >> 3 | (ord(pixels[i + 1]) << 3 & 0xe0))
         pixels2 += chr(ord(pixels[i]) & 0xf8 | (ord(pixels[i + 1]) >> 5 & 0x07))
-    out.write(pixels2)
+out.write(pixels2)
 out.close()
