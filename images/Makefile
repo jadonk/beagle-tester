@@ -18,7 +18,7 @@ all:
 	for x in $(RESOLUTIONS32); do \
 		echo "Creating $(BASENAME)$$x-32.raw.xz" ; \
 		convert $(BASEFILE) -resize $$x $(BASENAME)$$x-32.png ; \
-		./png2fb.py $(BASENAME)$$x-32.png $(BASENAME)$$x-32.raw ; \
+		./png2fb.py $(BASENAME)$$x-32.png $(BASENAME)$$x-32.raw -32 ; \
 		rm -f $(BASENAME)$$x-32.raw.xz ; \
 		xz $(BASENAME)$$x-32.raw ; \
 	done
