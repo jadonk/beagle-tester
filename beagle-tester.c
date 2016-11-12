@@ -3003,6 +3003,7 @@ char fontdata_8x8[] = {
 #define MODEL_BONE  "TI AM335x BeagleBone"
 #define MODEL_BLACK "TI AM335x BeagleBone Black"
 #define MODEL_WIFI  "TI AM335x BeagleBone Black Wireless"
+#define MODEL_BLUE  "TI AM335x BeagleBone Blue"
 #define COLOR_TEXT 0xffffffu
 #define COLOR_PASS 0x00ff00u
 #define COLOR_FAIL 0xff0000u
