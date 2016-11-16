@@ -36,10 +36,15 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
 3. (optional) connect a wire from TP4 to ground to enable EEPROM writing of board revision and serial number
 4. Power the board under test
 5. Connect to the board under test USB client port from a USB host with RNDIS client support that will perform a DHCP request that will respond to pings
-6. Connect one of the supported barcode scanners
-7. Wait for the CISPR test animation and audio playback ![CISPR image][cispr]
-8. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
-9. Pass or fail will be indicated by a respectively green or red box on the TV
+6. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
+7. Connect one of the supported barcode scanners
+8. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
+9. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
+10. Pass or fail will be indicated by a respectively green or red box on the TV
+11. Disconnect the barcode scanner
+12. Disconnect USB client
+13. Remove power
+14. Disconnect remaining devices
 
 # BeagleBone Black Wireless
 
@@ -58,10 +63,15 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
 3. (optional) connect a wire from TP1 to ground to enable EEPROM writing of board revision and serial number
 4. Power the board under test
 5. Connect to the board under test USB client port from a USB host with RNDIS client support that will perform a DHCP request that will respond to pings
-6. Connect one of the supported barcode scanners
-7. Wait for the CISPR test animation and audio playback ![CISPR image][cispr]
-8. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
-9. Pass or fail will be indicated by a respectively green or red box on the TV
+6. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
+7. Connect one of the supported barcode scanners
+8. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
+9. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
+10. Pass or fail will be indicated by a respectively green or red box on the TV
+11. Disconnect the barcode scanner
+12. Disconnect USB client
+13. Remove power
+14. Disconnect remaining devices
 
 # BeagleBoard-xM
 
@@ -78,16 +88,21 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
 
 ## Test steps
 
-1. Connect HDMI from board under test to TV to see output and hear audio
+1. Connect HDMI from board under test to TV to see output
 2. Connect an Ethernet device (router) with a DHCP server that has a gateway that will respond to pings
 3. Connect the 3 USB flash drives
 4. Connect the audio patch cable
 5. Power the board under test
-6. Connect a USB host (to the USB client port) with RNDIS client support that will perform a DHCP request that will respond to pings
-7. Connect one of the supported barcode scanners
-8. Wait for the CISPR test animation and audio playback ![CISPR image][cispr]
-9. Scan a barcode to begin the test
-10. Pass or fail will be indicated by a respectively green or red box on the TV ![xM pass image][xm-pass]
+6. Connect to the board under test USB client port from a USB host with RNDIS client support that will perform a DHCP request that will respond to pings
+7. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
+8. Connect one of the supported barcode scanners
+9. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
+10. Scan a barcode to begin the test
+11. Pass or fail will be indicated by a respectively green or red box on the TV ![xM pass image][xm-pass]
+12. Disconnect the barcode scanner
+13. Disconnect USB client
+14. Remove power
+15. Disconnect remaining devices
 
 [cispr]: https://raw.githubusercontent.com/jadonk/beagle-tester/master/images/itu-r-bt1729-colorbar-3200x1800.png
 [xm-pass]: https://raw.githubusercontent.com/jadonk/beagle-tester/master/images/beagleboard-xm-pass.png
