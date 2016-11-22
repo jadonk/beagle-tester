@@ -37,6 +37,7 @@
 #include <linux/input.h>
 #include <linux/fb.h>
 #include <linux/kd.h>
+#include <roboticscape.h>
 
 /*
  * common.h
@@ -3017,6 +3018,7 @@ int notice_line = 0;
 void beagle_test(const char *scan_value);
 void beagle_notice(const char *test, const char *status);
 void do_colorbar();
+int blue_specific_tests();
 
 static void do_stop()
 {
@@ -3316,7 +3318,12 @@ void beagle_test(const char *scan_value)
 	r = system(str);
 	beagle_notice("memory", r ? "fail" : "pass");
 
-	if(!strcmp(model, MODEL_WIFI)) {
+	if(!strcmp(model, MODEL_BLUE)) {
+		r = blue_specific_tests();
+		beagle_notice("sensors", r ? "fail" : "pass");
+	}
+
+	if(!strcmp(model, MODEL_WIFI) || !strcmp(model, MODEL_BLUE)) {
 		fp = popen("connect_bb_tether", "r"); // connect to tether
 		if (fp != NULL) {
 			fgets(str2, sizeof(str2)-1, fp);
@@ -3335,7 +3342,7 @@ void beagle_test(const char *scan_value)
 		r = system(str);
 		fprintf(stderr, "ping returned: %d\n", r);
 		beagle_notice("wifi", r ? "fail" : "pass");
-	} else { // assume BeagleBone Black
+	} else { // Ethernet
 		fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'",
 			 "r"); // fetch gateway
 		if (fp != NULL) {
@@ -3431,7 +3438,7 @@ void do_colorbar()
 	int x, y;
 
 	if (!init) {
-		if (fb_info.var.xres == 1280 || fb_info.var.bits_per_pixel == 32)
+		if (fb_info.var.xres == 1280 && fb_info.var.bits_per_pixel == 32)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1280x1024-32.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 480)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-480x272.raw.xz > /dev/fb0");
@@ -3468,3 +3475,48 @@ void do_colorbar()
 	
 	//usleep(4444);
 }
+
+int blue_specific_tests() {
+	int ret;
+
+	// use defaults for now, except also enable magnetometer.
+	imu_data_t data; 
+	imu_config_t conf = get_default_imu_config();
+	conf.enable_magnetometer=1;
+
+	// initialize_cape, this should never fail unless software is not set up
+	// in which case a useful error message should be printed out.
+	if(initialize_cape()<0)
+		return -1;
+
+	set_led(RED,OFF);
+	set_led(GREEN,ON);
+
+	// make sure 12V DC supply is connected
+	if(get_dc_jack_voltage()<10.0) {
+		cleanup_cape();
+		return -2;
+	}
+
+	// test imu
+	ret = initialize_imu(&data, conf);
+	power_off_imu();
+	if(ret<0) {
+		fprintf(stderr, "failed: mpu9250 imu\n");
+		cleanup_cape();
+		return -3;
+	}
+
+	// test barometer
+	ret = initialize_barometer(BMP_OVERSAMPLE_16,BMP_FILTER_OFF);
+	power_off_barometer();
+	if(ret<0) {
+		fprintf(stderr, "failed: bmp280 barometer\n");
+		cleanup_cape();
+		return -4;
+	}
+
+	cleanup_cape();
+	return 0;
+}
+
