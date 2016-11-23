@@ -15,6 +15,7 @@ TI_AM335x_BeagleBone_Blue)
 	echo spi > /sys/devices/platform/ocp/ocp\:P9_28_pinmux/state # CS - C12 - S1.1_6
 	#modprobe fbtft_device name=adafruit28 busnum=1 rotate=90 gpios=reset:49,dc:57,cs:113
 	modprobe fbtft_device name=adafruit28 busnum=1 rotate=90 gpios=reset:49,dc:57
+	sleep 2
 	;;
 *)
 	;;

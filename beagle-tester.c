@@ -3011,7 +3011,6 @@ char fontdata_8x8[] = {
 #define SCAN_VALUE_REPEAT "BURN-IN"
 #define SCAN_VALUE_COLORBAR "COLORBAR"
 #define SCAN_VALUE_STOP "STOP"
-static volatile sig_atomic_t stop = 0;
 int fail = 0;
 int notice_line = 0;
 
@@ -3022,7 +3021,7 @@ int blue_specific_tests();
 
 static void do_stop()
 {
-	stop = 1;
+	set_state(EXITING);
 }
 
 int main(int argc, char** argv)
@@ -3050,13 +3049,13 @@ int main(int argc, char** argv)
 	signal(SIGINT, do_stop);
 	signal(SIGTERM, do_stop);
 
-	while (!stop) {
+	while (get_state()!=EXITING) {
 		FD_ZERO(&rdfs);
 		FD_SET(barcode, &rdfs);
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 4000;
 		rd = select(barcode + 1, &rdfs, NULL, NULL, &timeout);
-		if (stop)
+		if (get_state()==EXITING)
 			break;
 		if (rd > 0) {
 			rd = read(barcode, ev, sizeof(ev));
@@ -3253,14 +3252,14 @@ int main(int argc, char** argv)
 			do_colorbar();
 		}
 		if (!strcmp(scan_value, SCAN_VALUE_STOP)) {
-			stop = 1;
+			set_state(EXITING);
 			break;
 		} else if (run == 1) {
 			do_fill_screen(&fb_info, 0);
 			beagle_test(scan_value);
 			fprintf(stderr, "Test fails: %d\n", fail);
 			fflush(stderr);
-			if (stop) {
+			if (get_state()==EXITING) {
 				run = 0;
 				break;	
 			} else if (!strcmp(scan_value, SCAN_VALUE_REPEAT)) {
@@ -3342,6 +3341,8 @@ void beagle_test(const char *scan_value)
 		r = system(str);
 		fprintf(stderr, "ping returned: %d\n", r);
 		beagle_notice("wifi", r ? "fail" : "pass");
+		
+		system("connmanctl tether wifi on");
 	} else { // Ethernet
 		fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'",
 			 "r"); // fetch gateway
@@ -3440,8 +3441,6 @@ void do_colorbar()
 	if (!init) {
 		if (fb_info.var.xres == 1280 && fb_info.var.bits_per_pixel == 32)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1280x1024-32.raw.xz > /dev/fb0");
-		else if (fb_info.var.xres == 320)
-			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-320x240.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 480)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-480x272.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 800)
@@ -3496,6 +3495,7 @@ int blue_specific_tests() {
 
 	// make sure 12V DC supply is connected
 	if(get_dc_jack_voltage()<10.0) {
+		fprintf(stderr, "failed: dc jack input\n");
 		cleanup_cape();
 		return -2;
 	}
