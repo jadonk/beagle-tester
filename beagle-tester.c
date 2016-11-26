@@ -3487,13 +3487,14 @@ int blue_specific_tests() {
 	imu_config_t conf = get_default_imu_config();
 	conf.enable_magnetometer=1;
 
-	// initialize_cape, this should never fail unless software is not set up
+	// initialize_roboticscape, this should never fail unless software is not set up
 	// in which case a useful error message should be printed out.
-	if(initialize_cape()<0)
+	if(initialize_roboticscape()<0){
 		return -1;
+	}
 
-	set_led(RED,OFF);
-	set_led(GREEN,ON);
+	set_rc_led(RED,OFF);
+	set_rc_led(GREEN,ON);
 
 	// make sure 12V DC supply is connected
 	if(get_dc_jack_voltage()<10.0) {
@@ -3519,8 +3520,15 @@ int blue_specific_tests() {
 		cleanup_cape();
 		return -4;
 	}
+	
+	// check charger by checking for the right voltage on the batt line
+	float v = get_battery_voltage();
+	if(v>8.4 || v<7.4){
+		fprintf(stderr, "failed: charger\n");
+		return -5;
+	}
 
-	cleanup_cape();
+	cleanup_roboticscape();
 	return 0;
 }
 
