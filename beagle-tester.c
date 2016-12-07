@@ -3487,10 +3487,7 @@ int blue_specific_tests() {
 	imu_config_t conf = get_default_imu_config();
 	conf.enable_magnetometer=1;
 
-	// initialize_cape, this should never fail unless software is not set up
-	// in which case a useful error message should be printed out.
-	if(initialize_cape()<0)
-		return -1;
+	initialize_cape();
 
 	set_led(RED,OFF);
 	set_led(GREEN,ON);
