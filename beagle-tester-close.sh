@@ -11,4 +11,4 @@ TI_AM335x_BeagleBone_Blue)
 	;;
 esac
 
-
+echo Cleaned up console. Exiting.
