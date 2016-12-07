@@ -3302,7 +3302,7 @@ void beagle_test(const char *scan_value)
 	lseek(fd_sn, 0, SEEK_SET);
 	r = read(fd_sn, str, 28);
 	str[28] = 0;
-	beagle_notice("init eeprom", str);
+	beagle_notice("eeprom", str);
 
 	fp = fopen("/etc/dogtag", "r");
 	fgets(str, sizeof(str), fp);
@@ -3367,7 +3367,7 @@ void beagle_test(const char *scan_value)
 		fprintf(stderr, "\n");
 		fflush(stderr);
 		r = system(str);
-		beagle_notice("usb client", r ? "fail" : "pass");
+		beagle_notice("usb dev", r ? "fail" : "pass");
 	}
 
 	if(!strcmp(model, MODEL_XM)) {
@@ -3376,21 +3376,21 @@ void beagle_test(const char *scan_value)
 		fprintf(stderr, "\n");
 		fflush(stderr);
 		r = system(str);
-		beagle_notice("usb host 1", r ? "fail" : "pass");
+		beagle_notice("usb 1", r ? "fail" : "pass");
 
 		sprintf(str, "timeout 8 hdparm -q -t --direct /dev/sdb");
 		fprintf(stderr, str);
 		fprintf(stderr, "\n");
 		fflush(stderr);
 		r = system(str);
-		beagle_notice("usb host 2", r ? "fail" : "pass");
+		beagle_notice("usb 2", r ? "fail" : "pass");
 
 		sprintf(str, "timeout 8 hdparm -q -t --direct /dev/sdc");
 		fprintf(stderr, str);
 		fprintf(stderr, "\n");
 		fflush(stderr);
 		r = system(str);
-		beagle_notice("usb host 3", r ? "fail" : "pass");
+		beagle_notice("usb 3", r ? "fail" : "pass");
 	} else if (!fail && strcmp(scan_value, SCAN_VALUE_REPEAT)) {
 		lseek(fd_sn, 0, SEEK_SET);
 		r = read(fd_sn, str, 12);
@@ -3401,7 +3401,7 @@ void beagle_test(const char *scan_value)
 		lseek(fd_sn, 0, SEEK_SET);
 		r = read(fd_sn, str2, 28);
 		str2[28] = 0;
-		beagle_notice("new eeprom", str2);
+		beagle_notice("eeprom", str2);
 		beagle_notice("eeprom", strcmp(str, str2) ? "fail" : "pass");
 	}
 
@@ -3416,7 +3416,7 @@ void beagle_test(const char *scan_value)
 
 void beagle_notice(const char *test, const char *status)
 {
-	const char *fmt = "%14s : %-50s";
+	const char *fmt = "%10s : %-20s";
 	unsigned color = COLOR_TEXT;
 	char str[70];
 
