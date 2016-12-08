@@ -3495,7 +3495,7 @@ int blue_specific_tests() {
 	imu_config_t conf = get_default_imu_config();
 	conf.enable_magnetometer=1;
 
-	initialize_cape();
+	//initialize_cape();
 
 	set_led(RED,OFF);
 	set_led(GREEN,ON);
@@ -3525,7 +3525,7 @@ int blue_specific_tests() {
 		return -4;
 	}
 
-	cleanup_cape();
+	//cleanup_cape();
 	return 0;
 }
 
