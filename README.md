@@ -9,6 +9,7 @@
 ## Supported scanners
 
 * [Datalogic QuickScan L](http://www.datalogic.com/eng/products/automatic-data-capture/general-duty-handheld-scanners/quickscan-l-qd2300-pd-166.html) - VID:05f9 "PSC Scanning, Inc." PID:2204 
+* [Intermec SG20 General Duty 1D/2D Handheld Scanner](http://www.intermec.com/products/scansg20t/) - VID:067E PID: 0801
 
 ## Software setup
 
