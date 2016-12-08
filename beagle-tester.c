@@ -3317,11 +3317,7 @@ void beagle_test(const char *scan_value)
 	r = system(str);
 	beagle_notice("memory", r ? "fail" : "pass");
 
-	if(!strcmp(model, MODEL_BLUE)) {
-		r = blue_specific_tests();
-		beagle_notice("sensors", r ? "fail" : "pass");
-	}
-
+	// if we have WiFi
 	if(!strcmp(model, MODEL_WIFI) || !strcmp(model, MODEL_BLUE)) {
 		fp = popen("connect_bb_tether", "r"); // connect to tether
 		if (fp != NULL) {
@@ -3361,6 +3357,7 @@ void beagle_test(const char *scan_value)
 		beagle_notice("ethernet", r ? "fail" : "pass");
 	}
 
+	// if not BeagleBoard-xM (need to fix xM image to enable USB net client)
 	if(strcmp(model, MODEL_XM)) {
 		sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I usb0 192.168.7.1");
 		fprintf(stderr, str);
@@ -3370,6 +3367,7 @@ void beagle_test(const char *scan_value)
 		beagle_notice("usb dev", r ? "fail" : "pass");
 	}
 
+	// if BeagleBoard-xM
 	if(!strcmp(model, MODEL_XM)) {
 		sprintf(str, "timeout 8 hdparm -q -t --direct /dev/sda");
 		fprintf(stderr, str);
@@ -3391,7 +3389,17 @@ void beagle_test(const char *scan_value)
 		fflush(stderr);
 		r = system(str);
 		beagle_notice("usb 3", r ? "fail" : "pass");
-	} else if (!fail && strcmp(scan_value, SCAN_VALUE_REPEAT)) {
+	}
+
+	// if BeagleBone Blue
+	if(!strcmp(model, MODEL_BLUE)) {
+		r = blue_specific_tests();
+		beagle_notice("sensors", r ? "fail" : "pass");
+	}
+
+	// if not xM, didn't fail and we aren't in repeat mode
+	if(strcmp(model, MODEL_XM) && 
+			!fail && strcmp(scan_value, SCAN_VALUE_REPEAT)) {
 		lseek(fd_sn, 0, SEEK_SET);
 		r = read(fd_sn, str, 12);
 		memcpy(&str[12], scan_value, 16);
