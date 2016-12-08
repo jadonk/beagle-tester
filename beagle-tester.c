@@ -3491,6 +3491,7 @@ int blue_specific_tests() {
 	int ret;
 
 	// use defaults for now, except also enable magnetometer.
+	float v;
 	imu_data_t data; 
 	imu_config_t conf = get_default_imu_config();
 	conf.enable_magnetometer=1;
@@ -3500,10 +3501,18 @@ int blue_specific_tests() {
 	set_led(RED,OFF);
 	set_led(GREEN,ON);
 
+	// check charger by checking for the right voltage on the batt line
+	v = get_battery_voltage();
+	if(v>8.4 || v<7.4) {
+		fprintf(stderr, "failed: battery input/charger\n");
+		//cleanup_cape();
+		return -1;
+	}
+
 	// make sure 12V DC supply is connected
 	if(get_dc_jack_voltage()<10.0) {
 		fprintf(stderr, "failed: dc jack input\n");
-		cleanup_cape();
+		//cleanup_cape();
 		return -2;
 	}
 
@@ -3512,7 +3521,7 @@ int blue_specific_tests() {
 	power_off_imu();
 	if(ret<0) {
 		fprintf(stderr, "failed: mpu9250 imu\n");
-		cleanup_cape();
+		//cleanup_cape();
 		return -3;
 	}
 
@@ -3521,7 +3530,7 @@ int blue_specific_tests() {
 	power_off_barometer();
 	if(ret<0) {
 		fprintf(stderr, "failed: bmp280 barometer\n");
-		cleanup_cape();
+		//cleanup_cape();
 		return -4;
 	}
 
