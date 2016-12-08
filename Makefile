@@ -24,7 +24,7 @@ install:
 	make -C images -s install
 	systemctl stop beagle-tester.service || true
 	systemctl daemon-reload || true
-	systemctl enable beagle-tester.service || true
+	#systemctl enable beagle-tester.service || true
 
 start: install
 	systemctl restart beagle-tester.service
