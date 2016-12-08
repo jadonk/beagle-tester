@@ -3424,7 +3424,7 @@ void beagle_test(const char *scan_value)
 
 void beagle_notice(const char *test, const char *status)
 {
-	const char *fmt = "%8.8: %-25.25s";
+	const char *fmt = "%8.8s: %-25.25s";
 	unsigned color = COLOR_TEXT;
 	char str[70];
 
