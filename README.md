@@ -4,6 +4,7 @@
 
 * [BeagleBone Black](#beaglebone-black)
 * [BeagleBone Black Wireless](#beaglebone-black-wireless)
+* [BeagleBone Blue](#beaglebone-blue)
 * [BeagleBoard-xM](#beagleboard-xm)
 
 ## Supported scanners
@@ -19,6 +20,26 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
     git clone https://github.com/jadonk/beagle-tester
     cd beagle-tester
     make && make install
+    
+## Serial number barcode format
+
+Each board that has an on-board EEPROM should have an associated 16 digit serial number placed onto a barcode on the board.
+
+The first 4 ASCII characters indicate the board type:
+
+* BeagleBone Black - 00C0
+* BeagleBone Black Wireless - BWA5
+* BeagleBone Blue - BLA2
+
+The second 4 characters should indicate the manufacturing week in the format YYWW, where YY is currently 16 and WW is currently 30.
+
+The next 4 characters should be a manufacturer-specific product code. If you are a new manufacturer, please choose something unique you can use to identify your boards.
+
+Allocations include, but are not limited to: 
+
+* BBGW for GHI manufactured BeagleBone Black Wireless
+
+The final 4 characters are a sequential decimal number. If more than 10,000 boards are manufactured that week, roll over the top digit to an ASCII hex character.
 
 # BeagleBone Black
 
@@ -54,6 +75,33 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
 * HDMI TV capable of 1280x720p60 (720p) (HDMI monitor if no audio testing)
 * BeagleBone Black Wireless running 'connman tether' to act as a WiFi access point (should be default on production image)
 * BeagleBone Black Wireless or other computer (configured to make DHCP requests over USB RNDIS interface and answer pings)
+* A supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
+* Approved 5V power brick
+
+## Test steps
+
+1. Have BeagleBone Black Wireless running as WiFi access point (SSID: BeagleBone-XXXX, PSK: BeagleBone)
+2. Connect HDMI from board under test to TV to see output and hear audio
+3. (optional) connect a wire from TP1 to ground to enable EEPROM writing of board revision and serial number
+4. Power the board under test
+5. Connect to the board under test USB client port from a USB host with RNDIS client support that will perform a DHCP request that will respond to pings
+6. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
+7. Connect one of the supported barcode scanners
+8. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
+9. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
+10. Pass or fail will be indicated by a respectively green or red box on the TV
+11. Disconnect the barcode scanner
+12. Disconnect USB client
+13. Remove power
+14. Disconnect remaining devices
+
+# BeagleBone Blue
+
+## Required equipment
+
+* Adafruit 2.4" TFT LCD subassembly (See https://gist.github.com/jadonk/0e4a190fc01dc5723d1f183737af1d83)
+* BeagleBone Blue acting as a WiFi access point (should be default on production image)
+* BeagleBone Blue or other computer (configured to make DHCP requests over USB RNDIS interface and answer pings)
 * A supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
 * Approved 5V power brick
 
