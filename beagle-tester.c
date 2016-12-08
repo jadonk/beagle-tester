@@ -3338,7 +3338,7 @@ void beagle_test(const char *scan_value)
 		fprintf(stderr, "ping returned: %d\n", r);
 		beagle_notice("wifi", r ? "fail" : "pass");
 		
-		system("connmanctl tether wifi on");
+		//system("connmanctl tether wifi on");
 	} else { // Ethernet
 		fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'",
 			 "r"); // fetch gateway

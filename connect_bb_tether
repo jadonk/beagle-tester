@@ -1,6 +1,6 @@
 #!/bin/bash
-connmanctl tether wifi off > /dev/null
-sleep 1
+#connmanctl tether wifi off > /dev/null
+#sleep 1
 connmanctl scan wifi > /dev/null
 SERVICE=`connmanctl services | grep BeagleBone | head -1 | sed 's/\s\+/,/g'`
 if [ "$SERVICE" == "" ] ; then 
