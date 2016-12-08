@@ -16,6 +16,8 @@
 
 If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleboard.org/latest-images), perform:
 
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install -y roboticscape
     cd /opt/source
     git clone https://github.com/jadonk/beagle-tester
     cd beagle-tester
