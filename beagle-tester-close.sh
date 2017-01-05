@@ -8,6 +8,7 @@ TI_AM335x_BeagleBone_Blue)
 	;;
 *)
 	systemctl restart getty@tty1.service
+	systemctl restart lightdm.service
 	;;
 esac
 
