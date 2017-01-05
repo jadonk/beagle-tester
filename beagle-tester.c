@@ -3311,7 +3311,7 @@ void beagle_test(const char *scan_value)
         len = strlen(str);
 	len--; str[len] = 0; // remove trailing character
         off = (len > 25) ? len-25 : 0;
-	beagle_notice("dogtag", str[off]);
+	beagle_notice("dogtag", &str[off]);
 
 	strcpy(str, "memtester 1M 1 > /dev/null");
 	fprintf(stderr, str);
