@@ -3284,6 +3284,7 @@ void beagle_test(const char *scan_value)
 	int fd_sn;
 	char str[70];
 	char str2[50];
+        int len, off;
 	char model[70];
 	FILE *fp;
 	unsigned x, y;
@@ -3307,8 +3308,10 @@ void beagle_test(const char *scan_value)
 	fp = fopen("/etc/dogtag", "r");
 	fgets(str, sizeof(str), fp);
 	fclose(fp);
-	str[strlen(str)-1] = 0; // remove trailing character
-	beagle_notice("dogtag", str);
+        len = strlen(str);
+	len--; str[len] = 0; // remove trailing character
+        off = (len > 25) ? len-25 : 0;
+	beagle_notice("dogtag", str[off]);
 
 	strcpy(str, "memtester 1M 1 > /dev/null");
 	fprintf(stderr, str);
