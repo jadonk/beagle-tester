@@ -135,7 +135,7 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 * BeagleBone Black or other computer (configured to make DHCP requests over USB RNDIS interface and answer pings)
 * A supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
 * Three (3) USB 2.0 HS capable flash drives
-* 1/8" audio patch cable
+* 1/8" audio patch cable and speaker
 * DB9 serial loopback cable
 * Approved 5V power brick
 
@@ -144,7 +144,7 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 1. Connect HDMI from board under test to TV to see output
 2. Connect an Ethernet device (router) with a DHCP server that has a gateway that will respond to pings
 3. Connect the 3 USB flash drives
-4. Connect the audio patch cable
+4. Connect the audio patch cable and speaker
 5. Power the board under test
 6. Connect to the board under test USB client port from a USB host with RNDIS client support that will perform a DHCP request that will respond to pings
 7. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
@@ -158,4 +158,4 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 15. Disconnect remaining devices
 
 [cispr]: https://raw.githubusercontent.com/jadonk/beagle-tester/master/images/itu-r-bt1729-colorbar-3200x1800.png
-[xm-pass]: https://raw.githubusercontent.com/jadonk/beagle-tester/master/images/beagleboard-xm-pass.png
+[xm-pass]: https://farm1.staticflickr.com/531/31402272653_86721d4fa5_o_d.png
