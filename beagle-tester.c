@@ -3293,6 +3293,8 @@ void beagle_test(const char *scan_value)
 	notice_line = 0;
 	beagle_notice("scan", scan_value);
 
+	beagle_notice("tester", "$Id$");
+
 	fp = fopen("/proc/device-tree/model", "r");
 	fgets(str, sizeof(str), fp);
 	fclose(fp);
