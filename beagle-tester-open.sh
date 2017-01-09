@@ -17,6 +17,12 @@ TI_AM335x_BeagleBone_Blue)
 	modprobe fbtft_device name=adafruit28 busnum=1 rotate=90 gpios=reset:49,dc:57
 	sleep 2
 	;;
+TI_OMAP3_BeagleBoard_xM)
+	amixer -c0 sset 'DAC1 Digital Fine' 40
+	amixer -c0 sset 'Headset' 2
+	amixer -c0 sset 'HeadsetL Mixer AudioL1' on
+	amixer -c0 sset 'HeadsetR Mixer AudioR1' on
+	;;
 *)
 	;;
 esac
