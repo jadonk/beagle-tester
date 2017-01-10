@@ -3334,8 +3334,16 @@ void beagle_test(const char *scan_value)
 		}
 		beagle_notice("tether", str2);
 
-		sprintf(str,
-			"ping -s 8184 -i 0.01 -q -c 150 -w 2 -I wlan0 192.168.0.1");
+		fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'",
+			 "r"); // fetch gateway
+		if (fp != NULL) {
+			fgets(str2, sizeof(str2)-1, fp);
+			pclose(fp);
+		} else {
+			str2[0] = 0;
+		}
+		sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I wlan0 %s",
+			 str2);
 		fprintf(stderr, str);
 		fprintf(stderr, "\n");
 		fflush(stderr);
