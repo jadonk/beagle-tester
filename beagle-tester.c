@@ -3284,6 +3284,8 @@ void beagle_test(const char *scan_value)
 	int fd_sn;
 	char str[70];
 	char str2[50];
+	char wlan0_ap[50];
+	char wlan0_host[50];
         int len, off;
 	char model[70];
 	FILE *fp;
@@ -3334,16 +3336,26 @@ void beagle_test(const char *scan_value)
 		}
 		beagle_notice("tether", str2);
 
-		fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'",
-			 "r"); // fetch gateway
+		fp = popen("ip -4 addr show wlan0 | grep inet | awk '{print $2}' | cut -d/ -f1 | tr -d '\n' | tr -d '\r'",
+			 "r"); // fetch wlan0 address
 		if (fp != NULL) {
-			fgets(str2, sizeof(str2)-1, fp);
+			fgets(wlan0_host, sizeof(wlan0_host)-1, fp);
 			pclose(fp);
 		} else {
-			str2[0] = 0;
+			wlan0_host[0] = 0;
 		}
-		sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I wlan0 %s",
-			 str2);
+
+		fp = popen("ip route | grep wlan0 | grep -v src | awk '{print $1}'",
+			 "r"); // fetch wlan0 gateway
+		if (fp != NULL) {
+			fgets(wlan0_ap, sizeof(wlan0_ap)-1, fp);
+			pclose(fp);
+		} else {
+			wlan0_ap[0] = 0;
+		}
+
+		sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I %s %s",
+			wlan0_host, wlan0_ap);
 		fprintf(stderr, str);
 		fprintf(stderr, "\n");
 		fflush(stderr);
@@ -3370,7 +3382,7 @@ void beagle_test(const char *scan_value)
 		beagle_notice("ethernet", r ? "fail" : "pass");
 	}
 
-	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I usb0 192.168.7.1");
+	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I 192.168.7.2 192.168.7.1");
 	fprintf(stderr, str);
 	fprintf(stderr, "\n");
 	fflush(stderr);
