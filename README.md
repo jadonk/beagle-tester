@@ -14,6 +14,8 @@
 
 ## Software setup
 
+For production, the boards should be flashed with an approved production image ahead of beginning this test. No additional software setup steps should be performed.
+
 If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleboard.org/latest-images), perform:
 
     apt-get update
