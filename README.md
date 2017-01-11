@@ -14,7 +14,7 @@
 
 ## Software setup
 
-For production, the boards should be flashed with an approved production image ahead of beginning this test. No additional software setup steps should be performed.
+For production, the boards should be flashed with an approved production image ahead of beginning this test. No additional software setup steps should be performed. The first 12 characters of the EEPROM should also be valid ahead of running this test, though the additional serial number characters need not and should not be programmed until this test is run.
 
 If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleboard.org/latest-images), perform:
 
