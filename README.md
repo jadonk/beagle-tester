@@ -47,27 +47,28 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 
 ## Required equipment
 
-* HDMI TV capable of 1280x720p60 (720p) (HDMI monitor if no audio testing)
-* Ethernet router (configured to answer DHCP requests and answer pings on the provided gateway)
-* BeagleBone Black or other computer (configured to make DHCP requests over USB RNDIS interface and answer pings)
-* A supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
-* Approved 5V power brick
+* _TV_: HDMI TV capable of 1280x720p60 (720p) (HDMI monitor if no audio testing) with HDMI-to-microHDMI cable
+* _Router_: Ethernet router (configured to answer DHCP requests and answer pings on the provided gateway) with Ethernet cable
+* _Host_: BeagleBone Black or other computer (configured to make DHCP requests over USB RNDIS interface and answer pings)
+* _Scanner_: A supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
+* _Power_: Approved 5V power brick
+* _DUT_: BeagleBone Black (device) under test
 
 ## Test steps
 
-1. Connect HDMI from board under test to TV to see output and hear audio
-2. Connect an Ethernet device (router) with a DHCP server that has a gateway that will respond to pings
+1. Connect microHDMI on _DUT_ to _TV_
+2. Connect Ethernet on _DUT_ to _router_
 3. (optional) connect a wire from TP4 to ground to enable EEPROM writing of board revision and serial number
-4. Power the board under test
-5. Connect to the board under test USB client port from a USB host with RNDIS client support that will perform a DHCP request that will respond to pings
+4. Connect _DUT_ to _power_
+5. Connect USB client port on _DUT_ to _Host_
 6. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
-7. Connect one of the supported barcode scanners
+7. Connect _scanner_
 8. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
 9. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
 10. Pass or fail will be indicated by a respectively green or red box on the TV
-11. Disconnect the barcode scanner
-12. Disconnect USB client
-13. Remove power
+11. Disconnect _scanner_
+12. Disconnect _host_
+13. Disconnect _power_
 14. Disconnect remaining devices
 
 # BeagleBone Black Wireless
