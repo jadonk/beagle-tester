@@ -3345,7 +3345,7 @@ void beagle_test(const char *scan_value)
 			wlan0_host[0] = 0;
 		}
 
-		fp = popen("ip route | grep wlan0 | grep -v src | awk '{print $1}'",
+		fp = popen("ip route | grep wlan0 | grep -v src | grep -v default | awk '{print $1}'",
 			 "r"); // fetch wlan0 gateway
 		if (fp != NULL) {
 			fgets(wlan0_ap, sizeof(wlan0_ap)-1, fp);
