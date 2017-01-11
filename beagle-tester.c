@@ -3382,7 +3382,12 @@ void beagle_test(const char *scan_value)
 		beagle_notice("ethernet", r ? "fail" : "pass");
 	}
 
-	sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I 192.168.7.2 192.168.7.1");
+	// if BeagleBoard-xM
+	if(!strcmp(model, MODEL_XM)) {
+		sprintf(str, "ping -s 8184 -i 0.01 -q -c 90 -w 2 -I 192.168.7.2 192.168.7.1");
+	} else {
+		sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I 192.168.7.2 192.168.7.1");
+	}
 	fprintf(stderr, str);
 	fprintf(stderr, "\n");
 	fflush(stderr);
