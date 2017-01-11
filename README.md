@@ -67,7 +67,7 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 7. Connect _scanner_
 8. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
 9. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
-10. Pass or fail will be indicated by a respectively green or red box on the TV
+10. Pass or fail will be indicated by a respectively green or red box on the _TV_
 11. Disconnect _scanner_
 12. Disconnect _host_
 13. Disconnect _power_
@@ -95,7 +95,7 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 7. Connect USB host on _DUT_ to _scanner_
 8. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
 9. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
-10. Pass or fail will be indicated by a respectively green or red box on the TV
+10. Pass or fail will be indicated by a respectively green or red box on the _TV_
 11. Disconnect _scanner_
 12. Disconnect _host_
 13. Disconnect _power_
@@ -105,30 +105,31 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 
 ## Required equipment
 
-* Adafruit 2.4" TFT LCD subassembly (See https://gist.github.com/jadonk/0e4a190fc01dc5723d1f183737af1d83)
-* BeagleBone Blue acting as a WiFi access point (should be default on production image)
-* BeagleBone Blue or other computer (configured to make DHCP requests over USB RNDIS interface and answer pings)
-* A supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
-* Approved 12V power brick
-* Approved 2S LiPo battery
+* _Display_: Adafruit 2.4" TFT LCD subassembly (See https://gist.github.com/jadonk/0e4a190fc01dc5723d1f183737af1d83)
+* _AP_: BeagleBone Blue acting as a WiFi access point (should be default on production image) (SSID: BeagleBone-XXXX, PSK: BeagleBone)
+* _Host_: BeagleBone Blue or other computer (configured to make DHCP requests over USB RNDIS interface and answer pings)
+* _Scanner_: Supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
+* _Power_: Approved 12V power brick
+* _Battery_: Approved 2S LiPo battery
+* _DUT_: BeagleBone Blue (device) under test
 
 ## Test steps
 
-1. Have BeagleBone Blue running as WiFi access point (SSID: BeagleBone-XXXX, PSK: BeagleBone)
-2. Connect S1.1/GP0 from board under test to Adafruit 2.4" TFT LCD subassembly to see display output
+1. Ensure _AP_ is functioning nearby
+2. Connect S1.1/GP0 connectors on _DUT_ to _display_
 3. (optional) connect a wire from WP to GND to enable EEPROM writing of board revision and serial number
-4. Power the board under test using the 2S LiPo battery
-5. Connect the 12V power brick
-6. Connect to the board under test USB client port from a USB host with RNDIS client support that will perform a DHCP request that will respond to pings
-7. Connect one of the supported barcode scanners
+4. Connect LIPO connector on _DUT_ to _battery_
+5. Connect _DUT_ to _power_
+6. Connect USB client on _DUT_ to _host_
+7. Connect USB host on _DUT_ to _scanner_
 8. Wait for the CISPR test animation (should be under 2 minutes) ![CISPR image][cispr]
 9. Scan the 16 character barcode (will be programmed if step 3 completed and other tests pass)
-10. Pass or fail will be indicated by a respectively green or red box on the display
-11. Disconnect the barcode scanner
-12. Disconnect USB client
-13. Disconnect 12V power brick
-14. Disconnect 2S LiPo battery
-14. Disconnect display
+10. Pass or fail will be indicated by a respectively green or red box on the _display_
+11. Disconnect _scanner_
+12. Disconnect _host_
+13. Disconnect _power_
+14. Disconnect _battery_
+14. Disconnect _display_
 
 # BeagleBoard-xM
 
@@ -155,7 +156,7 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 8. Connect USB host on _DUT_ to _scanner_
 9. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
 10. Scan a barcode to begin the test
-11. Pass or fail will be indicated by a respectively green or red box on the TV ![xM pass image][xm-pass]
+11. Pass or fail will be indicated by a respectively green or red box on the _TV_ ![xM pass image][xm-pass]
 12. Disconnect _scanner_
 13. Disconnect _host_
 14. Disconnect _power_
