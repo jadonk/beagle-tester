@@ -131,31 +131,31 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 
 ## Required equipment
 
-* HDMI TV capable of 1280x1024 (HDMI monitor if no audio testing)
-* Ethernet router (configured to answer DHCP requests and answer pings on the provided gateway)
-* BeagleBone Black or other computer (configured to make DHCP requests over USB RNDIS interface and answer pings)
-* A supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
-* Three (3) USB 2.0 HS capable flash drives
-* 1/8" audio patch cable and speaker
-* DB9 serial loopback cable
-* Approved 5V power brick
+* _TV_: DVI-D/HDMI TV capable of 1280x1024 with HDMI cable
+* _Router_: Ethernet router (configured to answer DHCP requests and answer pings on the provided gateway)
+* _Host_: BeagleBone Black or other computer (configured to make DHCP requests over USB RNDIS interface and answer pings)
+* _Scanner_: Supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
+* _Flashdrives_: Three (3) USB 2.0 HS capable flash drives
+* _Speaker_: Speaker with 1/8" audio patch cable
+* _Power_: Approved 5V power brick
+* _DUT_: BeagleBoard-xM (device) under test
 
 ## Test steps
 
-1. Connect HDMI from board under test to TV to see output
-2. Connect an Ethernet device (router) with a DHCP server that has a gateway that will respond to pings
-3. Connect the 3 USB flash drives
-4. Connect the audio patch cable and speaker
-5. Power the board under test
-6. Connect to the board under test USB client port from a USB host with RNDIS client support that will perform a DHCP request that will respond to pings
+1. Connect HDMI on _DUT_ to _TV_
+2. Connect Ethernet on _DUT_ to _router_
+3. Connect 3x USB host on _DUT_ to _flashdrives_
+4. Connect audio output on _DUT_ to _speaker_
+5. Connect _DUT_ to _power_
+6. Connect USB client on _DUT_ to _host_
 7. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
-8. Connect one of the supported barcode scanners
+8. Connect USB host on _DUT_ to _scanner_
 9. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
 10. Scan a barcode to begin the test
 11. Pass or fail will be indicated by a respectively green or red box on the TV ![xM pass image][xm-pass]
-12. Disconnect the barcode scanner
-13. Disconnect USB client
-14. Remove power
+12. Disconnect _scanner_
+13. Disconnect _host_
+14. Disconnect _power_
 15. Disconnect remaining devices
 
 [cispr]: https://raw.githubusercontent.com/jadonk/beagle-tester/master/images/itu-r-bt1729-colorbar-3200x1800.png
