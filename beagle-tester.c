@@ -3384,9 +3384,9 @@ void beagle_test(const char *scan_value)
 
 	// if BeagleBoard-xM
 	if(!strcmp(model, MODEL_XM)) {
-		sprintf(str, "ping -s 8184 -i 0.01 -q -c 90 -w 2 -I 192.168.7.2 192.168.7.1");
+		sprintf(str, "ping -s 8184 -i 0.01 -q -c 90 -w 2 -I 192.168.9.2 192.168.9.1");
 	} else {
-		sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I 192.168.7.2 192.168.7.1");
+		sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I 192.168.9.2 192.168.9.1");
 	}
 	fprintf(stderr, str);
 	fprintf(stderr, "\n");

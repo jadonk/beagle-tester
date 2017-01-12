@@ -27,6 +27,9 @@ TI_OMAP3_BeagleBoard_xM)
 	;;
 esac
 
+sed -i -e 's:192.168.7.1:192.168.9.1:g' /etc/udhcpd.conf
+ifconfig usb0 192.168.9.2 netmask 255.255.255.252
+systemctl restart udhcpd.service
 systemctl stop getty@tty1.service
 systemctl stop lightdm.service
 export XAUTHORITY=~debian/.Xauthority

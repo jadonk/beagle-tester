@@ -62,10 +62,10 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 2. Connect Ethernet on _DUT_ to _router_
 3. (optional) connect a wire from TP4 to ground to enable EEPROM writing of board revision and serial number
 4. Connect _DUT_ to _power_
-5. Connect USB client port on _DUT_ to _Host_
-6. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
-7. Connect _scanner_
-8. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
+5. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
+6. Connect _scanner_
+7. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
+8. Connect USB client port on _DUT_ to _host_
 9. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
 10. Pass or fail will be indicated by a respectively green or red box on the _TV_
 11. Disconnect _scanner_
@@ -90,10 +90,10 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 2. Connect microHDMI on _DUT_ to _TV_
 3. (optional) connect a wire from TP1 to ground to enable EEPROM writing of board revision and serial number
 4. Connect _DUT_ to _power_
-5. Connect USB client on _DUT_ to _host_
-6. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
-7. Connect USB host on _DUT_ to _scanner_
-8. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
+5. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
+6. Connect USB host on _DUT_ to _scanner_
+7. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
+8. Connect USB client on _DUT_ to _host_
 9. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
 10. Pass or fail will be indicated by a respectively green or red box on the _TV_
 11. Disconnect _scanner_
@@ -120,9 +120,9 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 3. (optional) connect a wire from WP to GND to enable EEPROM writing of board revision and serial number
 4. Connect LIPO connector on _DUT_ to _battery_
 5. Connect _DUT_ to _power_
-6. Connect USB client on _DUT_ to _host_
-7. Connect USB host on _DUT_ to _scanner_
-8. Wait for the CISPR test animation (should be under 2 minutes) ![CISPR image][cispr]
+6. Connect USB host on _DUT_ to _scanner_
+7. Wait for the CISPR test animation (should be under 2 minutes) ![CISPR image][cispr]
+8. Connect USB client on _DUT_ to _host_
 9. Scan the 16 character barcode (will be programmed if step 3 completed and other tests pass)
 10. Pass or fail will be indicated by a respectively green or red box on the _display_
 11. Disconnect _scanner_
@@ -151,10 +151,10 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 3. Connect 3x USB host on _DUT_ to _flashdrives_
 4. Connect audio output on _DUT_ to _speaker_
 5. Connect _DUT_ to _power_
-6. Connect USB client on _DUT_ to _host_
-7. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
-8. Connect USB host on _DUT_ to _scanner_
-9. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
+6. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
+7. Connect USB host on _DUT_ to _scanner_
+8. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
+9. Connect USB client on _DUT_ to _host_
 10. Scan a barcode to begin the test
 11. Pass or fail will be indicated by a respectively green or red box on the _TV_ ![xM pass image][xm-pass]
 12. Disconnect _scanner_
