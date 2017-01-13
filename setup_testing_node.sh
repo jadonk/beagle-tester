@@ -35,9 +35,9 @@ deb_usb_network=$(sed -nr "${deb_iface_range_regex} p" /etc/network/interfaces |
 deb_usb_gateway=$(sed -nr "${deb_iface_range_regex} p" /etc/network/interfaces |\
 		  sed -nr "s/^[[:space:]]*gateway[[:space:]]+([0-9.]+)/\1/p")
 
-sudo sed -i -e 's:'$deb_usb_address':192.168.10.2:g' /etc/network/interfaces
-sudo sed -i -e 's:'$deb_usb_network':192.168.10.0:g' /etc/network/interfaces
-sudo sed -i -e 's:'$deb_usb_gateway':192.168.10.1:g' /etc/network/interfaces
+sed -i -e 's:'$deb_usb_address':192.168.10.2:g' /etc/network/interfaces
+sed -i -e 's:'$deb_usb_network':192.168.10.0:g' /etc/network/interfaces
+sed -i -e 's:'$deb_usb_gateway':192.168.10.1:g' /etc/network/interfaces
 
 deb_usb_address=$(sed -nr "${deb_iface_range_regex} p" /etc/network/interfaces |\
 		  sed -nr "s/^[[:space:]]*address[[:space:]]+([0-9.]+)/\1/p")
@@ -52,9 +52,9 @@ echo "usb0, updated: [${deb_usb_address}],[${deb_usb_network}],[${deb_usb_gatewa
 
 #SoftAP0 192.168.8.x -> 192.168.11.x
 . /etc/default/bb-wl18xx
-sudo sed -i -e 's:'$USE_WL18XX_IP_PREFIX':192.168.11:g' /etc/default/bb-wl18xx
+sed -i -e 's:'$USE_WL18XX_IP_PREFIX':192.168.11:g' /etc/default/bb-wl18xx
 
-sudo sed -i -e 's:#USE_PERSONAL_SSID=:USE_PERSONAL_SSID=BeagleBone-TESTER:g' /etc/default/bb-wl18xx
+sed -i -e 's:#USE_PERSONAL_SSID=:USE_PERSONAL_SSID=BeagleBone-TESTER:g' /etc/default/bb-wl18xx
 
 . /etc/default/bb-wl18xx
 
