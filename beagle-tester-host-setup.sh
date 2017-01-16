@@ -60,8 +60,11 @@ sed -i -e 's:#USE_PERSONAL_SSID=:USE_PERSONAL_SSID=BeagleBone-TESTER:g' /etc/def
 
 echo "wlan0, updated: [${USE_WL18XX_IP_PREFIX}],[${USE_PERSONAL_SSID}]"
 
-wfile="beaglebone-getting-started-2016-11-07.img"
-cp /var/cache/doc-beaglebone-getting-started/${wfile} /var/www/html/${wfile}
+#/var/local/bb_usb_mass_storage.img is a symlink to:
+#/var/cache/doc-beaglebone-getting-started//beaglebone-getting-started-2016-11-07.img
+#(or newer)
+wfile="test.file"
+ln -s /var/local/bb_usb_mass_storage.img /var/www/html/${wfile}
 sha256sum /var/www/html/${wfile} > /var/www/html/${wfile}.sha256sum
 
 echo "wlan0, dl file: [${wfile}] setup on port 8080"
