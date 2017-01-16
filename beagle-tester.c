@@ -3259,6 +3259,11 @@ int main(int argc, char** argv)
 			beagle_test(scan_value);
 			fprintf(stderr, "Test fails: %d\n", fail);
 			fflush(stderr);
+			if (fail > 0) {
+				printf("RESULT: \033[41;30;5m FAIL \033[0m\n");
+			} else {
+ 				printf("RESULT: PASS \n");
+			}
 			if (get_state()==EXITING) {
 				run = 0;
 				break;	
