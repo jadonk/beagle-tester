@@ -3035,6 +3035,14 @@ int main(int argc, char** argv)
 	char scan_value[32];
 	int scan_i = 0;
 
+	fprintf(stderr, "Starting beagle-tester.\n");
+	fflush(stderr);
+
+	if (!barcode) {
+		fprintf(stderr, "ERROR: valid barcode scanner not found.\n");
+		fflush(stderr);
+	}
+
 	//FILE *errlog = fopen("/var/log/beagle-tester.log", "w");
 	ioctl(barcode, EVIOCGID, barcode_id);
 	fprintf(stderr, "Found input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
@@ -3538,14 +3546,15 @@ int blue_specific_tests() {
 	// check charger by checking for the right voltage on the batt line
 	v = get_battery_voltage();
 	if(v>8.4 || v<7.4) {
-		fprintf(stderr, "failed: battery input/charger\n");
+		fprintf(stderr, "failed: battery input/charger (%.2fV)\n", v);
 		//cleanup_cape();
 		return -1;
 	}
 
 	// make sure 12V DC supply is connected
-	if(get_dc_jack_voltage()<10.0) {
-		fprintf(stderr, "failed: dc jack input\n");
+	v = get_dc_jack_voltage();
+	if(v<10.0) {
+		fprintf(stderr, "failed: dc jack input (%.2fV)\n", v);
 		//cleanup_cape();
 		return -2;
 	}
