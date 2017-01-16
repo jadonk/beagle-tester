@@ -3545,7 +3545,7 @@ int blue_specific_tests() {
 
 	// check charger by checking for the right voltage on the batt line
 	v = get_battery_voltage();
-	if(v>8.4 || v<7.4) {
+	if(v>8.6 || v<7.4) {
 		fprintf(stderr, "failed: battery input/charger (%.2fV)\n", v);
 		//cleanup_cape();
 		return -1;
