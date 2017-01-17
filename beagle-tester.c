@@ -3367,7 +3367,7 @@ void beagle_test(const char *scan_value)
 			wlan0_ap[0] = 0;
 		}
 
-		sprintf(str, "ping -s 8184 -i 0.01 -q -c 150 -w 2 -I %s %s",
+		sprintf(str, "ping -c 4 -w 10 -I %s %s",
 			wlan0_host, wlan0_ap);
 		fprintf(stderr, str);
 		fprintf(stderr, "\n");
