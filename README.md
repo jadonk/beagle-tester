@@ -106,8 +106,8 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 ## Required equipment
 
 * _Display_: Adafruit 2.4" TFT LCD subassembly (See https://gist.github.com/jadonk/0e4a190fc01dc5723d1f183737af1d83)
-* _AP_: BeagleBone Blue acting as a WiFi access point (should be default on production image) (SSID: BeagleBone-XXXX, PSK: BeagleBone)
-* _Host_: BeagleBone Blue or other computer (configured to make DHCP requests over USB RNDIS interface and answer pings)
+* _AP_: BeagleBone Blue acting as a WiFi access point (use beagle-tester-host-setup.sh script) (SSID: BeagleBone-XXXX, PSK: BeagleBone)
+* _Host_: BeagleBone Blue or other computer (configured to make DHCP requests over USB RNDIS interface and answer pings, use beagle-tester-host-setup.sh script)
 * _Scanner_: Supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
 * _Power_: Approved 12V power brick
 * _DUT_: BeagleBone Blue (device) under test
