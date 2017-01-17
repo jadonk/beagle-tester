@@ -110,7 +110,6 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 * _Host_: BeagleBone Blue or other computer (configured to make DHCP requests over USB RNDIS interface and answer pings)
 * _Scanner_: Supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
 * _Power_: Approved 12V power brick
-* _Battery_: Approved 2S LiPo battery
 * _DUT_: BeagleBone Blue (device) under test
 
 ## Test steps
@@ -118,18 +117,16 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 1. Ensure _AP_ is functioning nearby
 2. Connect S1.1/GP0 connectors on _DUT_ to _display_
 3. (optional) connect a wire from WP to GND to enable EEPROM writing of board revision and serial number
-4. Connect LIPO connector on _DUT_ to _battery_
-5. Connect _DUT_ to _power_
-6. Connect USB host on _DUT_ to _scanner_
-7. Wait for the CISPR test animation (should be under 2 minutes) ![CISPR image][cispr]
-8. Connect USB client on _DUT_ to _host_
-9. Scan the 16 character barcode (will be programmed if step 3 completed and other tests pass)
-10. Pass or fail will be indicated by a respectively green or red box on the _display_
-11. Disconnect _scanner_
-12. Disconnect _host_
-13. Disconnect _power_
-14. Disconnect _battery_
-14. Disconnect _display_
+4. Connect _DUT_ to _power_
+5. Connect USB host on _DUT_ to _scanner_
+6. Wait for the CISPR test animation (should be under 2 minutes) ![CISPR image][cispr]
+7. Connect USB client on _DUT_ to _host_
+8. Scan the 16 character barcode (will be programmed if step 3 completed and other tests pass)
+9. Pass or fail will be indicated by a respectively green or red box on the _display_
+10. Disconnect _scanner_
+11. Disconnect _host_
+12. Disconnect _power_
+13. Disconnect _display_
 
 # BeagleBoard-xM
 
