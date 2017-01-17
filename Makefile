@@ -22,7 +22,7 @@ install:
 	install -m 755 -d $(DESTDIR)/etc/udev/rules.d
 	install -m 644 beagle-tester.rules $(DESTDIR)/etc/udev/rules.d
 	make -C images -s install
-	systemctl stop beagle-tester.service || true
+	#systemctl stop beagle-tester.service || true
 	systemctl daemon-reload || true
 	#systemctl enable beagle-tester.service || true
 
