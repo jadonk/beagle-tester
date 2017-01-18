@@ -3339,7 +3339,7 @@ void beagle_test(const char *scan_value)
 
 	// if we have WiFi
 	if(!strcmp(model, MODEL_WIFI) || !strcmp(model, MODEL_BLUE)) {
-		fp = popen("connect_bb_tether", "r"); // connect to tether
+		fp = popen("bb-connect-ap", "r"); // connect to ap
 		if (fp != NULL) {
 			fgets(str2, sizeof(str2)-1, fp);
 			str2[15] = 0;
@@ -3347,7 +3347,7 @@ void beagle_test(const char *scan_value)
 		} else {
 			str2[0] = 0;
 		}
-		beagle_notice("tether", str2);
+		beagle_notice("ap", str2);
 
 		fp = popen("ip -4 addr show wlan0 | grep inet | awk '{print $2}' | cut -d/ -f1 | tr -d '\n' | tr -d '\r'",
 			 "r"); // fetch wlan0 address
@@ -3375,8 +3375,6 @@ void beagle_test(const char *scan_value)
 		r = system(str);
 		fprintf(stderr, "ping returned: %d\n", r);
 		beagle_notice("wifi", r ? "fail" : "pass");
-		
-		//system("connmanctl tether wifi on");
 	} else { // Ethernet
 		fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'",
 			 "r"); // fetch gateway
