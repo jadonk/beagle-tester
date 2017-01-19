@@ -3018,6 +3018,7 @@ void beagle_test(const char *scan_value);
 void beagle_notice(const char *test, const char *status);
 void do_colorbar();
 int blue_specific_tests();
+void set_led_trigger(const char * led, const char * mode);
 
 static void do_stop()
 {
@@ -3316,6 +3317,11 @@ void beagle_test(const char *scan_value)
 	strcpy(model, str);
 	beagle_notice("model", str);
 
+	if (!strcmp(model, MODEL_BLUE)) {
+		set_led_trigger("red", "timer");
+		set_led_trigger("green", "timer");
+	}
+
 	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/eeprom", O_RDWR);
 	lseek(fd_sn, 0, SEEK_SET);
 	r = read(fd_sn, str, 28);
@@ -3457,6 +3463,16 @@ void beagle_test(const char *scan_value)
 			draw_pixel(&fb_info, x, y, color);
 	}
 
+	if (!strcmp(model, MODEL_BLUE)) {
+		if (fail) {
+			set_led_trigger("red", "default-on");
+			set_led_trigger("green", "none");
+		} else {
+			set_led_trigger("red", "none");
+			set_led_trigger("green", "default-on");
+		}
+	}
+
 	close(fd_sn);
 }
 
@@ -3527,6 +3543,8 @@ void do_colorbar()
 	//usleep(4444);
 }
 
+int initialize_mmap_adc();
+
 int blue_specific_tests() {
 	int ret;
 
@@ -3536,23 +3554,29 @@ int blue_specific_tests() {
 	imu_config_t conf = get_default_imu_config();
 	conf.enable_magnetometer=1;
 
+	// The generic initialize_cape() makes too many assumptions about the
+	// system config, so we have to initialize individual subsystems.
+	// The main conflict is the availability of exportable GPIO pins not
+	// used by kernel drivers, namely the FBTFT driver.
 	//initialize_cape();
 
-	set_led(RED,OFF);
-	set_led(GREEN,ON);
+	if(initialize_mmap_adc()){
+		fprintf(stderr, "ERROR: mmap_gpio_adc.c failed to initialize adc\n");
+		return -1;
+	}
 
 	// check charger by checking for the right voltage on the batt line
 	v = get_battery_voltage();
+	fprintf(stderr, "battery input/charger voltage: %.2fV\n", v);
 	if(v>8.6 || v<7.4) {
-		fprintf(stderr, "failed: battery input/charger (%.2fV)\n", v);
 		//cleanup_cape();
 		return -1;
 	}
 
 	// make sure 12V DC supply is connected
 	v = get_dc_jack_voltage();
+	fprintf(stderr, "dc jack input voltage: %.2fV\n", v);
 	if(v<10.0) {
-		fprintf(stderr, "failed: dc jack input (%.2fV)\n", v);
 		//cleanup_cape();
 		return -2;
 	}
@@ -3579,3 +3603,16 @@ int blue_specific_tests() {
 	return 0;
 }
 
+void set_led_trigger(const char * led, const char * mode)
+{
+	int fd;
+	char path[100];
+	int mode_len;
+
+	sprintf(path, "/sys/class/leds/%s/trigger", led);
+	mode_len = strlen(mode);
+	fd = open(path, O_WRONLY);
+	if(!fd) return;
+	write(fd, mode, mode_len);
+	close(fd);
+}
