@@ -3019,6 +3019,7 @@ void beagle_notice(const char *test, const char *status);
 void do_colorbar();
 int blue_specific_tests();
 void set_led_trigger(const char * led, const char * mode);
+void set_user_leds(int code);
 
 static void do_stop()
 {
@@ -3287,6 +3288,7 @@ int main(int argc, char** argv)
 	}
 
 	do_fill_screen(&fb_info, 4);
+	set_user_leds(-1);
 	system("/usr/sbin/beagle-tester-close.sh");
 
 	return 0;
@@ -3482,6 +3484,8 @@ void beagle_notice(const char *test, const char *status)
 	unsigned color = COLOR_TEXT;
 	char str[70];
 
+	set_user_leds(notice_line);
+
 	if(!strcmp(status, "fail")) {
 		fail++;
 		color = COLOR_FAIL;
@@ -3615,4 +3619,20 @@ void set_led_trigger(const char * led, const char * mode)
 	if(!fd) return;
 	write(fd, mode, mode_len);
 	close(fd);
+}
+
+void set_user_leds(int code)
+{
+	if (code < 0) {
+		set_led_trigger("beaglebone:green:usr0", "heartbeat");
+		set_led_trigger("beaglebone:green:usr1", "mmc0");
+		//set_led_trigger("beaglebone:green:usr2", "cpu0"); -- seems to no longer exist
+		set_led_trigger("beaglebone:green:usr2", "none");
+		set_led_trigger("beaglebone:green:usr3", "mmc1");
+	} else {
+		set_led_trigger("beaglebone:green:usr0", (code & 1) ? "default-on" : "none");
+		set_led_trigger("beaglebone:green:usr1", (code & 2) ? "default-on" : "none");
+		set_led_trigger("beaglebone:green:usr2", (code & 4) ? "default-on" : "none");
+		set_led_trigger("beaglebone:green:usr3", (code & 8) ? "default-on" : "none");
+	}
 }
