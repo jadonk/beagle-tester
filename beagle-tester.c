@@ -3052,6 +3052,8 @@ int main(int argc, char** argv)
 	fflush(stderr);
 
 	system("/usr/sbin/beagle-tester-open.sh");
+	set_led_trigger("red", "default-on");
+	set_led_trigger("green", "default-on");
 
 	fb_open(0, &fb_info);
 	do_colorbar();
@@ -3290,6 +3292,8 @@ int main(int argc, char** argv)
 	do_fill_screen(&fb_info, 4);
 	set_user_leds(-1);
 	system("/usr/sbin/beagle-tester-close.sh");
+	set_led_trigger("red", "none");
+	set_led_trigger("green", "none");
 
 	return 0;
 }
