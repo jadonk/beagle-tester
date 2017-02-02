@@ -89,7 +89,7 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 
 1. Ensure _AP_ is functioning nearby 
 2. Connect microHDMI on _DUT_ to _TV_
-3. (optional) connect a wire from TP1 to ground to enable EEPROM writing of board revision and serial number
+3. Connect a wire from TP1 to ground to enable EEPROM writing of board revision and serial number
 4. Connect _DUT_ to _power_
 5. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
 6. Connect USB host on _DUT_ to _scanner_
