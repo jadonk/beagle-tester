@@ -3358,7 +3358,7 @@ void beagle_test(const char *scan_value)
 		fp = fopen("/tmp/beagle-tester-ap", "r");
 		if (fp != NULL) {
 			fgets(str2, sizeof(str2)-1, fp);
-			str2[15] = 0;
+			str2[25] = 0;
 			fclose(fp);
 		} else {
 			str2[0] = 0;
