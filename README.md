@@ -42,6 +42,7 @@ The next 4 characters should be a manufacturer-specific product code. If you are
 Allocations include, but are not limited to: 
 
 * BBGW for GHI manufactured BeagleBone Black Wireless
+* ELnn for Embest manufactured BeagleBone Blue
 
 The final 4 characters are a sequential decimal number. If more than 10,000 boards are manufactured that week, roll over the top digit to an ASCII hex character.
 
@@ -60,13 +61,13 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 
 1. Connect microHDMI on _DUT_ to _TV_
 2. Connect Ethernet on _DUT_ to _router_
-3. (optional) connect a wire from TP4 to ground to enable EEPROM writing of board revision and serial number
+3. Connect a wire from TP4 to ground to enable EEPROM writing of board revision and serial number
 4. Connect _DUT_ to _power_
 5. Wait for the BeagleBoard.org desktop to show (should be under 2 minutes)
 6. Connect _scanner_
 7. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
 8. Connect USB client port on _DUT_ to _host_
-9. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
+9. Scan the 16 character barcode
 10. Pass or fail will be indicated by a respectively green or red box on the _TV_
 11. Disconnect _scanner_
 12. Disconnect _host_
@@ -94,7 +95,7 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 6. Connect USB host on _DUT_ to _scanner_
 7. Wait for the CISPR test animation and audio playback (should be under 15 seconds) ![CISPR image][cispr]
 8. Connect USB client on _DUT_ to _host_
-9. Scan the 16 character barcode (4 character board revision and 12 character serial number) (will be programmed if step 3 completed and other tests pass)
+9. Scan the 16 character barcode
 10. Pass or fail will be indicated by a respectively green or red box on the _TV_
 11. Disconnect _scanner_
 12. Disconnect _host_
@@ -114,12 +115,12 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 ## Test steps
 
 1. Ensure _AP_ is functioning nearby
-2. (optional) connect a wire from WP to GND to enable EEPROM writing of board revision and serial number
+2. Connect a wire from WP to GND to enable EEPROM writing of board revision and serial number
 3. Connect _DUT_ to _power_
 4. Connect USB host on _DUT_ to _scanner_
 5. Wait for the G and R LEDs to be lit
 6. Connect USB client on _DUT_ to _host_
-7. Scan the 16 character barcode (will be programmed if step 3 completed and other tests pass)
+7. Scan the 16 character barcode
 8. Pass or fail will be indicated by respectively G or R led flashing exclusively (blue LEDs 0-3 will flash indicating the test number executing and if blue LEDs 0-3 stop flashing before G or R begin flashing, then the board hung and failed)
 9. Disconnect _scanner_
 10. Disconnect _host_
