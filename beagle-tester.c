@@ -3358,30 +3358,34 @@ void beagle_test(const char *scan_value)
 
 	// if we have WiFi
 	if(!strcmp(model, MODEL_WIFI) || !strcmp(model, MODEL_BLUE)) {
-		fp = popen("bb-connect-ap", "r"); // connect to ap
+		// connect to ap
+		system("bb-connect-ap &> /tmp/beagle-tester-ap");
+		fp = fopen("/tmp/beagle-tester-ap", "r");
 		if (fp != NULL) {
 			fgets(str2, sizeof(str2)-1, fp);
 			str2[15] = 0;
-			pclose(fp);
+			fclose(fp);
 		} else {
 			str2[0] = 0;
 		}
 		beagle_notice("ap", str2);
 
-		fp = popen("ip -4 addr show wlan0 | grep inet | awk '{print $2}' | cut -d/ -f1 | tr -d '\n' | tr -d '\r'",
-			 "r"); // fetch wlan0 address
+		// fetch wlan0 address
+		system("ip -4 addr show wlan0 | grep inet | awk '{print $2}' | cut -d/ -f1 | tr -d '\n' | tr -d '\r' &> /tmp/beagle-tester-wlan0-host");
+		fp = fopen("/tmp/beagle-tester-wlan0-host", "r");
 		if (fp != NULL) {
 			fgets(wlan0_host, sizeof(wlan0_host)-1, fp);
-			pclose(fp);
+			fclose(fp);
 		} else {
 			wlan0_host[0] = 0;
 		}
 
-		fp = popen("ip route | grep -E 'wlan0|link' | grep -Ev 'src|default' | awk '{print $1}'",
-			 "r"); // fetch wlan0 gateway
+		// fetch wlan0 gateway
+		system("ip route | grep -E 'wlan0|link' | grep -Ev 'src|default' | awk '{print $1}' &> /tmp/beagle-tester-wlan0-gw");
+		fp = fopen("/tmp/beagle-tester-wlan0-gw", "r");
 		if (fp != NULL) {
 			fgets(wlan0_ap, sizeof(wlan0_ap)-1, fp);
-			pclose(fp);
+			fclose(fp);
 		} else {
 			wlan0_ap[0] = 0;
 		}
