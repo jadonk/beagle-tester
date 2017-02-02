@@ -3013,6 +3013,7 @@ char fontdata_8x8[] = {
 #define SCAN_VALUE_STOP "STOP"
 int fail = 0;
 int notice_line = 0;
+int display = 1;
 
 void beagle_test(const char *scan_value);
 void beagle_notice(const char *test, const char *status);
@@ -3055,8 +3056,14 @@ int main(int argc, char** argv)
 	set_led_trigger("red", "default-on");
 	set_led_trigger("green", "default-on");
 
-	fb_open(0, &fb_info);
-	do_colorbar();
+	if (access("/dev/fb0", W_OK)) {
+		fprintf(stderr, "Unable to write to /dev/fb0\n");
+		fflush(stderr);
+		display = 0;
+	} else {
+		fb_open(0, &fb_info);
+		do_colorbar();
+	}
 
 	signal(SIGINT, do_stop);
 	signal(SIGTERM, do_stop);
@@ -3267,7 +3274,7 @@ int main(int argc, char** argv)
 			set_state(EXITING);
 			break;
 		} else if (run == 1) {
-			do_fill_screen(&fb_info, 0);
+			if (display) do_fill_screen(&fb_info, 0);
 			beagle_test(scan_value);
 			fprintf(stderr, "Test fails: %d\n", fail);
 			fflush(stderr);
@@ -3289,7 +3296,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-	do_fill_screen(&fb_info, 4);
+	if (display) do_fill_screen(&fb_info, 4);
 	set_user_leds(-1);
 	system("/usr/sbin/beagle-tester-close.sh");
 	set_led_trigger("red", "none");
@@ -3464,9 +3471,11 @@ void beagle_test(const char *scan_value)
 	}
 
 	color = fail ? COLOR_FAIL : COLOR_PASS;
-	for (y = fb_info.var.yres/2; y < fb_info.var.yres; y++) {
-		for (x = fb_info.var.xres/2; x < fb_info.var.xres; x++)
-			draw_pixel(&fb_info, x, y, color);
+	if (display) {
+		for (y = fb_info.var.yres/2; y < fb_info.var.yres; y++) {
+			for (x = fb_info.var.xres/2; x < fb_info.var.xres; x++)
+				draw_pixel(&fb_info, x, y, color);
+		}
 	}
 
 	if (!strcmp(model, MODEL_BLUE)) {
@@ -3498,7 +3507,8 @@ void beagle_notice(const char *test, const char *status)
 	fprintf(stderr, str);
 	fprintf(stderr, "\n");
 	fflush(stderr);
-	fb_put_string(&fb_info, 20, 50+notice_line*10, str, 70, color, 1, 70);
+	if (display)
+		fb_put_string(&fb_info, 20, 50+notice_line*10, str, 70, color, 1, 70);
 	notice_line++;
 }
 
