@@ -3268,7 +3268,7 @@ int main(int argc, char** argv)
 		}
 
 		if (run == 0) {
-			do_colorbar();
+			if (display) do_colorbar();
 		}
 		if (!strcmp(scan_value, SCAN_VALUE_STOP)) {
 			set_state(EXITING);
