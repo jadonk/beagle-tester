@@ -3330,11 +3330,6 @@ void beagle_test(const char *scan_value)
 	strcpy(model, str);
 	beagle_notice("model", str);
 
-	if (!strcmp(model, MODEL_BLUE)) {
-		set_led_trigger("red", "timer");
-		set_led_trigger("green", "timer");
-	}
-
 	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/eeprom", O_RDWR);
 	lseek(fd_sn, 0, SEEK_SET);
 	r = read(fd_sn, str, 28);
@@ -3484,11 +3479,11 @@ void beagle_test(const char *scan_value)
 
 	if (!strcmp(model, MODEL_BLUE)) {
 		if (fail) {
-			set_led_trigger("red", "default-on");
+			set_led_trigger("red", "timer");
 			set_led_trigger("green", "none");
 		} else {
 			set_led_trigger("red", "none");
-			set_led_trigger("green", "default-on");
+			set_led_trigger("green", "timer");
 		}
 	}
 
@@ -3648,9 +3643,9 @@ void set_user_leds(int code)
 		set_led_trigger("beaglebone:green:usr2", "none");
 		set_led_trigger("beaglebone:green:usr3", "mmc1");
 	} else {
-		set_led_trigger("beaglebone:green:usr0", (code & 1) ? "default-on" : "none");
-		set_led_trigger("beaglebone:green:usr1", (code & 2) ? "default-on" : "none");
-		set_led_trigger("beaglebone:green:usr2", (code & 4) ? "default-on" : "none");
-		set_led_trigger("beaglebone:green:usr3", (code & 8) ? "default-on" : "none");
+		set_led_trigger("beaglebone:green:usr0", (code & 1) ? "timer" : "none");
+		set_led_trigger("beaglebone:green:usr1", (code & 2) ? "timer" : "none");
+		set_led_trigger("beaglebone:green:usr2", (code & 4) ? "timer" : "none");
+		set_led_trigger("beaglebone:green:usr3", (code & 8) ? "timer" : "none");
 	}
 }
