@@ -3068,13 +3068,13 @@ int main(int argc, char** argv)
 	signal(SIGINT, do_stop);
 	signal(SIGTERM, do_stop);
 
-	while (get_state()!=EXITING) {
+	while (rc_get_state()!=EXITING) {
 		FD_ZERO(&rdfs);
 		FD_SET(barcode, &rdfs);
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 4000;
 		rd = select(barcode + 1, &rdfs, NULL, NULL, &timeout);
-		if (get_state()==EXITING)
+		if (rc_get_state()==EXITING)
 			break;
 		if (rd > 0) {
 			rd = read(barcode, ev, sizeof(ev));
@@ -3283,7 +3283,7 @@ int main(int argc, char** argv)
 			} else {
  				printf("RESULT: PASS \n");
 			}
-			if (get_state()==EXITING) {
+			if (rc_get_state()==EXITING) {
 				run = 0;
 				break;	
 			} else if (!strcmp(scan_value, SCAN_VALUE_REPEAT)) {
