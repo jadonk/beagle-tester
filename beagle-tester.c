@@ -3567,7 +3567,7 @@ int blue_specific_tests() {
 
 	// use defaults for now, except also enable magnetometer.
 	float v;
-	imu_data_t data; 
+	rc_imu_data_t data;
 	imu_config_t conf = get_default_imu_config();
 	conf.enable_magnetometer=1;
 
