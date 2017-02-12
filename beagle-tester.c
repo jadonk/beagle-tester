@@ -3024,7 +3024,7 @@ void set_user_leds(int code);
 
 static void do_stop()
 {
-	set_state(EXITING);
+	rc_set_state(EXITING);
 }
 
 int main(int argc, char** argv)
@@ -3271,7 +3271,7 @@ int main(int argc, char** argv)
 			if (display) do_colorbar();
 		}
 		if (!strcmp(scan_value, SCAN_VALUE_STOP)) {
-			set_state(EXITING);
+			rc_set_state(EXITING);
 			break;
 		} else if (run == 1) {
 			if (display) do_fill_screen(&fb_info, 0);
