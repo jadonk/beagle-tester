@@ -3609,7 +3609,7 @@ int blue_specific_tests() {
 
 	// test barometer
 	ret = rc_initialize_barometer(BMP_OVERSAMPLE_16,BMP_FILTER_OFF);
-	power_off_barometer();
+	rc_power_off_barometer();
 	if(ret<0) {
 		fprintf(stderr, "failed: bmp280 barometer\n");
 		//cleanup_cape();
