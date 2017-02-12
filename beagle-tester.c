@@ -3600,7 +3600,7 @@ int blue_specific_tests() {
 
 	// test imu
 	ret = initialize_imu(&data, conf);
-	power_off_imu();
+	rc_power_off_imu();
 	if(ret<0) {
 		fprintf(stderr, "failed: mpu9250 imu\n");
 		//cleanup_cape();
