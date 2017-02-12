@@ -3583,7 +3583,7 @@ int blue_specific_tests() {
 	}
 
 	// check charger by checking for the right voltage on the batt line
-	v = get_battery_voltage();
+	v = rc_battery_voltage();
 	fprintf(stderr, "battery input/charger voltage: %.2fV\n", v);
 	if(v>8.6 || v<7.4) {
 		//cleanup_cape();
