@@ -3591,7 +3591,7 @@ int blue_specific_tests() {
 	}
 
 	// make sure 12V DC supply is connected
-	v = get_dc_jack_voltage();
+	v = rc_dc_jack_voltage();
 	fprintf(stderr, "dc jack input voltage: %.2fV\n", v);
 	if(v<10.0) {
 		//cleanup_cape();
