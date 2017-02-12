@@ -3568,7 +3568,7 @@ int blue_specific_tests() {
 	// use defaults for now, except also enable magnetometer.
 	float v;
 	rc_imu_data_t data;
-	imu_config_t conf = get_default_imu_config();
+	rc_imu_config_t conf = get_default_imu_config();
 	conf.enable_magnetometer=1;
 
 	// The generic initialize_cape() makes too many assumptions about the
