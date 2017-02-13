@@ -3024,7 +3024,7 @@ void set_user_leds(int code);
 
 static void do_stop()
 {
-	set_state(EXITING);
+	rc_set_state(EXITING);
 }
 
 int main(int argc, char** argv)
@@ -3068,13 +3068,13 @@ int main(int argc, char** argv)
 	signal(SIGINT, do_stop);
 	signal(SIGTERM, do_stop);
 
-	while (get_state()!=EXITING) {
+	while (rc_get_state()!=EXITING) {
 		FD_ZERO(&rdfs);
 		FD_SET(barcode, &rdfs);
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 4000;
 		rd = select(barcode + 1, &rdfs, NULL, NULL, &timeout);
-		if (get_state()==EXITING)
+		if (rc_get_state()==EXITING)
 			break;
 		if (rd > 0) {
 			rd = read(barcode, ev, sizeof(ev));
@@ -3271,7 +3271,7 @@ int main(int argc, char** argv)
 			if (display) do_colorbar();
 		}
 		if (!strcmp(scan_value, SCAN_VALUE_STOP)) {
-			set_state(EXITING);
+			rc_set_state(EXITING);
 			break;
 		} else if (run == 1) {
 			if (display) do_fill_screen(&fb_info, 0);
@@ -3283,7 +3283,7 @@ int main(int argc, char** argv)
 			} else {
  				printf("RESULT: PASS \n");
 			}
-			if (get_state()==EXITING) {
+			if (rc_get_state()==EXITING) {
 				run = 0;
 				break;	
 			} else if (!strcmp(scan_value, SCAN_VALUE_REPEAT)) {
@@ -3567,8 +3567,8 @@ int blue_specific_tests() {
 
 	// use defaults for now, except also enable magnetometer.
 	float v;
-	imu_data_t data; 
-	imu_config_t conf = get_default_imu_config();
+	rc_imu_data_t data;
+	rc_imu_config_t conf = rc_default_imu_config();
 	conf.enable_magnetometer=1;
 
 	// The generic initialize_cape() makes too many assumptions about the
@@ -3583,7 +3583,7 @@ int blue_specific_tests() {
 	}
 
 	// check charger by checking for the right voltage on the batt line
-	v = get_battery_voltage();
+	v = rc_battery_voltage();
 	fprintf(stderr, "battery input/charger voltage: %.2fV\n", v);
 	if(v>8.6 || v<7.4) {
 		//cleanup_cape();
@@ -3591,7 +3591,7 @@ int blue_specific_tests() {
 	}
 
 	// make sure 12V DC supply is connected
-	v = get_dc_jack_voltage();
+	v = rc_dc_jack_voltage();
 	fprintf(stderr, "dc jack input voltage: %.2fV\n", v);
 	if(v<10.0) {
 		//cleanup_cape();
@@ -3599,8 +3599,8 @@ int blue_specific_tests() {
 	}
 
 	// test imu
-	ret = initialize_imu(&data, conf);
-	power_off_imu();
+	ret = rc_initialize_imu(&data, conf);
+	rc_power_off_imu();
 	if(ret<0) {
 		fprintf(stderr, "failed: mpu9250 imu\n");
 		//cleanup_cape();
@@ -3608,8 +3608,8 @@ int blue_specific_tests() {
 	}
 
 	// test barometer
-	ret = initialize_barometer(BMP_OVERSAMPLE_16,BMP_FILTER_OFF);
-	power_off_barometer();
+	ret = rc_initialize_barometer(BMP_OVERSAMPLE_16,BMP_FILTER_OFF);
+	rc_power_off_barometer();
 	if(ret<0) {
 		fprintf(stderr, "failed: bmp280 barometer\n");
 		//cleanup_cape();
