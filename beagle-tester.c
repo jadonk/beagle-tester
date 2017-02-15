@@ -3466,7 +3466,8 @@ void beagle_test(const char *scan_value)
 		r = read(fd_sn, str2, 28);
 		str2[28] = 0;
 		beagle_notice("eeprom", str2);
-		beagle_notice("eeprom", strcmp(str, str2) ? "fail" : "pass");
+		fail = strcmp(str, str2) ? 1 : 0;
+		beagle_notice("eeprom", fail ? "fail" : "pass");
 	}
 
 	color = fail ? COLOR_FAIL : COLOR_PASS;
