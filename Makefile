@@ -14,7 +14,7 @@ clean:
 install:
 	install -m 755 -d $(DESTDIR)$(prefix)/sbin
 	install -m 700 beagle-tester $(DESTDIR)$(prefix)/sbin
-	install -m 744 connect_bb_tether $(DESTDIR)$(prefix)/sbin
+	install -m 744 bb-connect-ap $(DESTDIR)$(prefix)/sbin
 	install -m 744 beagle-tester-open.sh $(DESTDIR)$(prefix)/sbin
 	install -m 744 beagle-tester-close.sh $(DESTDIR)$(prefix)/sbin
 	install -m 755 -d $(DESTDIR)/lib/systemd/system

@@ -3013,15 +3013,18 @@ char fontdata_8x8[] = {
 #define SCAN_VALUE_STOP "STOP"
 int fail = 0;
 int notice_line = 0;
+int display = 1;
 
 void beagle_test(const char *scan_value);
 void beagle_notice(const char *test, const char *status);
 void do_colorbar();
 int blue_specific_tests();
+void set_led_trigger(const char * led, const char * mode);
+void set_user_leds(int code);
 
 static void do_stop()
 {
-	set_state(EXITING);
+	rc_set_state(EXITING);
 }
 
 int main(int argc, char** argv)
@@ -3050,20 +3053,28 @@ int main(int argc, char** argv)
 	fflush(stderr);
 
 	system("/usr/sbin/beagle-tester-open.sh");
+	set_led_trigger("red", "default-on");
+	set_led_trigger("green", "default-on");
 
-	fb_open(0, &fb_info);
-	do_colorbar();
+	if (access("/dev/fb0", W_OK)) {
+		fprintf(stderr, "Unable to write to /dev/fb0\n");
+		fflush(stderr);
+		display = 0;
+	} else {
+		fb_open(0, &fb_info);
+		do_colorbar();
+	}
 
 	signal(SIGINT, do_stop);
 	signal(SIGTERM, do_stop);
 
-	while (get_state()!=EXITING) {
+	while (rc_get_state()!=EXITING) {
 		FD_ZERO(&rdfs);
 		FD_SET(barcode, &rdfs);
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 4000;
 		rd = select(barcode + 1, &rdfs, NULL, NULL, &timeout);
-		if (get_state()==EXITING)
+		if (rc_get_state()==EXITING)
 			break;
 		if (rd > 0) {
 			rd = read(barcode, ev, sizeof(ev));
@@ -3257,13 +3268,13 @@ int main(int argc, char** argv)
 		}
 
 		if (run == 0) {
-			do_colorbar();
+			if (display) do_colorbar();
 		}
 		if (!strcmp(scan_value, SCAN_VALUE_STOP)) {
-			set_state(EXITING);
+			rc_set_state(EXITING);
 			break;
 		} else if (run == 1) {
-			do_fill_screen(&fb_info, 0);
+			if (display) do_fill_screen(&fb_info, 0);
 			beagle_test(scan_value);
 			fprintf(stderr, "Test fails: %d\n", fail);
 			fflush(stderr);
@@ -3272,7 +3283,7 @@ int main(int argc, char** argv)
 			} else {
  				printf("RESULT: PASS \n");
 			}
-			if (get_state()==EXITING) {
+			if (rc_get_state()==EXITING) {
 				run = 0;
 				break;	
 			} else if (!strcmp(scan_value, SCAN_VALUE_REPEAT)) {
@@ -3285,8 +3296,11 @@ int main(int argc, char** argv)
 		}
 	}
 
-	do_fill_screen(&fb_info, 4);
+	if (display) do_fill_screen(&fb_info, 4);
+	set_user_leds(-1);
 	system("/usr/sbin/beagle-tester-close.sh");
+	set_led_trigger("red", "none");
+	set_led_trigger("green", "none");
 
 	return 0;
 }
@@ -3339,30 +3353,34 @@ void beagle_test(const char *scan_value)
 
 	// if we have WiFi
 	if(!strcmp(model, MODEL_WIFI) || !strcmp(model, MODEL_BLUE)) {
-		fp = popen("connect_bb_tether", "r"); // connect to tether
+		// connect to ap
+		system("bb-connect-ap > /tmp/beagle-tester-ap");
+		fp = fopen("/tmp/beagle-tester-ap", "r");
 		if (fp != NULL) {
 			fgets(str2, sizeof(str2)-1, fp);
-			str2[15] = 0;
-			pclose(fp);
+			str2[25] = 0;
+			fclose(fp);
 		} else {
 			str2[0] = 0;
 		}
-		beagle_notice("tether", str2);
+		beagle_notice("ap", str2);
 
-		fp = popen("ip -4 addr show wlan0 | grep inet | awk '{print $2}' | cut -d/ -f1 | tr -d '\n' | tr -d '\r'",
-			 "r"); // fetch wlan0 address
+		// fetch wlan0 address
+		system("ip -4 addr show wlan0 | grep inet | awk '{print $2}' | cut -d/ -f1 | tr -d '\n' | tr -d '\r' > /tmp/beagle-tester-wlan0-host");
+		fp = fopen("/tmp/beagle-tester-wlan0-host", "r");
 		if (fp != NULL) {
 			fgets(wlan0_host, sizeof(wlan0_host)-1, fp);
-			pclose(fp);
+			fclose(fp);
 		} else {
 			wlan0_host[0] = 0;
 		}
 
-		fp = popen("ip route | grep wlan0 | grep -v src | grep -v default | awk '{print $1}'",
-			 "r"); // fetch wlan0 gateway
+		// fetch wlan0 gateway
+		system("ip route | grep -E 'wlan0|link' | grep -Ev 'src|default' | awk '{print $1}' > /tmp/beagle-tester-wlan0-gw");
+		fp = fopen("/tmp/beagle-tester-wlan0-gw", "r");
 		if (fp != NULL) {
 			fgets(wlan0_ap, sizeof(wlan0_ap)-1, fp);
-			pclose(fp);
+			fclose(fp);
 		} else {
 			wlan0_ap[0] = 0;
 		}
@@ -3375,8 +3393,6 @@ void beagle_test(const char *scan_value)
 		r = system(str);
 		fprintf(stderr, "ping returned: %d\n", r);
 		beagle_notice("wifi", r ? "fail" : "pass");
-		
-		//system("connmanctl tether wifi on");
 	} else { // Ethernet
 		fp = popen("ip route get 1.1.1.1 | perl -n -e 'print $1 if /via (.*) dev/'",
 			 "r"); // fetch gateway
@@ -3450,13 +3466,26 @@ void beagle_test(const char *scan_value)
 		r = read(fd_sn, str2, 28);
 		str2[28] = 0;
 		beagle_notice("eeprom", str2);
-		beagle_notice("eeprom", strcmp(str, str2) ? "fail" : "pass");
+		fail = strcmp(str, str2) ? 1 : 0;
+		beagle_notice("eeprom", fail ? "fail" : "pass");
 	}
 
 	color = fail ? COLOR_FAIL : COLOR_PASS;
-	for (y = fb_info.var.yres/2; y < fb_info.var.yres; y++) {
-		for (x = fb_info.var.xres/2; x < fb_info.var.xres; x++)
-			draw_pixel(&fb_info, x, y, color);
+	if (display) {
+		for (y = fb_info.var.yres/2; y < fb_info.var.yres; y++) {
+			for (x = fb_info.var.xres/2; x < fb_info.var.xres; x++)
+				draw_pixel(&fb_info, x, y, color);
+		}
+	}
+
+	if (!strcmp(model, MODEL_BLUE)) {
+		if (fail) {
+			set_led_trigger("red", "timer");
+			set_led_trigger("green", "none");
+		} else {
+			set_led_trigger("red", "none");
+			set_led_trigger("green", "timer");
+		}
 	}
 
 	close(fd_sn);
@@ -3468,6 +3497,8 @@ void beagle_notice(const char *test, const char *status)
 	unsigned color = COLOR_TEXT;
 	char str[70];
 
+	set_user_leds(notice_line);
+
 	if(!strcmp(status, "fail")) {
 		fail++;
 		color = COLOR_FAIL;
@@ -3476,7 +3507,8 @@ void beagle_notice(const char *test, const char *status)
 	fprintf(stderr, str);
 	fprintf(stderr, "\n");
 	fflush(stderr);
-	fb_put_string(&fb_info, 20, 50+notice_line*10, str, 70, color, 1, 70);
+	if (display)
+		fb_put_string(&fb_info, 20, 50+notice_line*10, str, 70, color, 1, 70);
 	notice_line++;
 }
 
@@ -3529,39 +3561,47 @@ void do_colorbar()
 	//usleep(4444);
 }
 
+int initialize_mmap_adc();
+
 int blue_specific_tests() {
 	int ret;
 
 	// use defaults for now, except also enable magnetometer.
 	float v;
-	imu_data_t data; 
-	imu_config_t conf = get_default_imu_config();
+	rc_imu_data_t data;
+	rc_imu_config_t conf = rc_default_imu_config();
 	conf.enable_magnetometer=1;
 
+	// The generic initialize_cape() makes too many assumptions about the
+	// system config, so we have to initialize individual subsystems.
+	// The main conflict is the availability of exportable GPIO pins not
+	// used by kernel drivers, namely the FBTFT driver.
 	//initialize_cape();
 
-	set_led(RED,OFF);
-	set_led(GREEN,ON);
+	if(initialize_mmap_adc()){
+		fprintf(stderr, "ERROR: mmap_gpio_adc.c failed to initialize adc\n");
+		return -1;
+	}
 
 	// check charger by checking for the right voltage on the batt line
-	v = get_battery_voltage();
+	v = rc_battery_voltage();
+	fprintf(stderr, "battery input/charger voltage: %.2fV\n", v);
 	if(v>10.0 || v<6.0) {
-		fprintf(stderr, "failed: battery input/charger (%.2fV)\n", v);
 		//cleanup_cape();
 		return -1;
 	}
 
 	// make sure 12V DC supply is connected
-	v = get_dc_jack_voltage();
+	v = rc_dc_jack_voltage();
+	fprintf(stderr, "dc jack input voltage: %.2fV\n", v);
 	if(v<10.0) {
-		fprintf(stderr, "failed: dc jack input (%.2fV)\n", v);
 		//cleanup_cape();
 		return -2;
 	}
 
 	// test imu
-	ret = initialize_imu(&data, conf);
-	power_off_imu();
+	ret = rc_initialize_imu(&data, conf);
+	rc_power_off_imu();
 	if(ret<0) {
 		fprintf(stderr, "failed: mpu9250 imu\n");
 		//cleanup_cape();
@@ -3569,8 +3609,8 @@ int blue_specific_tests() {
 	}
 
 	// test barometer
-	ret = initialize_barometer(BMP_OVERSAMPLE_16,BMP_FILTER_OFF);
-	power_off_barometer();
+	ret = rc_initialize_barometer(BMP_OVERSAMPLE_16,BMP_FILTER_OFF);
+	rc_power_off_barometer();
 	if(ret<0) {
 		fprintf(stderr, "failed: bmp280 barometer\n");
 		//cleanup_cape();
@@ -3581,3 +3621,32 @@ int blue_specific_tests() {
 	return 0;
 }
 
+void set_led_trigger(const char * led, const char * mode)
+{
+	int fd;
+	char path[100];
+	int mode_len;
+
+	sprintf(path, "/sys/class/leds/%s/trigger", led);
+	mode_len = strlen(mode);
+	fd = open(path, O_WRONLY);
+	if(!fd) return;
+	write(fd, mode, mode_len);
+	close(fd);
+}
+
+void set_user_leds(int code)
+{
+	if (code < 0) {
+		set_led_trigger("beaglebone:green:usr0", "heartbeat");
+		set_led_trigger("beaglebone:green:usr1", "mmc0");
+		//set_led_trigger("beaglebone:green:usr2", "cpu0"); -- seems to no longer exist
+		set_led_trigger("beaglebone:green:usr2", "none");
+		set_led_trigger("beaglebone:green:usr3", "mmc1");
+	} else {
+		set_led_trigger("beaglebone:green:usr0", (code & 1) ? "timer" : "none");
+		set_led_trigger("beaglebone:green:usr1", (code & 2) ? "timer" : "none");
+		set_led_trigger("beaglebone:green:usr2", (code & 4) ? "timer" : "none");
+		set_led_trigger("beaglebone:green:usr3", (code & 8) ? "timer" : "none");
+	}
+}
