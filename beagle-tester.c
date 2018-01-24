@@ -3024,8 +3024,8 @@ void set_user_leds(int code);
 
 struct cape
 {
-	char scan_value[5];
-	char id[21];
+	char prefix[5];
+	char id_str[21];
 	int eeprom_addr;
 	int (*test)(const char *scan_value, unsigned id);
 };
@@ -3036,10 +3036,12 @@ int test_display50_cape(const char *scan_value, unsigned id);
 int test_display70_cape(const char *scan_value, unsigned id);
 int test_load_cape(const char *scan_value, unsigned id);
 int test_motor_cape(const char *scan_value, unsigned id);
-int test_proto_cape(const char *scan_value, unsigned id);
 int test_power_cape(const char *scan_value, unsigned id);
+int test_proto_cape(const char *scan_value, unsigned id);
+int test_relay_cape(const char *scan_value, unsigned id);
 int test_robotics_cape(const char *scan_value, unsigned id);
 int test_servo_cape(const char *scan_value, unsigned id);
+void install_overlay(const char *scan_value, const char *id_str);
 
 /* Per https://github.com/beagleboard/capes/blob/master/README.mediawiki */
 static struct cape capes[] = {
@@ -3051,8 +3053,9 @@ static struct cape capes[] = {
 	{ "BC05", "BBORG_MOTOR", 0x55, test_motor_cape },
 	{ "BC06", "BBORG_POWER", 0, test_power_cape },
 	{ "BC07", "BBORG_PROTO", 0x54, test_proto_cape },
-	{ "BC08", "BBORG_ROBOTICS", 0, test_robotics_cape },
-	{ "BC09", "BBORG_SERVO", 0x55, test_servo_cape },
+	{ "BC08", "BBORG_RELAY", 0x54, test_relay_cape },
+	{ "BC09", "BBORG_ROBOTICS", 0, test_robotics_cape },
+	{ "BC0A", "BBORG_SERVO", 0x55, test_servo_cape },
 };
 
 static void do_stop()
@@ -3359,7 +3362,7 @@ void beagle_test(const char *scan_value)
 
 	if(!strncmp(scan_value, "BC", 2)) {
 		for(x = 0; x < sizeof(capes) / sizeof(capes[0]); x++) {
-			if(!strncmp(scan_value, capes[x].scan_value, 4)) {
+			if(!strncmp(scan_value, capes[x].prefix, 4)) {
 				fail = capes[x].test(scan_value, x);
 				goto done;
 			}
@@ -3724,13 +3727,35 @@ int test_motor_cape(const char *scan_value, unsigned id)
 	return(fail);
 }
 
+int test_power_cape(const char *scan_value, unsigned id)
+{
+	return(fail);
+}
+
 int test_proto_cape(const char *scan_value, unsigned id)
 {
 	return(fail);
 }
 
-int test_power_cape(const char *scan_value, unsigned id)
+/* BC0800A2yywwnnnn */
+int test_relay_cape(const char *scan_value, unsigned id)
 {
+	install_overlay(scan_value, capes[id].id_str);
+	system("echo 1 > `fgrep RELAY1 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("sleep 1");
+	system("echo 0 > `fgrep RELAY1 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("sleep 1");
+	system("echo 1 > `fgrep RELAY2 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("sleep 1");
+	system("echo 0 > `fgrep RELAY2 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("sleep 1");
+	system("echo 1 > `fgrep RELAY3 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("sleep 1");
+	system("echo 0 > `fgrep RELAY3 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("sleep 1");
+	system("echo 1 > `fgrep RELAY4 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("sleep 1");
+	system("echo 0 > `fgrep RELAY4 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
 	return(fail);
 }
 
@@ -3742,4 +3767,11 @@ int test_robotics_cape(const char *scan_value, unsigned id)
 int test_servo_cape(const char *scan_value, unsigned id)
 {
 	return(fail);
+}
+
+void install_overlay(const char *scan_value, const char *id_str)
+{
+	/* #dtb_overlay=/lib/firmware/<file8>.dtbo */
+	const char *cmd = "perl -i.bak -pe 's!^.*dtb_overlay=/lib/firmware/.+\.dtbo.*!dtb_overlay=/lib/firmware/%s.dtbo!;' /boot/uEnv.txt";
+	//system(cmd);
 }
