@@ -3022,6 +3022,39 @@ int blue_specific_tests();
 void set_led_trigger(const char * led, const char * mode);
 void set_user_leds(int code);
 
+struct cape
+{
+	char scan_value[5];
+	char id[21];
+	int eeprom_addr;
+	int (*test)(const char *scan_value, unsigned id);
+};
+
+int test_comms_cape(const char *scan_value, unsigned id);
+int test_display18_cape(const char *scan_value, unsigned id);
+int test_display50_cape(const char *scan_value, unsigned id);
+int test_display70_cape(const char *scan_value, unsigned id);
+int test_load_cape(const char *scan_value, unsigned id);
+int test_motor_cape(const char *scan_value, unsigned id);
+int test_proto_cape(const char *scan_value, unsigned id);
+int test_power_cape(const char *scan_value, unsigned id);
+int test_robotics_cape(const char *scan_value, unsigned id);
+int test_servo_cape(const char *scan_value, unsigned id);
+
+/* Per https://github.com/beagleboard/capes/blob/master/README.mediawiki */
+static struct cape capes[] = {
+	{ "BC00", "BBORG_COMMS", 0x56, test_comms_cape },
+	{ "BC01", "BBORG_DISPLAY18", 0x57, test_display18_cape },
+	{ "BC02", "BBORG_DISPLAY50", 0x57, test_display50_cape },
+	{ "BC03", "BBORG_DISPLAY70", 0x57, test_display70_cape },
+	{ "BC04", "BBORG_LOAD", 0x54, test_load_cape },
+	{ "BC05", "BBORG_MOTOR", 0x55, test_motor_cape },
+	{ "BC06", "BBORG_POWER", 0, test_power_cape },
+	{ "BC07", "BBORG_PROTO", 0x54, test_proto_cape },
+	{ "BC08", "BBORG_ROBOTICS", 0, test_robotics_cape },
+	{ "BC09", "BBORG_SERVO", 0x55, test_servo_cape },
+};
+
 static void do_stop()
 {
 	rc_set_state(EXITING);
@@ -3324,6 +3357,15 @@ void beagle_test(const char *scan_value)
 
 	beagle_notice("tester", "$Id$");
 
+	if(!strncmp(scan_value, "BC", 2)) {
+		for(x = 0; x < sizeof(capes) / sizeof(capes[0]); x++) {
+			if(!strncmp(scan_value, capes[x].scan_value, 4)) {
+				fail = capes[x].test(scan_value, x);
+				goto done;
+			}
+		}
+	}
+
 	fp = fopen("/proc/device-tree/model", "r");
 	fgets(str, sizeof(str), fp);
 	fclose(fp);
@@ -3470,6 +3512,9 @@ void beagle_test(const char *scan_value)
 		beagle_notice("eeprom", fail ? "fail" : "pass");
 	}
 
+	close(fd_sn);
+
+done:
 	color = fail ? COLOR_FAIL : COLOR_PASS;
 	if (display) {
 		for (y = fb_info.var.yres/2; y < fb_info.var.yres; y++) {
@@ -3487,8 +3532,6 @@ void beagle_test(const char *scan_value)
 			set_led_trigger("green", "timer");
 		}
 	}
-
-	close(fd_sn);
 }
 
 void beagle_notice(const char *test, const char *status)
@@ -3649,4 +3692,54 @@ void set_user_leds(int code)
 		set_led_trigger("beaglebone:green:usr2", (code & 4) ? "timer" : "none");
 		set_led_trigger("beaglebone:green:usr3", (code & 8) ? "timer" : "none");
 	}
+}
+
+int test_comms_cape(const char *scan_value, unsigned id)
+{
+	return(fail);
+}
+
+int test_display18_cape(const char *scan_value, unsigned id)
+{
+	return(fail);
+}
+
+int test_display50_cape(const char *scan_value, unsigned id)
+{
+	return(fail);
+}
+
+int test_display70_cape(const char *scan_value, unsigned id)
+{
+	return(fail);
+}
+
+int test_load_cape(const char *scan_value, unsigned id)
+{
+	return(fail);
+}
+
+int test_motor_cape(const char *scan_value, unsigned id)
+{
+	return(fail);
+}
+
+int test_proto_cape(const char *scan_value, unsigned id)
+{
+	return(fail);
+}
+
+int test_power_cape(const char *scan_value, unsigned id)
+{
+	return(fail);
+}
+
+int test_robotics_cape(const char *scan_value, unsigned id)
+{
+	return(fail);
+}
+
+int test_servo_cape(const char *scan_value, unsigned id)
+{
+	return(fail);
 }
