@@ -3824,8 +3824,8 @@ int test_relay_cape(const char *scan_value, unsigned id)
 	beagle_notice("ver/mfr", &str2[38]);
 	beagle_notice("partno", &str2[58]);
 	beagle_notice("serial", &str2[76]);
-	for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
-	for(r = 0; r < 88; r++) printf("%02x", str2[r]); printf("\n");
+	//for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	//for(r = 0; r < 88; r++) printf("%02x", str2[r]); printf("\n");
 	fail = memcmp(str, str2, 88) ? 1 : 0;
 	beagle_notice("eeprom", fail ? "fail" : "pass");
 
