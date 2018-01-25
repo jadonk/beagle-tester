@@ -3741,9 +3741,106 @@ int test_display70_cape(const char *scan_value, unsigned id)
 	return(fail);
 }
 
+/* BC0400A2yywwnnnnnnnn */
 int test_load_cape(const char *scan_value, unsigned id)
 {
-	fail++;
+	int r;
+	int fd_sn;
+	char str[90];
+	char str2[90];
+
+	install_overlay(scan_value, capes[id].id_str);
+
+	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0054/2-00540/nvmem", O_RDWR);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str, 88);
+	str[89] = 0;
+	beagle_notice("name", &str[6]);
+
+	system("echo out > /sys/class/gpio/gpio7/direction");
+	system("echo 1 > /sys/class/gpio/gpio7/value");
+	beagle_notice("sink1", "on");
+	system("sleep 1");
+	system("echo 0 > /sys/class/gpio/gpio7/value");
+	beagle_notice("sink1", "off");
+
+	system("echo out > /sys/class/gpio/gpio20/direction");
+	system("echo 1 > /sys/class/gpio/gpio20/value");
+	beagle_notice("sink2", "on");
+	system("sleep 1");
+	system("echo 0 > /sys/class/gpio/gpio20/value");
+	beagle_notice("sink2", "off");
+
+	system("echo out > /sys/class/gpio/gpio112/direction");
+	system("echo 1 > /sys/class/gpio/gpio112/value");
+	beagle_notice("sink3", "on");
+	system("sleep 1");
+	system("echo 0 > /sys/class/gpio/gpio112/value");
+	beagle_notice("sink3", "off");
+
+	system("echo out > /sys/class/gpio/gpio115/direction");
+	system("echo 1 > /sys/class/gpio/gpio115/value");
+	beagle_notice("sink4", "on");
+	system("sleep 1");
+	system("echo 0 > /sys/class/gpio/gpio115/value");
+	beagle_notice("sink4", "off");
+
+	system("echo out > /sys/class/gpio/gpio44/direction");
+	system("echo 1 > /sys/class/gpio/gpio44/value");
+	beagle_notice("sink5", "on");
+	system("sleep 1");
+	system("echo 0 > /sys/class/gpio/gpio44/value");
+	beagle_notice("sink5", "off");
+
+	system("echo out > /sys/class/gpio/gpio45/direction");
+	system("echo 1 > /sys/class/gpio/gpio45/value");
+	beagle_notice("sink6", "on");
+	system("sleep 1");
+	system("echo 0 > /sys/class/gpio/gpio45/value");
+	beagle_notice("sink6", "off");
+
+	system("echo out > /sys/class/gpio/gpio47/direction");
+	system("echo 1 > /sys/class/gpio/gpio47/value");
+	beagle_notice("sink7", "on");
+	system("sleep 1");
+	system("echo 0 > /sys/class/gpio/gpio47/value");
+	beagle_notice("sink7", "off");
+
+	system("echo out > /sys/class/gpio/gpio27/direction");
+	system("echo 1 > /sys/class/gpio/gpio27/value");
+	beagle_notice("sink8", "on");
+	system("sleep 1");
+	system("echo 0 > /sys/class/gpio/gpio27/value");
+	beagle_notice("sink8", "off");
+
+	//for(r = 0; r < 88; r++) printf("%02x", cape_eeprom[r]); printf("\n");
+	memcpy(str, cape_eeprom, 88);
+	//for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	strcpy(&str[6], capes[id].name);	/* board name */
+	//for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	memcpy(&str[38], &scan_value[4], 4);	/* board version */
+	//for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	strcpy(&str[58], capes[id].id_str);	/* part number */
+	//for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	strncpy(&str[76], &scan_value[8], 16);	/* serial number */
+	str[89] = 0;
+	//for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	lseek(fd_sn, 0, SEEK_SET);
+	r = write(fd_sn, str, 88);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str2, 88);
+	str2[89] = 0;
+	beagle_notice("name", &str2[6]);
+	beagle_notice("ver/mfr", &str2[38]);
+	beagle_notice("partno", &str2[58]);
+	beagle_notice("serial", &str2[76]);
+	//for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	//for(r = 0; r < 88; r++) printf("%02x", str2[r]); printf("\n");
+	fail = memcmp(str, str2, 88) ? 1 : 0;
+	beagle_notice("eeprom", fail ? "fail" : "pass");
+
+	close(fd_sn);
+
 	return(fail);
 }
 
@@ -3788,6 +3885,7 @@ int test_relay_cape(const char *scan_value, unsigned id)
 	system("echo 0 > /sys/class/gpio/gpio20/value");
 	beagle_notice("relay1", "off");
 	system("sleep 1");
+
 	system("echo out > /sys/class/gpio/gpio7/direction");
 	system("echo 1 > /sys/class/gpio/gpio7/value");
 	beagle_notice("relay2", "on");
@@ -3795,7 +3893,7 @@ int test_relay_cape(const char *scan_value, unsigned id)
 	system("echo 0 > /sys/class/gpio/gpio7/value");
 	beagle_notice("relay2", "off");
 	system("sleep 1");
-	system("echo out > /sys/class/gpio/gpio112/direction");
+
 	system("echo out > /sys/class/gpio/gpio112/direction");
 	system("echo 1 > /sys/class/gpio/gpio112/value");
 	beagle_notice("relay3", "on");
@@ -3803,7 +3901,7 @@ int test_relay_cape(const char *scan_value, unsigned id)
 	system("echo 0 > /sys/class/gpio/gpio112/value");
 	beagle_notice("relay3", "off");
 	system("sleep 1");
-	system("echo out > /sys/class/gpio/gpio115/direction");
+
 	system("echo out > /sys/class/gpio/gpio115/direction");
 	system("echo 1 > /sys/class/gpio/gpio115/value");
 	beagle_notice("relay4", "on");
@@ -3858,5 +3956,7 @@ void install_overlay(const char *scan_value, const char *id_str)
 {
 	/* #dtb_overlay=/lib/firmware/<file8>.dtbo */
 	const char *cmd = "perl -i.bak -pe 's!^.*dtb_overlay=/lib/firmware/.+\.dtbo.*!dtb_overlay=/lib/firmware/%s.dtbo!;' /boot/uEnv.txt";
+	printf("Optional command to force overlay loading:\n");
 	printf(cmd, id_str);
+	printf("\n");
 }
