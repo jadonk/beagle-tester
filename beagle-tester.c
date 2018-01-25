@@ -3848,5 +3848,5 @@ void install_overlay(const char *scan_value, const char *id_str)
 {
 	/* #dtb_overlay=/lib/firmware/<file8>.dtbo */
 	const char *cmd = "perl -i.bak -pe 's!^.*dtb_overlay=/lib/firmware/.+\.dtbo.*!dtb_overlay=/lib/firmware/%s.dtbo!;' /boot/uEnv.txt";
-	//system(cmd);
+	printf(cmd, id_str);
 }
