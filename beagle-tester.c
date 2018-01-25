@@ -3719,41 +3719,49 @@ void set_user_leds(int code)
 
 int test_comms_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_display18_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_display50_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_display70_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_load_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_motor_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_power_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_proto_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
@@ -3836,11 +3844,13 @@ int test_relay_cape(const char *scan_value, unsigned id)
 
 int test_robotics_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_servo_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
