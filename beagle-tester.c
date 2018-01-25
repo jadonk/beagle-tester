@@ -3024,9 +3024,10 @@ void set_user_leds(int code);
 
 struct cape
 {
-	char prefix[5];
-	char id_str[21];
+	const char prefix[5];
+	const char id_str[21];
 	int eeprom_addr;
+	const char name[33];
 	int (*test)(const char *scan_value, unsigned id);
 };
 
@@ -3045,17 +3046,36 @@ void install_overlay(const char *scan_value, const char *id_str);
 
 /* Per https://github.com/beagleboard/capes/blob/master/README.mediawiki */
 static struct cape capes[] = {
-	{ "BC00", "BBORG_COMMS", 0x56, test_comms_cape },
-	{ "BC01", "BBORG_DISPLAY18", 0x57, test_display18_cape },
-	{ "BC02", "BBORG_DISPLAY50", 0x57, test_display50_cape },
-	{ "BC03", "BBORG_DISPLAY70", 0x57, test_display70_cape },
-	{ "BC04", "BBORG_LOAD", 0x54, test_load_cape },
-	{ "BC05", "BBORG_MOTOR", 0x55, test_motor_cape },
-	{ "BC06", "BBORG_POWER", 0, test_power_cape },
-	{ "BC07", "BBORG_PROTO", 0x54, test_proto_cape },
-	{ "BC08", "BBORG_RELAY", 0x54, test_relay_cape },
-	{ "BC09", "BBORG_ROBOTICS", 0, test_robotics_cape },
-	{ "BC0A", "BBORG_SERVO", 0x55, test_servo_cape },
+	{ "BC00", "BBORG_COMMS", 0x56, "Industrial Comms Cape", test_comms_cape },
+	{ "BC01", "BBORG_DISPLAY18", 0x57, "1.8\" Display Cape", test_display18_cape },
+	{ "BC02", "BBORG_DISPLAY50", 0x57, "5\" Display Cape", test_display50_cape },
+	{ "BC03", "BBORG_DISPLAY70", 0x57, "7\" Display Cape", test_display70_cape },
+	{ "BC04", "BBORG_LOAD", 0x54, "Load Driver Cape", test_load_cape },
+	{ "BC05", "BBORG_MOTOR", 0x55, "Motor Driver Cape", test_motor_cape },
+	{ "BC06", "BBORG_POWER", 0, "Power Supply Cape", test_power_cape },
+	{ "BC07", "BBORG_PROTO", 0x54, "Prototyping Cape", test_proto_cape },
+	{ "BC08", "BBORG_RELAY", 0x54, "Relay Cape", test_relay_cape },
+	{ "BC09", "BBORG_ROBOTICS", 0, "Robotics Cape", test_robotics_cape },
+	{ "BC0A", "BBORG_SERVO", 0x55, "Servo Driver Capes", test_servo_cape },
+};
+
+/* Per https://github.com/beagleboard/beaglebone-black/wiki/System-Reference-Manual#824-eeprom-data-format */
+const char cape_eeprom[88] = {
+	0xAA, 0x55, 0x33, 0xEE,		/* header (4) */
+	0x41, 0x31,			/* format version (2) */
+	0, 0, 0, 0, 0, 0, 0, 0,		/* board name (32)@6 */
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0x30, 0x30, 0x30, 0x30,		/* board version (4)@38 */
+	'B', 'e', 'a', 'g', 'l', 'e',	/* manufacturer (16)@42 */
+	'B', 'o', 'a', 'r', 'd', '.',
+	'o', 'r', 'g', 0,
+	0, 0, 0, 0, 0, 0, 0, 0,		/* part number (16)@58 */
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0,				/* number of pins (2)@60 */
+	0, 0, 0, 0, 0, 0, 0, 0,		/* serial number (12)@76 */
+	0, 0, 0, 0
 };
 
 static void do_stop()
@@ -3375,7 +3395,7 @@ void beagle_test(const char *scan_value)
 	strcpy(model, str);
 	beagle_notice("model", str);
 
-	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/eeprom", O_RDWR);
+	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/0-00500/nvmem", O_RDWR);
 	lseek(fd_sn, 0, SEEK_SET);
 	r = read(fd_sn, str, 28);
 	str[28] = 0;
@@ -3737,25 +3757,80 @@ int test_proto_cape(const char *scan_value, unsigned id)
 	return(fail);
 }
 
-/* BC0800A2yywwnnnn */
+/* BC0800A2yywwnnnnnnnn */
 int test_relay_cape(const char *scan_value, unsigned id)
 {
+	int r;
+	int fd_sn;
+	char str[90];
+	char str2[90];
+
 	install_overlay(scan_value, capes[id].id_str);
-	system("echo 1 > `fgrep RELAY1 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+
+	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0054/2-00540/nvmem", O_RDWR);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str, 88);
+	str[89] = 0;
+	beagle_notice("name", &str[6]);
+
+	system("echo out > /sys/class/gpio/gpio20/direction");
+	system("echo 1 > /sys/class/gpio/gpio20/value");
+	beagle_notice("relay1", "on");
 	system("sleep 1");
-	system("echo 0 > `fgrep RELAY1 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("echo 0 > /sys/class/gpio/gpio20/value");
+	beagle_notice("relay1", "off");
 	system("sleep 1");
-	system("echo 1 > `fgrep RELAY2 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("echo out > /sys/class/gpio/gpio7/direction");
+	system("echo 1 > /sys/class/gpio/gpio7/value");
+	beagle_notice("relay2", "on");
 	system("sleep 1");
-	system("echo 0 > `fgrep RELAY2 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("echo 0 > /sys/class/gpio/gpio7/value");
+	beagle_notice("relay2", "off");
 	system("sleep 1");
-	system("echo 1 > `fgrep RELAY3 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("echo out > /sys/class/gpio/gpio112/direction");
+	system("echo out > /sys/class/gpio/gpio112/direction");
+	system("echo 1 > /sys/class/gpio/gpio112/value");
+	beagle_notice("relay3", "on");
 	system("sleep 1");
-	system("echo 0 > `fgrep RELAY3 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("echo 0 > /sys/class/gpio/gpio112/value");
+	beagle_notice("relay3", "off");
 	system("sleep 1");
-	system("echo 1 > `fgrep RELAY4 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("echo out > /sys/class/gpio/gpio115/direction");
+	system("echo out > /sys/class/gpio/gpio115/direction");
+	system("echo 1 > /sys/class/gpio/gpio115/value");
+	beagle_notice("relay4", "on");
 	system("sleep 1");
-	system("echo 0 > `fgrep RELAY4 /sys/class/gpio/*/label | perl -pe 's/^([^:]+)label:.*$/$1value/;'`");
+	system("echo 0 > /sys/class/gpio/gpio115/value");
+	beagle_notice("relay4", "off");
+
+	//for(r = 0; r < 88; r++) printf("%02x", cape_eeprom[r]); printf("\n");
+	memcpy(str, cape_eeprom, 88);
+	//for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	strcpy(&str[6], capes[id].name);	/* board name */
+	//for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	memcpy(&str[38], &scan_value[4], 4);	/* board version */
+	//for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	strcpy(&str[58], capes[id].id_str);	/* part number */
+	//for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	strncpy(&str[76], &scan_value[8], 16);	/* serial number */
+	str[89] = 0;
+	//for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	lseek(fd_sn, 0, SEEK_SET);
+	r = write(fd_sn, str, 88);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str2, 88);
+	str2[89] = 0;
+	beagle_notice("name", &str2[6]);
+	beagle_notice("ver/mfr", &str2[38]);
+	beagle_notice("partno", &str2[58]);
+	beagle_notice("serial", &str2[76]);
+	for(r = 0; r < 88; r++) printf("%02x", str[r]); printf("\n");
+	for(r = 0; r < 88; r++) printf("%02x", str2[r]); printf("\n");
+	fail = memcmp(str, str2, 88) ? 1 : 0;
+	beagle_notice("eeprom", fail ? "fail" : "pass");
+
+	close(fd_sn);
+
 	return(fail);
 }
 
