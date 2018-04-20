@@ -3719,21 +3719,25 @@ void set_user_leds(int code)
 
 int test_comms_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_display18_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_display50_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_display70_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
@@ -3786,16 +3790,19 @@ int test_load_cape(const char *scan_value, unsigned id)
 
 int test_motor_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_power_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_proto_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
@@ -3853,11 +3860,13 @@ int test_relay_cape(const char *scan_value, unsigned id)
 
 int test_robotics_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
 int test_servo_cape(const char *scan_value, unsigned id)
 {
+	fail++;
 	return(fail);
 }
 
@@ -3865,7 +3874,9 @@ void install_overlay(const char *scan_value, const char *id_str)
 {
 	/* #dtb_overlay=/lib/firmware/<file8>.dtbo */
 	const char *cmd = "perl -i.bak -pe 's!^.*dtb_overlay=/lib/firmware/.+\.dtbo.*!dtb_overlay=/lib/firmware/%s.dtbo!;' /boot/uEnv.txt";
+	printf("Optional command to force overlay loading:\n");
 	printf(cmd, id_str);
+	printf("\n");
 }
 
 int gpio_out_test(const char *name, unsigned pin)
