@@ -10,3 +10,6 @@ KERNEL=="event*", ATTRS{idVendor}=="067e", ATTRS{idProduct}=="0801",\
 KERNEL=="event*", ATTRS{idVendor}=="0c2e", ATTRS{idProduct}=="0901",\
     SYMLINK+="input/beagle-barcode", TAG+="systemd",\
     ENV{SYSTEMD_WANTS}="beagle-tester.service"
+KERNEL=="event*", ATTRS{idVendor}=="05f9", ATTRS{idProduct}=="2206",\
+    SYMLINK+="input/beagle-barcode", TAG+="systemd",\
+    ENV{SYSTEMD_WANTS}="beagle-tester.service"

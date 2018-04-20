@@ -3759,11 +3759,12 @@ int test_load_cape(const char *scan_value, unsigned id)
 
 	gpio_out_test("sink1", 7);
 	gpio_out_test("sink2", 20);
-	gpio_out_test("sinkX", 115);
-	gpio_out_test("sinkX", 112);
-	gpio_out_test("sinkX", 45);
-	gpio_out_test("sinkX", 47);
-	gpio_out_test("sinkX", 27);
+	gpio_out_test("sink3", 112);
+	gpio_out_test("sink4", 115);
+	gpio_out_test("sink5", 44);
+	gpio_out_test("sink6", 45);
+	gpio_out_test("sink7", 47);
+	gpio_out_test("sink8", 27);
 
 	memcpy(str, cape_eeprom, 88);
 	strcpy(&str[6], capes[id].name);	/* board name */
@@ -3882,11 +3883,14 @@ void install_overlay(const char *scan_value, const char *id_str)
 int gpio_out_test(const char *name, unsigned pin)
 {
 	const char *sleep = "sleep 1";
+	const char *export = "echo %i > /sys/class/gpio/export";
 	const char *dir_out = "echo out > /sys/class/gpio/gpio%i/direction";
 	const char *value_high = "echo 1 > /sys/class/gpio/gpio%i/value";
 	const char *value_low = "echo 0 > /sys/class/gpio/gpio%i/value";
 	char buffer[50];
 
+	//sprintf(buffer, export, pin);
+	//system(buffer);
 	sprintf(buffer, dir_out, pin);
 	system(buffer);
 	sprintf(buffer, value_high, pin);
