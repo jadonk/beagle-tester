@@ -3554,6 +3554,13 @@ done:
 			set_led_trigger("red", "none");
 			set_led_trigger("green", "timer");
 		}
+	} else {
+		if (!fail) {
+			set_led_trigger("beaglebone:green:usr0", "default-on");
+			set_led_trigger("beaglebone:green:usr1", "default-on");
+			set_led_trigger("beaglebone:green:usr2", "default-on");
+			set_led_trigger("beaglebone:green:usr3", "default-on");
+		}
 	}
 }
 
