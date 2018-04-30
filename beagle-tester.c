@@ -37,7 +37,11 @@
 #include <linux/input.h>
 #include <linux/fb.h>
 #include <linux/kd.h>
-#include <roboticscape.h>
+#include <rc/adc.h>
+#include <rc/bmp.h>
+#include <rc/mpu.h>
+#include <rc/start_stop.h>
+#include <rc/time.h>
 
 /*
  * common.h
@@ -3634,59 +3638,56 @@ void do_colorbar()
 	//usleep(4444);
 }
 
-int initialize_mmap_adc();
-
 int blue_specific_tests() {
 	int ret;
 
 	// use defaults for now, except also enable magnetometer.
 	float v;
-	rc_imu_data_t data;
-	rc_imu_config_t conf = rc_default_imu_config();
-	conf.enable_magnetometer=1;
+	rc_mpu_data_t data;
+	rc_mpu_config_t conf = rc_mpu_default_config();
+	conf.i2c_bus = 2;
+	conf.gpio_interrupt_pin = 117;
+	conf.enable_magnetometer = 1;
 
-	// The generic initialize_cape() makes too many assumptions about the
-	// system config, so we have to initialize individual subsystems.
-	// The main conflict is the availability of exportable GPIO pins not
-	// used by kernel drivers, namely the FBTFT driver.
-	//initialize_cape();
-
-	if(initialize_mmap_adc()){
-		fprintf(stderr, "ERROR: mmap_gpio_adc.c failed to initialize adc\n");
+	if(rc_adc_init()){
+		fprintf(stderr, "ERROR: rc_adc_init() failed to initialize adc\n");
 		return -1;
 	}
 
 	// check charger by checking for the right voltage on the batt line
-	v = rc_battery_voltage();
+	v = rc_adc_batt();
 	fprintf(stderr, "battery input/charger voltage: %.2fV\n", v);
 	if(v>10.0 || v<6.0) {
-		//cleanup_cape();
+		fprintf(stderr, "ERROR: battery input voltage out of spec\n");
+		rc_adc_cleanup();
 		return -1;
 	}
 
 	// make sure 12V DC supply is connected
-	v = rc_dc_jack_voltage();
+	v = rc_adc_dc_jack();
 	fprintf(stderr, "dc jack input voltage: %.2fV\n", v);
 	if(v<10.0) {
-		//cleanup_cape();
+		fprintf(stderr, "ERROR: dc jack voltage too low\n");
+		rc_adc_cleanup();
 		return -2;
 	}
 
+	rc_adc_cleanup();
+
 	// test imu
-	ret = rc_initialize_imu(&data, conf);
-	rc_power_off_imu();
+	ret = rc_mpu_initialize_dmp(&data, conf);
+	rc_mpu_power_off();
 	if(ret<0) {
 		fprintf(stderr, "failed: mpu9250 imu\n");
-		//cleanup_cape();
 		return -3;
 	}
 
 	// test barometer
-	ret = rc_initialize_barometer(BMP_OVERSAMPLE_16,BMP_FILTER_OFF);
-	rc_power_off_barometer();
+	ret = rc_bmp_init(BMP_OVERSAMPLE_16,BMP_FILTER_OFF);
+	rc_bmp_power_off();
 	if(ret<0) {
 		fprintf(stderr, "failed: bmp280 barometer\n");
-		//cleanup_cape();
+		rc_mpu_power_off();
 		return -4;
 	}
 
