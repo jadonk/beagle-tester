@@ -3115,6 +3115,10 @@ int main(int argc, char** argv)
 	system("/usr/sbin/beagle-tester-open.sh");
 	set_led_trigger("red", "default-on");
 	set_led_trigger("green", "default-on");
+	set_led_trigger("beaglebone:green:usr0", "default-on");
+	set_led_trigger("beaglebone:green:usr1", "default-on");
+	set_led_trigger("beaglebone:green:usr2", "default-on");
+	set_led_trigger("beaglebone:green:usr3", "default-on");
 
 	if (access("/dev/fb0", W_OK)) {
 		fprintf(stderr, "Unable to write to /dev/fb0\n");
@@ -3558,13 +3562,13 @@ done:
 			set_led_trigger("red", "none");
 			set_led_trigger("green", "timer");
 		}
-	} else {
-		if (!fail) {
-			set_led_trigger("beaglebone:green:usr0", "default-on");
-			set_led_trigger("beaglebone:green:usr1", "default-on");
-			set_led_trigger("beaglebone:green:usr2", "default-on");
-			set_led_trigger("beaglebone:green:usr3", "default-on");
-		}
+	}
+
+	if (!fail) {
+		set_led_trigger("beaglebone:green:usr0", "default-on");
+		set_led_trigger("beaglebone:green:usr1", "default-on");
+		set_led_trigger("beaglebone:green:usr2", "default-on");
+		set_led_trigger("beaglebone:green:usr3", "default-on");
 	}
 }
 
