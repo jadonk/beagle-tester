@@ -3895,14 +3895,19 @@ void install_overlay(const char *scan_value, const char *id_str)
 int gpio_out_test(const char *name, unsigned pin)
 {
 	const char *sleep = "sleep 1";
+	const char *pinfile = "/sys/class/gpio/gpio%i";
 	const char *export = "echo %i > /sys/class/gpio/export";
 	const char *dir_out = "echo out > /sys/class/gpio/gpio%i/direction";
 	const char *value_high = "echo 1 > /sys/class/gpio/gpio%i/value";
 	const char *value_low = "echo 0 > /sys/class/gpio/gpio%i/value";
 	char buffer[50];
+	struct stat mystat;
 
-	//sprintf(buffer, export, pin);
-	//system(buffer);
+	sprintf(buffer, pinfile, pin);
+	if(stat( buffer, &mystat) != 0) {
+		sprintf(buffer, export, pin);
+		system(buffer);
+	}
 	sprintf(buffer, dir_out, pin);
 	system(buffer);
 	sprintf(buffer, value_high, pin);
