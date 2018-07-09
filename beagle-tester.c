@@ -4268,6 +4268,7 @@ int test_load_cape(const char *scan_value, unsigned id)
 	return(fail);
 }
 
+/* BC0500A2yywwnnnnnnnn */
 int test_motor_cape(const char *scan_value, unsigned id)
 {
 	int r;
