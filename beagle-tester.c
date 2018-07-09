@@ -4288,53 +4288,61 @@ int test_motor_cape(const char *scan_value, unsigned id)
 	/* Export PWMs */
 	/* Motor 1 */
 	system("echo pwm > /sys/devices/platform/ocp/ocp:P9_16_pinmux/state");
-	system("echo 1 > /sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip*/export");
+	system("bash -c 'echo 1 > /sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip*/export'");
 	/* Motor 2 */
 	system("echo pwm > /sys/devices/platform/ocp/ocp:P9_14_pinmux/state");
-	system("echo 0 > /sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip*/export");
+	system("bash -c 'echo 0 > /sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip*/export'");
 	/* Motor 3 */
 	system("echo pwm > /sys/devices/platform/ocp/ocp:P8_13_pinmux/state");
-	system("echo 1 > /sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip*/export");
+	system("bash -c 'echo 1 > /sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip*/export'");
 	/* Motor 4 */
 	system("echo pwm > /sys/devices/platform/ocp/ocp:P8_19_pinmux/state");
-	system("echo 0 > /sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip*/export");
+	system("bash -c 'echo 0 > /sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip*/export'");
 	system(sleep);
 
 	/* Test Motor 1 */
-	system("echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/period");
-	system("echo 50000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/duty_cycle");
-	system("echo 1 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/enable");
+	beagle_notice("M1", "low");
+	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/period'");
+	system("bash -c 'echo 50000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/duty_cycle'");
+	system("bash -c 'echo 1 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/enable'");
 	system(sleep);
-	system("echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/duty_cycle");
+	beagle_notice("M1", "high");
+	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/duty_cycle'");
 	system(sleep);
-	system("echo 0 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/enable");
+	system("bash -c 'echo 0 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/enable'");
 
 	/* Test Motor 2 */
-	system("echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/period");
-	system("echo 50000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/duty_cycle");
-	system("echo 1 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/enable");
+	beagle_notice("M2", "low");
+	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/period'");
+	system("bash -c 'echo 50000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/duty_cycle'");
+	system("bash -c 'echo 1 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/enable'");
 	system(sleep);
-	system("echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/duty_cycle");
+	beagle_notice("M2", "high");
+	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/duty_cycle'");
 	system(sleep);
-	system("echo 0 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/enable");
+	system("bash -c 'echo 0 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/enable'");
 
 	/* Test Motor 3 */
-	system("echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/period");
-	system("echo 50000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/duty_cycle");
-	system("echo 1 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/enable");
+	beagle_notice("M3", "low");
+	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/period'");
+	system("bash -c 'echo 50000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/duty_cycle'");
+	system("bash -c 'echo 1 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/enable'");
 	system(sleep);
-	system("echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/duty_cycle");
+	beagle_notice("M3", "high");
+	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/duty_cycle'");
 	system(sleep);
-	system("echo 0 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/enable");
+	system("bash -c 'echo 0 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/enable'");
 
 	/* Test Motor 4 */
-	system("echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/period");
-	system("echo 50000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/duty_cycle");
-	system("echo 1 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/enable");
+	beagle_notice("M4", "low");
+	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/period'");
+	system("bash -c 'echo 50000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/duty_cycle'");
+	system("bash -c 'echo 1 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/enable'");
 	system(sleep);
-	system("echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/duty_cycle");
+	beagle_notice("M4", "high");
+	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/duty_cycle'");
 	system(sleep);
-	system("echo 0 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/enable");
+	system("bash -c 'echo 0 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/enable'");
 
 	memcpy(str, cape_eeprom, 88);
 	strcpy(&str[6], capes[id].name);	/* board name */
