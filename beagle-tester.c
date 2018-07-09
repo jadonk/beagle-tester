@@ -4270,7 +4270,91 @@ int test_load_cape(const char *scan_value, unsigned id)
 
 int test_motor_cape(const char *scan_value, unsigned id)
 {
-	fail++;
+	int r;
+	int fd_sn;
+	char str[90];
+	char str2[90];
+	const char *sleep = "sleep 1";
+
+	install_overlay(scan_value, capes[id].id_str);
+
+	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0054/2-00540/nvmem", O_RDWR);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str, 88);
+	str[89] = 0;
+	beagle_notice("name", &str[6]);
+
+	/* Export PWMs */
+	/* Motor 1 */
+	system("echo pwm > /sys/devices/platform/ocp/ocp:P9_16_pinmux/state");
+	system("echo 1 > /sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip*/export");
+	/* Motor 2 */
+	system("echo pwm > /sys/devices/platform/ocp/ocp:P9_14_pinmux/state");
+	system("echo 0 > /sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip*/export");
+	/* Motor 3 */
+	system("echo pwm > /sys/devices/platform/ocp/ocp:P8_13_pinmux/state");
+	system("echo 1 > /sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip*/export");
+	/* Motor 4 */
+	system("echo pwm > /sys/devices/platform/ocp/ocp:P8_19_pinmux/state");
+	system("echo 0 > /sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip*/export");
+	system(sleep);
+
+	/* Test Motor 1 */
+	system("echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/period");
+	system("echo 50000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/duty_cycle");
+	system("echo 1 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/enable");
+	system(sleep);
+	system("echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/duty_cycle");
+	system(sleep);
+	system("echo 0 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/enable");
+
+	/* Test Motor 2 */
+	system("echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/period");
+	system("echo 50000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/duty_cycle");
+	system("echo 1 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/enable");
+	system(sleep);
+	system("echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/duty_cycle");
+	system(sleep);
+	system("echo 0 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/enable");
+
+	/* Test Motor 3 */
+	system("echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/period");
+	system("echo 50000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/duty_cycle");
+	system("echo 1 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/enable");
+	system(sleep);
+	system("echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/duty_cycle");
+	system(sleep);
+	system("echo 0 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/enable");
+
+	/* Test Motor 4 */
+	system("echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/period");
+	system("echo 50000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/duty_cycle");
+	system("echo 1 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/enable");
+	system(sleep);
+	system("echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/duty_cycle");
+	system(sleep);
+	system("echo 0 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/enable");
+
+	memcpy(str, cape_eeprom, 88);
+	strcpy(&str[6], capes[id].name);	/* board name */
+	memcpy(&str[38], &scan_value[4], 4);	/* board version */
+	strcpy(&str[58], capes[id].id_str);	/* part number */
+	strncpy(&str[76], &scan_value[8], 16);	/* serial number */
+	str[89] = 0;
+	lseek(fd_sn, 0, SEEK_SET);
+	r = write(fd_sn, str, 88);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str2, 88);
+	str2[89] = 0;
+	beagle_notice("name", &str2[6]);
+	beagle_notice("ver/mfr", &str2[38]);
+	beagle_notice("partno", &str2[58]);
+	beagle_notice("serial", &str2[76]);
+	fail = memcmp(str, str2, 88) ? 1 : 0;
+	beagle_notice("eeprom", fail ? "fail" : "pass");
+
+	close(fd_sn);
+
 	return(fail);
 }
 
@@ -4371,7 +4455,7 @@ int gpio_out_test(const char *name, unsigned pin)
 	struct stat mystat;
 
 	sprintf(buffer, pinfile, pin);
-	if(stat( buffer, &mystat) != 0) {
+	if(stat(buffer, &mystat) != 0) {
 		sprintf(buffer, export, pin);
 		system(buffer);
 	}
@@ -4388,3 +4472,4 @@ int gpio_out_test(const char *name, unsigned pin)
 
 	return(0);
 }
+
