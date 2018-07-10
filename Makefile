@@ -7,7 +7,8 @@ INSTALL := install
 all: beagle-tester
 
 beagle-tester: beagle-tester.c
-	$(CC) $(CFLAGS_FOR_BUILD) -W -Wall -Wwrite-strings -O3 -o beagle-tester beagle-tester.c -lroboticscape
+	#$(CC) $(CFLAGS_FOR_BUILD) -W -Wall -Wwrite-strings -O3 -o beagle-tester beagle-tester.c -lroboticscape
+	$(CC) $(CFLAGS_FOR_BUILD) -W -Wall -Wwrite-strings -O3 -o beagle-tester beagle-tester.c
 
 images:
 	$(MAKE) -C images
