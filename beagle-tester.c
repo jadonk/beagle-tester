@@ -37,11 +37,13 @@
 #include <linux/input.h>
 #include <linux/fb.h>
 #include <linux/kd.h>
+#ifdef ENABLE_BLUE
 #include <rc/adc.h>
 #include <rc/bmp.h>
 #include <rc/mpu.h>
 #include <rc/start_stop.h>
 #include <rc/time.h>
+#endif
 #include <linux/spi/spidev.h>
 #include <linux/i2c-dev.h>
 
@@ -3482,7 +3484,9 @@ int display = 1;
 void beagle_test(const char *scan_value);
 void beagle_notice(const char *test, const char *status);
 void do_colorbar();
+#ifdef ENABLE_BLUE
 int blue_specific_tests();
+#endif
 int osd3358_sm_ref_design_tests();
 void set_led_trigger(const char * led, const char * mode);
 void set_user_leds(int code);
@@ -3981,11 +3985,13 @@ void beagle_test(const char *scan_value)
 		beagle_notice("usb 3", r ? "fail" : "pass");
 	}
 
+#ifdef ENABLE_BLUE
 	// if BeagleBone Blue
 	if(!strcmp(model, MODEL_BLUE)) {
 		r = blue_specific_tests();
 		beagle_notice("sensors", r ? "fail" : "pass");
 	}
+#endif
 	
 	// If OSD3358-SM-RED
 	if(!strcmp(model, MODEL_OSD3358_BSM_REF)){
@@ -4109,6 +4115,7 @@ void do_colorbar()
 	//usleep(4444);
 }
 
+#ifdef ENABLE_BLUE
 int blue_specific_tests() {
 	int ret;
 
@@ -4165,6 +4172,7 @@ int blue_specific_tests() {
 	//cleanup_cape();
 	return 0;
 }
+#endif
 
 void set_led_trigger(const char * led, const char * mode)
 {
