@@ -3547,9 +3547,16 @@ const char cape_eeprom[88] = {
 	0, 0, 0, 0
 };
 
+#ifndef ENABLE_BLUE
+volatile int exiting = 0;
+
 static void do_stop()
 {
+#ifdef ENABLE_BLUE
 	rc_set_state(EXITING);
+#else
+	exiting = 1;
+#endif
 }
 
 int main(int argc, char** argv)
@@ -3597,13 +3604,21 @@ int main(int argc, char** argv)
 	signal(SIGINT, do_stop);
 	signal(SIGTERM, do_stop);
 
+#ifdef ENABLE_BLUE
 	while (rc_get_state()!=EXITING) {
+#else
+	while (!exiting) {
+#endif
 		FD_ZERO(&rdfs);
 		FD_SET(barcode, &rdfs);
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 4000;
 		rd = select(barcode + 1, &rdfs, NULL, NULL, &timeout);
+#ifdef ENABLE_BLUE
 		if (rc_get_state()==EXITING)
+#else
+		if (exiting)
+#endif
 			break;
 		if (rd > 0) {
 			rd = read(barcode, ev, sizeof(ev));
@@ -3800,7 +3815,11 @@ int main(int argc, char** argv)
 			if (display) do_colorbar();
 		}
 		if (!strcmp(scan_value, SCAN_VALUE_STOP)) {
+#ifdef ENABLE_BLUE
 			rc_set_state(EXITING);
+#else
+			exiting = 1;
+#endif
 			break;
 		} else if (run == 1) {
 			if (display) do_fill_screen(&fb_info, 0);
@@ -3812,7 +3831,11 @@ int main(int argc, char** argv)
 			} else {
  				printf("RESULT: PASS \n");
 			}
+#ifdef ENABLE_BLUE
 			if (rc_get_state()==EXITING) {
+#else
+			if (exiting) {
+#endif
 				run = 0;
 				break;	
 			} else if (!strcmp(scan_value, SCAN_VALUE_REPEAT)) {
