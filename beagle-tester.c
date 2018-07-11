@@ -3068,7 +3068,7 @@ static struct cape capes[] = {
 	{ "BC04", "BBORG_LOAD", 0x54, "Load Driver Cape", test_load_cape },
 	{ "BC05", "BBORG_MOTOR", 0x55, "Motor Driver Cape", test_motor_cape },
 	{ "BC06", "BBORG_POWER", 0, "Power Supply Cape", test_power_cape },
-	{ "BC07", "BBORG_PROTO", 0x54, "Prototyping Cape", test_proto_cape },
+	{ "BC07", "BBORG_PROTO", 0x57, "Prototyping Cape", test_proto_cape },
 	{ "BC08", "BBORG_RELAY", 0x54, "Relay Cape", test_relay_cape },
 	{ "BC09", "BBORG_ROBOTICS", 0, "Robotics Cape", test_robotics_cape },
 	{ "BC0A", "BBORG_SERVO", 0x55, "Servo Cape", test_servo_cape },
@@ -3970,9 +3970,11 @@ int test_proto_cape(const char *scan_value, unsigned id)
 
 	install_overlay(scan_value, capes[id].id_str);
 
-	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0054/2-00540/nvmem", O_RDWR);
+	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0057/2-00570/nvmem", O_RDWR);
 	lseek(fd_sn, 0, SEEK_SET);
 	r = read(fd_sn, str, 88);
+	if(r < 0)
+		printf("EEPROM read failure in test_proto_cape()\n");
 	str[89] = 0;
 	beagle_notice("name", &str[6]);
 
