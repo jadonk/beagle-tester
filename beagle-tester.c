@@ -3777,6 +3777,28 @@ void set_user_leds(int code)
 int test_comms_cape(const char *scan_value, unsigned id)
 {
 	printf("%s %d - not supported\n", scan_value, id);
+	
+	int r;
+	int fd_sn;
+	char str[90];
+	char str2[90];
+	
+	install_overlay(scan_value, capes[id].id_str);
+
+	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0056/2-00560/nvmem", O_RDWR);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str, 88);
+	if(r < 0)
+		printf("EEPROM read failure in test_comms_cape()\n");
+	str[89] = 0;
+	beagle_notice("name", &str[6]);
+	
+	
+	gpio_out_test("sinkA", 48);
+	gpio_out_test("sinkB", 49);
+	
+	
+	
 	fail++;
 	return(fail);
 }
@@ -3995,6 +4017,12 @@ int test_proto_cape(const char *scan_value, unsigned id)
 	beagle_notice("serial", &str2[76]);
 	fail = memcmp(str, str2, 88) ? 1 : 0;
 	beagle_notice("eeprom", fail ? "fail" : "pass");
+
+	gpio_out_test("LED", 68);
+	gpio_out_test("Blue", 44);
+	gpio_out_test("Red", 26);
+	gpio_out_test("Green", 46);
+	
 
 	close(fd_sn);
 
