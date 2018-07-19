@@ -3071,7 +3071,7 @@ static struct cape capes[] = {
 	{ "BC07", "BBORG_PROTO", 0x57, "Prototyping Cape", test_proto_cape },
 	{ "BC08", "BBORG_RELAY", 0x54, "Relay Cape", test_relay_cape },
 	{ "BC09", "BBORG_ROBOTICS", 0, "Robotics Cape", test_robotics_cape },
-	{ "BC0A", "BBORG_SERVO", 0x55, "Servo Cape", test_servo_cape },
+	{ "BC0A", "BBORG_SERVO", 0x54, "Servo Cape", test_servo_cape },
 };
 
 /* Per https://github.com/beagleboard/beaglebone-black/wiki/System-Reference-Manual#824-eeprom-data-format */
@@ -4073,7 +4073,7 @@ int test_servo_cape(const char *scan_value, unsigned id)
 
 	install_overlay(scan_value, capes[id].id_str);
 
-	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0055/2-00550/nvmem", O_RDWR);
+	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0054/2-00540/nvmem", O_RDWR);
 	lseek(fd_sn, 0, SEEK_SET);
 	r = read(fd_sn, str, 88);
 	if(r < 0)
