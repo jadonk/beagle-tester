@@ -4102,7 +4102,6 @@ int test_servo_cape(const char *scan_value, unsigned id)
 	system("bash -c 'echo 13 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
 	system("bash -c 'echo 14 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
 	system("bash -c 'echo 15 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	/* system(sleep); */
 
 	/* Set periods to 100Hz (10ms) */
 	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:0/period'");
@@ -4158,7 +4157,6 @@ int test_servo_cape(const char *scan_value, unsigned id)
 	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:13/enable'");
 	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:14/enable'");
 	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:15/enable'");
-	system(sleep);
 
 	/* Set duty cycles to 2ms */
 	beagle_notice("pwms", "2ms");
@@ -4178,7 +4176,6 @@ int test_servo_cape(const char *scan_value, unsigned id)
 	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:13/duty_cycle'");
 	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:14/duty_cycle'");
 	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:15/duty_cycle'");
-	system(sleep);
 
 	/* Set duty cycles to 1ms */
 	beagle_notice("pwms", "1ms");
@@ -4198,7 +4195,6 @@ int test_servo_cape(const char *scan_value, unsigned id)
 	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:13/duty_cycle'");
 	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:14/duty_cycle'");
 	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:15/duty_cycle'");
-	system(sleep);
 
 	/* Enable PWM outputs */
 	beagle_notice("pwms", "off");
