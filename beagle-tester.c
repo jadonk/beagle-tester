@@ -4082,7 +4082,7 @@ int test_servo_cape(const char *scan_value, unsigned id)
 	beagle_notice("name", &str[6]);
 
 	/* Enable pca9685 */
-	system("echo pca9685 0x70 > /sys/bus/i2c/devices/new_device");
+	system("echo pca9685 0x70 > /sys/bus/i2c/devices/i2c-2/new_device");
 	system(sleep);
 
 	/* Export PWMs */
