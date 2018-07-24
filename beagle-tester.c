@@ -3896,6 +3896,7 @@ int test_motor_cape(const char *scan_value, unsigned id)
 	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/duty_cycle'");
 	system(sleep);
 	system("bash -c 'echo 0 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*1/enable'");
+	system("echo gpio > /sys/devices/platform/ocp/ocp:P9_16_pinmux/state");
 
 	/* Test Motor 2 */
 	beagle_notice("M2", "low");
@@ -3907,6 +3908,7 @@ int test_motor_cape(const char *scan_value, unsigned id)
 	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/duty_cycle'");
 	system(sleep);
 	system("bash -c 'echo 0 > /sys/devices/platform/ocp/48302000.*/48302200.*/pwm/pwmchip*/pwm*0/enable'");
+	system("echo gpio > /sys/devices/platform/ocp/ocp:P9_14_pinmux/state");
 
 	/* Test Motor 3 */
 	beagle_notice("M3", "low");
@@ -3918,6 +3920,7 @@ int test_motor_cape(const char *scan_value, unsigned id)
 	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/duty_cycle'");
 	system(sleep);
 	system("bash -c 'echo 0 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*1/enable'");
+	system("echo gpio > /sys/devices/platform/ocp/ocp:P8_13_pinmux/state");
 
 	/* Test Motor 4 */
 	beagle_notice("M4", "low");
@@ -3929,6 +3932,7 @@ int test_motor_cape(const char *scan_value, unsigned id)
 	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/duty_cycle'");
 	system(sleep);
 	system("bash -c 'echo 0 > /sys/devices/platform/ocp/48304000.*/48304200.*/pwm/pwmchip*/pwm*0/enable'");
+	system("echo gpio > /sys/devices/platform/ocp/ocp:P8_19_pinmux/state");
 
 	memcpy(str, cape_eeprom, 88);
 	strcpy(&str[6], capes[id].name);	/* board name */
@@ -4082,6 +4086,8 @@ int test_servo_cape(const char *scan_value, unsigned id)
 	beagle_notice("name", &str[6]);
 
 	/* Enable pca9685 */
+	system("echo i2c > /sys/devices/platform/ocp/ocp:P9_19_pinmux/state");
+	system("echo i2c > /sys/devices/platform/ocp/ocp:P9_20_pinmux/state");
 	system("echo pca9685 0x70 > /sys/bus/i2c/devices/i2c-2/new_device");
 	system(sleep);
 
