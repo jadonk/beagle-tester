@@ -3426,6 +3426,7 @@ void beagle_test(const char *scan_value)
 	if(!strncmp(scan_value, "BC", 2)) {
 		for(x = 0; x < sizeof(capes) / sizeof(capes[0]); x++) {
 			if(!strncmp(scan_value, capes[x].prefix, 4)) {
+				beagle_notice("model", capes[x].name);
 				fail = capes[x].test(scan_value, x);
 				goto done;
 			}
@@ -3437,6 +3438,27 @@ void beagle_test(const char *scan_value)
 	fclose(fp);
 	strcpy(model, str);
 	beagle_notice("model", str);
+	if(!strcmp(model, MODEL_BLACK)) {
+		if(strncmp(scan_value, "00", 2)) {
+			beagle_notice("model", "fail");
+			fail = 1;
+			goto done;
+		}
+	}
+	else if(!strcmp(model, MODEL_WIFI)) {
+		if(strncmp(scan_value, "BW", 2)) {
+			beagle_notice("model", "fail");
+			fail = 1;
+			goto done;
+		}
+	}
+	else if(!strcmp(model, MODEL_BLUE)) {
+		if(strncmp(scan_value, "BL", 2)) {
+			beagle_notice("model", "fail");
+			fail = 1;
+			goto done;
+		}
+	}
 
 	fd_sn = open("/sys/bus/i2c/devices/i2c-0/0-0050/0-00500/nvmem", O_RDWR);
 	lseek(fd_sn, 0, SEEK_SET);
