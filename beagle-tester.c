@@ -3796,13 +3796,49 @@ void set_user_leds(int code)
 	}
 }
 
+/* BC0000A2yywwnnnnnnnn */
 int test_comms_cape(const char *scan_value, unsigned id)
 {
-	printf("%s %d - not supported\n", scan_value, id);
-	fail++;
+	int r;
+	int fd_sn;
+	char str[90];
+	char str2[90];
+
+	install_overlay(scan_value, capes[id].id_str);
+
+	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0056/2-00560/nvmem", O_RDWR);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str, 88);
+	if(r < 0)
+		printf("EEPROM read failure in test_load_cape()\n");
+	str[89] = 0;
+	beagle_notice("name", &str[6]);
+
+	gpio_out_test("sinkA", 49);
+	gpio_out_test("sinkB", 48);
+
+	memcpy(str, cape_eeprom, 88);
+	strcpy(&str[6], capes[id].name);	/* board name */
+	memcpy(&str[38], &scan_value[4], 4);	/* board version */
+	strcpy(&str[58], capes[id].id_str);	/* part number */
+	strncpy(&str[76], &scan_value[8], 16);	/* serial number */
+	str[89] = 0;
+	lseek(fd_sn, 0, SEEK_SET);
+	r = write(fd_sn, str, 88);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str2, 88);
+	str2[89] = 0;
+	beagle_notice("name", &str2[6]);
+	beagle_notice("ver/mfr", &str2[38]);
+	beagle_notice("partno", &str2[58]);
+	beagle_notice("serial", &str2[76]);
+	fail = memcmp(str, str2, 88) ? 1 : 0;
+	beagle_notice("eeprom", fail ? "fail" : "pass");
+
+	close(fd_sn);
+
 	return(fail);
 }
-
 int test_display18_cape(const char *scan_value, unsigned id)
 {
 	printf("%s %d - not supported\n", scan_value, id);
