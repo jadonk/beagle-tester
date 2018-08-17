@@ -4144,9 +4144,9 @@ int test_servo_cape(const char *scan_value, unsigned id)
 	beagle_notice("name", &str[6]);
 
 	/* Enable pca9685 */
-	system("echo i2c > /sys/devices/platform/ocp/ocp:P9_19_pinmux/state");
-	system("echo i2c > /sys/devices/platform/ocp/ocp:P9_20_pinmux/state");
 	system("echo pca9685 0x70 > /sys/bus/i2c/devices/i2c-2/new_device");
+	system("echo out > /sys/class/gpio/gpio68/direction");
+	system("echo 0 > /sys/class/gpio/gpio68/value");
 	system(sleep);
 
 	/* Export PWMs */
