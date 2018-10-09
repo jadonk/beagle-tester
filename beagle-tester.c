@@ -3816,7 +3816,7 @@ int test_comms_cape(const char *scan_value, unsigned id)
 	lseek(fd_sn, 0, SEEK_SET);
 	r = read(fd_sn, str, 88);
 	if(r < 0)
-		printf("EEPROM read failure in test_load_cape()\n");
+		printf("EEPROM read failure in test_comms_cape()\n");
 	str[89] = 0;
 	beagle_notice("name", &str[6]);
 
@@ -3842,7 +3842,6 @@ int test_comms_cape(const char *scan_value, unsigned id)
 	beagle_notice("eeprom", fail ? "fail" : "pass");
 
 	close(fd_sn);
-
 	return(fail);
 }
 int test_display18_cape(const char *scan_value, unsigned id)
@@ -4063,6 +4062,12 @@ int test_proto_cape(const char *scan_value, unsigned id)
 	beagle_notice("serial", &str2[76]);
 	fail = memcmp(str, str2, 88) ? 1 : 0;
 	beagle_notice("eeprom", fail ? "fail" : "pass");
+
+	gpio_out_test("LED", 68);
+	gpio_out_test("Blue", 44);
+	gpio_out_test("Red", 26);
+	gpio_out_test("Green", 46);
+	
 
 	close(fd_sn);
 
