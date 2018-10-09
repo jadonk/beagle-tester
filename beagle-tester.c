@@ -4045,6 +4045,11 @@ int test_proto_cape(const char *scan_value, unsigned id)
 	str[89] = 0;
 	beagle_notice("name", &str[6]);
 
+	gpio_out_test("LED", 68);
+	gpio_out_test("Blue", 44);
+	gpio_out_test("Red", 26);
+	gpio_out_test("Green", 46);
+
 	memcpy(str, cape_eeprom, 88);
 	strcpy(&str[6], capes[id].name);	/* board name */
 	memcpy(&str[38], &scan_value[4], 4);	/* board version */
@@ -4063,14 +4068,7 @@ int test_proto_cape(const char *scan_value, unsigned id)
 	fail = memcmp(str, str2, 88) ? 1 : 0;
 	beagle_notice("eeprom", fail ? "fail" : "pass");
 
-	gpio_out_test("LED", 68);
-	gpio_out_test("Blue", 44);
-	gpio_out_test("Red", 26);
-	gpio_out_test("Green", 46);
-	
-
 	close(fd_sn);
-
 	return(fail);
 }
 
