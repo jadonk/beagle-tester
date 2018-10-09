@@ -3600,6 +3600,13 @@ void beagle_test(const char *scan_value)
 			!fail && strcmp(scan_value, SCAN_VALUE_REPEAT)) {
 		lseek(fd_sn, 0, SEEK_SET);
 		r = read(fd_sn, str, 12);
+
+		/* TODO: Analyze if this is the right thing to do! */
+		// if BeagleBone Black
+		if(!strcmp(model, MODEL_BLACK)) {
+			memcpy(&str[0], "\xaa\x55\x33\xee\x41\x33\x33\x35\x42\x4e\x4c\x54", 12);
+		}
+
 		memcpy(&str[12], scan_value, 16);
 		str[28] = 0;
 		lseek(fd_sn, 0, SEEK_SET);
