@@ -3421,7 +3421,11 @@ void beagle_test(const char *scan_value)
 	notice_line = 0;
 	beagle_notice("scan", scan_value);
 
+#ifdef VERSION
+	beagle_notice("tester", VERSION);
+#else
 	beagle_notice("tester", "$Id$");
+#endif
 
 	if(!strncmp(scan_value, "BC", 2)) {
 		for(x = 0; x < sizeof(capes) / sizeof(capes[0]); x++) {
