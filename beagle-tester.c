@@ -3595,17 +3595,16 @@ void beagle_test(const char *scan_value)
 		beagle_notice("OSD3358-SM Reference Design board components", r ? "fail" : "pass");
 	}
 
-	// if not xM, didn't fail and we aren't in repeat mode
-	if(strcmp(model, MODEL_XM) && 
+	// if not xM nor X15, didn't fail and we aren't in repeat mode
+	if(strcmp(model, MODEL_XM) && strcmp(model, MODEL_X15) &&
 			!fail && strcmp(scan_value, SCAN_VALUE_REPEAT)) {
 		lseek(fd_sn, 0, SEEK_SET);
 		r = read(fd_sn, str, 12);
 
-		/* TODO: Analyze if this is the right thing to do! */
-		// if BeagleBone Black
-		if(!strcmp(model, MODEL_BLACK)) {
-			memcpy(&str[0], "\xaa\x55\x33\xee\x41\x33\x33\x35\x42\x4e\x4c\x54", 12);
-		}
+		/* TODO: How do we properly decide how to assign the EEPROM? */
+		/* DANGEROUS!!!: This will make everything a BeagleBone
+		 * Black derivative. This will break PocketBeagles and X15s */
+		memcpy(&str[0], "\xaa\x55\x33\xee\x41\x33\x33\x35\x42\x4e\x4c\x54", 12);
 
 		memcpy(&str[12], scan_value, 16);
 		str[28] = 0;
