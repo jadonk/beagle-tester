@@ -3441,7 +3441,10 @@ void beagle_test(const char *scan_value)
 	fgets(str, sizeof(str), fp);
 	fclose(fp);
 	strcpy(model, str);
-	beagle_notice("model", str);
+        len = strlen(str);
+	len--; str[len] = 0; // remove trailing character
+        off = (len > 25) ? len-25 : 0;
+	beagle_notice("model", &str[off]);
 	if(!strcmp(model, MODEL_BLACK)) {
 		if(strncmp(scan_value, "00", 2)) {
 			beagle_notice("model", "fail");
