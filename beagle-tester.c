@@ -3427,7 +3427,11 @@ void beagle_test(const char *scan_value)
 	notice_line = 0;
 	beagle_notice("scan", scan_value);
 
+#ifdef VERSION
+	beagle_notice("tester", VERSION);
+#else
 	beagle_notice("tester", "$Id$");
+#endif
 
 	if(!strncmp(scan_value, "BC", 2)) {
 		for(x = 0; x < sizeof(capes) / sizeof(capes[0]); x++) {
@@ -3443,7 +3447,10 @@ void beagle_test(const char *scan_value)
 	fgets(str, sizeof(str), fp);
 	fclose(fp);
 	strcpy(model, str);
-	beagle_notice("model", str);
+        len = strlen(str);
+	len--; str[len] = 0; // remove trailing character
+        off = (len > 25) ? len-25 : 0;
+	beagle_notice("model", &str[off]);
 	if(!strcmp(model, MODEL_BLACK)) {
 		if(strncmp(scan_value, "00", 2)) {
 			beagle_notice("model", "fail");
@@ -3597,11 +3604,17 @@ void beagle_test(const char *scan_value)
 		beagle_notice("OSD3358-SM Reference Design board components", r ? "fail" : "pass");
 	}
 
-	// if not xM, didn't fail and we aren't in repeat mode
-	if(strcmp(model, MODEL_XM) && 
+	// if not xM nor X15, didn't fail and we aren't in repeat mode
+	if(strcmp(model, MODEL_XM) && strcmp(model, MODEL_X15) &&
 			!fail && strcmp(scan_value, SCAN_VALUE_REPEAT)) {
 		lseek(fd_sn, 0, SEEK_SET);
 		r = read(fd_sn, str, 12);
+
+		/* TODO: How do we properly decide how to assign the EEPROM? */
+		/* DANGEROUS!!!: This will make everything a BeagleBone
+		 * Black derivative. This will break PocketBeagles and X15s */
+		memcpy(&str[0], "\xaa\x55\x33\xee\x41\x33\x33\x35\x42\x4e\x4c\x54", 12);
+
 		memcpy(&str[12], scan_value, 16);
 		str[28] = 0;
 		lseek(fd_sn, 0, SEEK_SET);
@@ -3683,6 +3696,8 @@ void do_colorbar()
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-800x600.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 1024)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1024x768.raw.xz > /dev/fb0");
+		else if (fb_info.var.xres == 1088)
+			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1088x1920.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 1280)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1280x720.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 1360)
@@ -3802,13 +3817,48 @@ void set_user_leds(int code)
 	}
 }
 
+/* BC0000A2yywwnnnnnnnn */
 int test_comms_cape(const char *scan_value, unsigned id)
 {
-	printf("%s %d - not supported\n", scan_value, id);
-	fail++;
+	int r;
+	int fd_sn;
+	char str[90];
+	char str2[90];
+
+	install_overlay(scan_value, capes[id].id_str);
+
+	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0056/2-00560/nvmem", O_RDWR);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str, 88);
+	if(r < 0)
+		printf("EEPROM read failure in test_comms_cape()\n");
+	str[89] = 0;
+	beagle_notice("name", &str[6]);
+
+	gpio_out_test("sinkA", 49);
+	gpio_out_test("sinkB", 48);
+
+	memcpy(str, cape_eeprom, 88);
+	strcpy(&str[6], capes[id].name);	/* board name */
+	memcpy(&str[38], &scan_value[4], 4);	/* board version */
+	strcpy(&str[58], capes[id].id_str);	/* part number */
+	strncpy(&str[76], &scan_value[8], 16);	/* serial number */
+	str[89] = 0;
+	lseek(fd_sn, 0, SEEK_SET);
+	r = write(fd_sn, str, 88);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str2, 88);
+	str2[89] = 0;
+	beagle_notice("name", &str2[6]);
+	beagle_notice("ver/mfr", &str2[38]);
+	beagle_notice("partno", &str2[58]);
+	beagle_notice("serial", &str2[76]);
+	fail = memcmp(str, str2, 88) ? 1 : 0;
+	beagle_notice("eeprom", fail ? "fail" : "pass");
+
+	close(fd_sn);
 	return(fail);
 }
-
 int test_display18_cape(const char *scan_value, unsigned id)
 {
 	printf("%s %d - not supported\n", scan_value, id);
@@ -4010,6 +4060,11 @@ int test_proto_cape(const char *scan_value, unsigned id)
 	str[89] = 0;
 	beagle_notice("name", &str[6]);
 
+	gpio_out_test("LED", 68);
+	gpio_out_test("Blue", 44);
+	gpio_out_test("Red", 26);
+	gpio_out_test("Green", 46);
+
 	memcpy(str, cape_eeprom, 88);
 	strcpy(&str[6], capes[id].name);	/* board name */
 	memcpy(&str[38], &scan_value[4], 4);	/* board version */
@@ -4029,7 +4084,6 @@ int test_proto_cape(const char *scan_value, unsigned id)
 	beagle_notice("eeprom", fail ? "fail" : "pass");
 
 	close(fd_sn);
-
 	return(fail);
 }
 
@@ -4114,9 +4168,9 @@ int test_servo_cape(const char *scan_value, unsigned id)
 	beagle_notice("name", &str[6]);
 
 	/* Enable pca9685 */
-	system("echo i2c > /sys/devices/platform/ocp/ocp:P9_19_pinmux/state");
-	system("echo i2c > /sys/devices/platform/ocp/ocp:P9_20_pinmux/state");
 	system("echo pca9685 0x70 > /sys/bus/i2c/devices/i2c-2/new_device");
+	system("echo out > /sys/class/gpio/gpio68/direction");
+	system("echo 0 > /sys/class/gpio/gpio68/value");
 	system(sleep);
 
 	/* Export PWMs */
