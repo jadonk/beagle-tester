@@ -4342,6 +4342,7 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 	system("echo 24c256 0x57 > /sys/bus/i2c/devices/i2c-2/new_device");
 	system(sleep);
 
+	/* Read EEPROM */
 	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0057/2-00570/nvmem", O_RDWR);
 	lseek(fd_sn, 0, SEEK_SET);
 	r = read(fd_sn, str, 88);
@@ -4350,7 +4351,21 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 	str[89] = 0;
 	beagle_notice("name", &str[6]);
 
+	/* Light up LEDs */
+	system("echo timer > /sys/class/leds/gamepup::left/trigger");
+	system("echo timer > /sys/class/leds/gamepup::right/trigger");
 
+	/* Make tone on buzzer */
+	system("echo pwm > /sys/devices/platform/ocp/ocp:P1_33_pinmux/state");
+	system("bash -c 'echo 1 > /sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip*/export'");
+	system(sleep);
+	system("bash -c 'echo 1000000 > /sys/devices/platform/ocp/48300000.*/48300200.*/pwm/pwmchip*/pwm*1/period'");
+	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48300000.*/48300200.*/pwm/pwmchip*/pwm*1/duty_cycle'");
+	system("bash -c 'echo 1 > /sys/devices/platform/ocp/48300000.*/48300200.*/pwm/pwmchip*/pwm*1/enable'");
+	system(sleep);
+	system("bash -c 'echo 0 > /sys/devices/platform/ocp/48300000.*/48300200.*/pwm/pwmchip*/pwm*1/enable'");
+
+	/* Write EEPROM */
 	memcpy(str, cape_eeprom, 88);
 	strcpy(&str[6], capes[id].name);	/* board name */
 	memcpy(&str[38], &scan_value[4], 4);	/* board version */
@@ -4369,8 +4384,8 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 	fail = memcmp(str, str2, 88) ? 1 : 0;
 	beagle_notice("eeprom", fail ? "fail" : "pass");
 
+	/* Finish */
 	close(fd_sn);
-
 	return(fail);
 }
 
