@@ -4342,7 +4342,7 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 	system("echo 24c256 0x57 > /sys/bus/i2c/devices/i2c-2/new_device");
 	system(sleep);
 
-	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0057/2-00547/nvmem", O_RDWR);
+	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0057/2-00570/nvmem", O_RDWR);
 	lseek(fd_sn, 0, SEEK_SET);
 	r = read(fd_sn, str, 88);
 	if(r < 0)
