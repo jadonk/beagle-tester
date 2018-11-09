@@ -3433,7 +3433,7 @@ void beagle_test(const char *scan_value)
 	beagle_notice("tester", "$Id$");
 #endif
 
-	if(!strncmp(scan_value, "BC", 2)) {
+	if(!strncmp(scan_value, "BC", 2) || !strncmp(scan_value, "PC", 2)) {
 		for(x = 0; x < sizeof(capes) / sizeof(capes[0]); x++) {
 			if(!strncmp(scan_value, capes[x].prefix, 4)) {
 				beagle_notice("model", capes[x].name);
@@ -3859,6 +3859,7 @@ int test_comms_cape(const char *scan_value, unsigned id)
 	close(fd_sn);
 	return(fail);
 }
+
 int test_display18_cape(const char *scan_value, unsigned id)
 {
 	printf("%s %d - not supported\n", scan_value, id);
@@ -4326,7 +4327,7 @@ int test_servo_cape(const char *scan_value, unsigned id)
 	return(fail);
 }
 
-/* PC0000A2yywwnnnnnnnn */
+/* PC0000Axyywwnnnnnnnn */
 int test_gamepup_cape(const char *scan_value, unsigned id)
 {
 	int r;
@@ -4337,9 +4338,11 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 
 	install_overlay(scan_value, capes[id].id_str);
 
-	// echo 24c256 0x57 > /sys/bus/i2c/devices/i2c-1/new_device
+	/* Enable EEPROM */
+	system("echo 24c256 0x57 > /sys/bus/i2c/devices/i2c-2/new_device");
+	system(sleep);
 
-	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0054/2-00540/nvmem", O_RDWR);
+	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0057/2-00547/nvmem", O_RDWR);
 	lseek(fd_sn, 0, SEEK_SET);
 	r = read(fd_sn, str, 88);
 	if(r < 0)
@@ -4347,141 +4350,6 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 	str[89] = 0;
 	beagle_notice("name", &str[6]);
 
-	/* Enable pca9685 */
-	system("echo i2c > /sys/devices/platform/ocp/ocp:P9_19_pinmux/state");
-	system("echo i2c > /sys/devices/platform/ocp/ocp:P9_20_pinmux/state");
-	system("echo pca9685 0x70 > /sys/bus/i2c/devices/i2c-2/new_device");
-	system(sleep);
-
-	/* Export PWMs */
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 2 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 3 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 4 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 5 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 6 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 7 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 8 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 9 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 10 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 11 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 12 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 13 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 14 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-	system("bash -c 'echo 15 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/export'");
-
-	/* Set periods to 100Hz (10ms) */
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:0/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:1/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:2/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:3/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:4/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:5/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:6/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:7/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:8/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:9/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:10/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:11/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:12/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:13/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:14/period'");
-	system("bash -c 'echo 10000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:15/period'");
-
-	/* Set duty cycles to 1ms */
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:0/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:1/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:2/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:3/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:4/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:5/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:6/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:7/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:8/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:9/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:10/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:11/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:12/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:13/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:14/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:15/duty_cycle'");
-
-	/* Enable PWM outputs */
-	beagle_notice("pwms", "1ms");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:0/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:1/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:2/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:3/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:4/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:5/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:6/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:7/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:8/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:9/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:10/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:11/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:12/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:13/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:14/enable'");
-	system("bash -c 'echo 1 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:15/enable'");
-
-	/* Set duty cycles to 2ms */
-	beagle_notice("pwms", "2ms");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:0/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:1/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:2/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:3/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:4/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:5/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:6/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:7/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:8/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:9/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:10/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:11/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:12/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:13/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:14/duty_cycle'");
-	system("bash -c 'echo 2000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:15/duty_cycle'");
-
-	/* Set duty cycles to 1ms */
-	beagle_notice("pwms", "1ms");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:0/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:1/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:2/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:3/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:4/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:5/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:6/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:7/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:8/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:9/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:10/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:11/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:12/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:13/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:14/duty_cycle'");
-	system("bash -c 'echo 1000000 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:15/duty_cycle'");
-
-	/* Enable PWM outputs */
-	beagle_notice("pwms", "off");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:0/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:1/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:2/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:3/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:4/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:5/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:6/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:7/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:8/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:9/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:10/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:11/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:12/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:13/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:14/enable'");
-	system("bash -c 'echo 0 > /sys/bus/i2c/drivers/pca9685-pwm/2-0070/pwm/pwmchip*/pwm*:15/enable'");
 
 	memcpy(str, cape_eeprom, 88);
 	strcpy(&str[6], capes[id].name);	/* board name */
@@ -4503,6 +4371,22 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 
 	close(fd_sn);
 
+	return(fail);
+}
+
+/* PC0100Axyywwnnnnnnnn */
+int test_techlab_cape(const char *scan_value, unsigned id)
+{
+	printf("%s %d - not supported\n", scan_value, id);
+	fail++;
+	return(fail);
+}
+
+/* PC0200Axyywwnnnnnnnn */
+int test_ppilot_cape(const char *scan_value, unsigned id)
+{
+	printf("%s %d - not supported\n", scan_value, id);
+	fail++;
 	return(fail);
 }
 
