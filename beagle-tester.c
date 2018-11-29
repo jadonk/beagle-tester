@@ -4392,8 +4392,102 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 /* PC0100Axyywwnnnnnnnn */
 int test_techlab_cape(const char *scan_value, unsigned id)
 {
-	printf("%s %d - not supported\n", scan_value, id);
-	fail++;
+	int r;
+	int fd_sn;
+	char str[90];
+	char str2[90];
+	const char *sleep = "sleep 1";
+	int fd_accel;
+
+	install_overlay(scan_value, capes[id].id_str);
+
+	/* Enable EEPROM */
+	system("echo 24c256 0x57 > /sys/bus/i2c/devices/i2c-2/new_device");
+	system(sleep);
+
+	/* Read EEPROM */
+	fd_sn = open("/sys/bus/i2c/devices/i2c-2/2-0057/2-00570/nvmem", O_RDWR);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str, 88);
+	if(r < 0)
+		printf("EEPROM read failure in test_techlab_cape()\n");
+	str[89] = 0;
+	beagle_notice("name", &str[6]);
+
+	beagle_notice("leds", "on");
+
+	/* Tie buttons to LEDs */
+	system("echo gpio > /sys/devices/platform/ocp/ocp:P2_33_pinmux/state");
+	system("echo gpio > /sys/class/leds/beaglebone:green:usr3/trigger");
+	system("echo 1 > /sys/class/leds/beaglebone:green:usr3/inverted");
+	system("echo 45 > /sys/class/leds/beaglebone:green:usr3/gpio");
+
+	system("echo gpio > /sys/devices/platform/ocp/ocp:P1_29_pinmux/state");
+	system("echo gpio > /sys/class/leds/beaglebone:green:usr2/trigger");
+	system("echo 1 > /sys/class/leds/beaglebone:green:usr2/inverted");
+	system("echo 117 > /sys/class/leds/beaglebone:green:usr2/gpio");
+
+	/* Turn on all SPI GPIO expander LEDs */
+	system("echo spi > /sys/devices/platform/ocp/ocp:P2_25_pinmux/state");
+	system("echo spi_sclk > /sys/devices/platform/ocp/ocp:P2_29_pinmux/state");
+	system("echo spi_cs > /sys/devices/platform/ocp/ocp:P2_31_pinmux/state");
+	system("echo -ne \"\\x40\\x00\\x80\" > /dev/spidev1.1");
+	system("echo -ne \"\\x40\\x01\\x80\" > /dev/spidev1.1");
+
+	/* Turn on RGB LEDs */
+	system("config-pin p1.33 high"); /* Red */
+	system("config-pin p2.1 high"); /* Green */
+	system("config-pin p1.36 high"); /* Blue */
+
+	/* Make tone on buzzer */
+	// config-pin p2.30 pruout
+	// https://gist.github.com/jadonk/9965fa50384f349a21db376c8bace37b
+	// make TARGET=buzz PRUN=pru0
+
+	system(sleep);
+
+	/* Turn off all SPI GPIO expander LEDs */
+	system("echo -ne \"\\x40\\x00\\xff\" > /dev/spidev1.1");
+	system("echo -ne \"\\x40\\x01\\xff\" > /dev/spidev1.1");
+
+	/* Turn off RGB LEDs */
+	system("config-pin p1.33 low"); /* Red */
+	system("config-pin p2.1 low"); /* Green */
+	system("config-pin p1.36 low"); /* Blue */
+
+	beagle_notice("leds", "off");
+
+	/* No idea what to do with light sensor */
+
+	/* Read accelerometer */
+	fd_accel = open("/dev/i2c-2", O_RDWR);
+	if (file < 0) {
+		fail++;
+	}
+	beagle_notice("accel", fail ? "fail" : "pass");
+	// https://gist.github.com/jadonk/72b230c6f457527490aece08c00c005d
+
+	/* Write EEPROM */
+	memcpy(str, cape_eeprom, 88);
+	strcpy(&str[6], capes[id].name);	/* board name */
+	memcpy(&str[38], &scan_value[4], 4);	/* board version */
+	strcpy(&str[58], capes[id].id_str);	/* part number */
+	strncpy(&str[76], &scan_value[8], 16);	/* serial number */
+	str[89] = 0;
+	lseek(fd_sn, 0, SEEK_SET);
+	r = write(fd_sn, str, 88);
+	lseek(fd_sn, 0, SEEK_SET);
+	r = read(fd_sn, str2, 88);
+	str2[89] = 0;
+	beagle_notice("name", &str2[6]);
+	beagle_notice("ver/mfr", &str2[38]);
+	beagle_notice("partno", &str2[58]);
+	beagle_notice("serial", &str2[76]);
+	fail = memcmp(str, str2, 88) ? (fail+1) : fail;
+	beagle_notice("eeprom", fail ? "fail" : "pass");
+
+	/* Finish */
+	close(fd_sn);
 	return(fail);
 }
 
