@@ -4461,7 +4461,7 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 
 	/* Read accelerometer */
 	fd_accel = open("/dev/i2c-2", O_RDWR);
-	if (file < 0) {
+	if (fd_accel < 0) {
 		fail++;
 	}
 	beagle_notice("accel", fail ? "fail" : "pass");
