@@ -4394,10 +4394,13 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 {
 	int r;
 	int fd_sn;
+	int fd_light;
 	char str[90];
 	char str2[90];
+	char *ptr;
 	const char *sleep = "sleep 1";
 	int fd_accel;
+	int addr_accel;
 
 	install_overlay(scan_value, capes[id].id_str);
 
@@ -4414,59 +4417,126 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	str[89] = 0;
 	beagle_notice("name", &str[6]);
 
-	beagle_notice("leds", "on");
+	beagle_notice("7seg", "on");
 
-	/* Tie buttons to LEDs */
+	/* Put buttons into GPIO mode */
 	system("echo gpio > /sys/devices/platform/ocp/ocp:P2_33_pinmux/state");
-	system("echo gpio > /sys/class/leds/beaglebone:green:usr3/trigger");
-	system("echo 1 > /sys/class/leds/beaglebone:green:usr3/inverted");
-	system("echo 45 > /sys/class/leds/beaglebone:green:usr3/gpio");
-
 	system("echo gpio > /sys/devices/platform/ocp/ocp:P1_29_pinmux/state");
-	system("echo gpio > /sys/class/leds/beaglebone:green:usr2/trigger");
-	system("echo 1 > /sys/class/leds/beaglebone:green:usr2/inverted");
-	system("echo 117 > /sys/class/leds/beaglebone:green:usr2/gpio");
 
-	/* Turn on all SPI GPIO expander LEDs */
-	system("echo spi > /sys/devices/platform/ocp/ocp:P2_25_pinmux/state");
-	system("echo spi_sclk > /sys/devices/platform/ocp/ocp:P2_29_pinmux/state");
-	system("echo spi_cs > /sys/devices/platform/ocp/ocp:P2_31_pinmux/state");
-	system("echo -ne \"\\x40\\x00\\x80\" > /dev/spidev1.1");
-	system("echo -ne \"\\x40\\x01\\x80\" > /dev/spidev1.1");
+	/* Tie left button to left SPI GPIO expander seven segment LED */
+	system("echo gpio > /sys/class/leds/techlab::seg0/trigger");
+	system("echo 45 > /sys/class/leds/techlab::seg0/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg0/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg1/trigger");
+	system("echo 45 > /sys/class/leds/techlab::seg1/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg1/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg2/trigger");
+	system("echo 45 > /sys/class/leds/techlab::seg2/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg2/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg3/trigger");
+	system("echo 45 > /sys/class/leds/techlab::seg3/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg3/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg4/trigger");
+	system("echo 45 > /sys/class/leds/techlab::seg4/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg4/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg5/trigger");
+	system("echo 45 > /sys/class/leds/techlab::seg5/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg5/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg6/trigger");
+	system("echo 45 > /sys/class/leds/techlab::seg6/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg6/brightness");
 
-	/* Turn on RGB LEDs */
-	system("config-pin p1.33 high"); /* Red */
-	system("config-pin p2.1 high"); /* Green */
-	system("config-pin p1.36 high"); /* Blue */
+	/* Tie right button to left SPI GPIO expander seven segment LED */
+	system("echo gpio > /sys/class/leds/techlab::seg8/trigger");
+	system("echo 117 > /sys/class/leds/techlab::seg8/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg8/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg9/trigger");
+	system("echo 117 > /sys/class/leds/techlab::seg9/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg9/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg10/trigger");
+	system("echo 117 > /sys/class/leds/techlab::seg10/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg10/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg11/trigger");
+	system("echo 117 > /sys/class/leds/techlab::seg11/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg11/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg12/trigger");
+	system("echo 117 > /sys/class/leds/techlab::seg12/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg12/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg13/trigger");
+	system("echo 117 > /sys/class/leds/techlab::seg13/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg13/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg14/trigger");
+	system("echo 117 > /sys/class/leds/techlab::seg14/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg14/brightness");
+	system("echo gpio > /sys/class/leds/techlab::seg15/trigger");
+	system("echo 117 > /sys/class/leds/techlab::seg15/gpio");
+	system("echo 255 > /sys/class/leds/techlab::seg15/brightness");
 
+	/* Tie left button to red LED */
+	//system("echo pwm > /sys/devices/platform/ocp/ocp:P1_33_pinmux/state");
+	//system("echo gpio > /sys/class/leds/techlab::red/trigger");
+	//system("echo 45 > /sys/class/leds/techlab::red/gpio");
+	//system("echo 255 > /sys/class/leds/techlab::red/brightness");
+
+	/* Tie right button to green LED */
+	//system("echo pwm > /sys/devices/platform/ocp/ocp:P2_01_pinmux/state");
+	//system("echo gpio > /sys/class/leds/techlab::green/trigger");
+	//system("echo 117 > /sys/class/leds/techlab::green/gpio");
+	//system("echo 255 > /sys/class/leds/techlab::green/brightness");
+
+	/* Blink blue LED */
+	//system("echo pwm > /sys/devices/platform/ocp/ocp:P1_36_pinmux/state");
+	//system("echo timer > /sys/class/leds/techlab::blue/trigger");
+	//system("echo 155 > /sys/class/leds/techlab::green/brightness");
+	
 	/* Make tone on buzzer */
 	// Make sure buzz.out is copied over to /lib/firmware/am335x-pru0-fw
+	beagle_notice("buzzer", "tone");
 	system("bash -c 'echo pruout > /sys/devices/platform/ocp/ocp:P2_30_pinmux/state'");
 	system("bash -c 'echo stop > /sys/devices/platform/ocp/4a326000.pruss-soc-bus/4a300000.pruss/4a33*000.pru0/remoteproc/remoteproc*/state'");
 	system("bash -c 'echo start > /sys/devices/platform/ocp/4a326000.pruss-soc-bus/4a300000.pruss/4a33*000.pru0/remoteproc/remoteproc*/state'");
 
+	/* Turn on red LED */
+	beagle_notice("led", "red");
+	system("echo pwm > /sys/devices/platform/ocp/ocp:P1_33_pinmux/state");
+	system("echo default-on > /sys/class/leds/techlab::red/trigger");
 	system(sleep);
+	system("echo none > /sys/class/leds/techlab::red/trigger");
 
-	/* Turn off all SPI GPIO expander LEDs */
-	system("echo -ne \"\\x40\\x00\\xff\" > /dev/spidev1.1");
-	system("echo -ne \"\\x40\\x01\\xff\" > /dev/spidev1.1");
+	/* Turn on green LED */
+	beagle_notice("led", "green");
+	system("echo default-on > /sys/class/leds/techlab::green/trigger");
+	system(sleep);
+	system("echo none > /sys/class/leds/techlab::green/trigger");
 
-	/* Turn off RGB LEDs */
-	system("config-pin p1.33 low"); /* Red */
-	system("config-pin p2.1 low"); /* Green */
-	system("config-pin p1.36 low"); /* Blue */
+	/* Turn on blue LED */
+	beagle_notice("led", "blue");
+	system("echo default-on > /sys/class/leds/techlab::blue/trigger");
+	system(sleep);
+	system("echo none > /sys/class/leds/techlab::blue/trigger");
 
-	beagle_notice("leds", "off");
+	/* Just a single light sensor reading */
+	fd_light = open("/sys/bus/iio/devices/iio:device0/in_voltage0_raw", O_RDWR);
+	lseek(fd_light, 0, SEEK_SET);
+	r = read(fd_light, str, 5);
+	if(r < 0)
+		printf("Light sensor read failure in test_techlab_cape()\n");
+	ptr = strtok(str, "\n");
+	beagle_notice("light", ptr);
 
-	/* No idea what to do with light sensor */
 
 	/* Read accelerometer */
+	// i2cset -y 2 0x1c 0x2a 0x01
+	// watch -n0 i2cdump -y 2 0x1c
 	fd_accel = open("/dev/i2c-2", O_RDWR);
 	if (fd_accel < 0) {
 		fail++;
 	}
+	addr_accel = 0x1c;
+	if (ioctl(fd_accel, I2C_SLAVE, addr_accel) < 0) {
+		fail++;
+	}
 	beagle_notice("accel", fail ? "fail" : "pass");
-	// https://gist.github.com/jadonk/72b230c6f457527490aece08c00c005d
 
 	/* Write EEPROM */
 	memcpy(str, cape_eeprom, 88);
