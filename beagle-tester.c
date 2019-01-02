@@ -4440,9 +4440,10 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	system("config-pin p1.36 high"); /* Blue */
 
 	/* Make tone on buzzer */
-	// config-pin p2.30 pruout
-	// https://gist.github.com/jadonk/9965fa50384f349a21db376c8bace37b
-	// make TARGET=buzz PRUN=pru0
+	// Make sure buzz.out is copied over to /lib/firmware/am335x-pru0-fw
+	system("bash -c 'echo pruout > /sys/devices/platform/ocp/ocp:P2_30_pinmux/state'");
+	system("bash -c 'echo stop > /sys/devices/platform/ocp/4a326000.pruss-soc-bus/4a300000.pruss/4a33*000.pru0/remoteproc/remoteproc*/state'");
+	system("bash -c 'echo start > /sys/devices/platform/ocp/4a326000.pruss-soc-bus/4a300000.pruss/4a33*000.pru0/remoteproc/remoteproc*/state'");
 
 	system(sleep);
 
