@@ -27,6 +27,7 @@ install:
 	$(INSTALL) -m 644 beagle-tester.service $(DESTDIR)/lib/systemd/system
 	$(INSTALL) -m 755 -d $(DESTDIR)/etc/udev/rules.d
 	$(INSTALL) -m 644 beagle-tester.rules $(DESTDIR)/etc/udev/rules.d
+	$(INSTALL) -m 755 -d $(DESTDIR)/lib/firmware
 	$(INSTALL) -m 644 buzz.out $(DESTDIR)/lib/firmware/am335x-pru0-fw
 	$(MAKE) -C images -s install
 	#systemctl stop beagle-tester.service || true
