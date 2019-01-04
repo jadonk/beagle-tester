@@ -4400,8 +4400,6 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	char *ptr;
 	const char *sleep = "sleep 1";
 	int fd_accel;
-	int addr_accel;
-	char buf[3];
 
 	install_overlay(scan_value, capes[id].id_str);
 
@@ -4526,25 +4524,16 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	beagle_notice("light", ptr);
 
 	/* Read accelerometer */
-	// i2cset -y 2 0x1c 0x2a 0x01
-	// watch -n0 i2cdump -y 2 0x1c
-	fd_accel = open("/dev/i2c-2", O_RDWR);
-	if (fd_accel < 0) {
+	fd_accel = open("/sys/bus/iio/devices/iio:device1/in_accel_x_raw", O_RDWR);
+	lseek(fd_accel, 0, SEEK_SET);
+	r = read(fd_accel, str, 5);
+	if(r < 0) {
 		fail++;
+		ptr = (char *)"fail";
+	} else {
+		ptr = strtok(str, "\n");
 	}
-	addr_accel = 0x1c;
-	if (ioctl(fd_accel, I2C_SLAVE, addr_accel) < 0) {
-		fail++;
-	}
-	buf[0] = 0x2a;
-	buf[1] = 0x01;
-	if (write(fd_accel,buf,2) != 2) {
-		fail++;
-	}
-	if (read(fd_accel,buf,2) != 2) {
-		fail++;
-	}
-	beagle_notice("accel", fail ? "fail" : "pass");
+	beagle_notice("accel", str);
 
 	/* Write EEPROM */
 	memcpy(str, cape_eeprom, 88);
