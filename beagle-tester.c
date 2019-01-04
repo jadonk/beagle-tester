@@ -4401,6 +4401,7 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	const char *sleep = "sleep 1";
 	int fd_accel;
 	int addr_accel;
+	char buf[3];
 
 	install_overlay(scan_value, capes[id].id_str);
 
@@ -4524,7 +4525,6 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	ptr = strtok(str, "\n");
 	beagle_notice("light", ptr);
 
-
 	/* Read accelerometer */
 	// i2cset -y 2 0x1c 0x2a 0x01
 	// watch -n0 i2cdump -y 2 0x1c
@@ -4534,6 +4534,14 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	}
 	addr_accel = 0x1c;
 	if (ioctl(fd_accel, I2C_SLAVE, addr_accel) < 0) {
+		fail++;
+	}
+	buf[0] = 0x2a;
+	buf[1] = 0x01;
+	if (write(fd_accel,buf,2) != 2) {
+		fail++;
+	}
+	if (read(fd_accel,buf,2) != 2) {
 		fail++;
 	}
 	beagle_notice("accel", fail ? "fail" : "pass");
