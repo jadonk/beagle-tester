@@ -4492,8 +4492,8 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	// Make sure buzz.out is copied over to /lib/firmware/am335x-pru0-fw
 	beagle_notice("buzzer", "tone");
 	system("bash -c 'echo pruout > /sys/devices/platform/ocp/ocp:P2_30_pinmux/state'");
-	system("bash -c 'echo stop > /sys/devices/platform/ocp/4a326000.pruss-soc-bus/4a300000.pruss/4a33*000.pru0/remoteproc/remoteproc*/state'");
-	system("bash -c 'echo start > /sys/devices/platform/ocp/4a326000.pruss-soc-bus/4a300000.pruss/4a33*000.pru0/remoteproc/remoteproc*/state'");
+	system("bash -c 'echo stop > /sys/class/remoteproc/remoteproc1/state'");
+	system("bash -c 'echo start > /sys/class/remoteproc/remoteproc1/state'");
 
 	/* Turn on red LED */
 	beagle_notice("led", "red");
