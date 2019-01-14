@@ -4423,71 +4423,53 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	system("echo gpio > /sys/devices/platform/ocp/ocp:P1_29_pinmux/state");
 
 	/* Tie left button to left SPI GPIO expander seven segment LED */
-	system("echo gpio > /sys/class/leds/techlab::seg0/trigger");
+	set_led_trigger("techlab::seg0", "gpio");
+	set_led_trigger("techlab::seg1", "gpio");
+	set_led_trigger("techlab::seg2", "gpio");
+	set_led_trigger("techlab::seg3", "gpio");
+	set_led_trigger("techlab::seg4", "gpio");
+	set_led_trigger("techlab::seg5", "gpio");
+	set_led_trigger("techlab::seg6", "gpio");
 	system("echo 45 > /sys/class/leds/techlab::seg0/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg0/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg1/trigger");
 	system("echo 45 > /sys/class/leds/techlab::seg1/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg1/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg2/trigger");
 	system("echo 45 > /sys/class/leds/techlab::seg2/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg2/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg3/trigger");
 	system("echo 45 > /sys/class/leds/techlab::seg3/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg3/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg4/trigger");
 	system("echo 45 > /sys/class/leds/techlab::seg4/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg4/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg5/trigger");
 	system("echo 45 > /sys/class/leds/techlab::seg5/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg5/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg6/trigger");
 	system("echo 45 > /sys/class/leds/techlab::seg6/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg6/brightness");
 
 	/* Tie right button to left SPI GPIO expander seven segment LED */
-	system("echo gpio > /sys/class/leds/techlab::seg8/trigger");
+	set_led_trigger("techlab::seg8", "gpio");
+	set_led_trigger("techlab::seg9", "gpio");
+	set_led_trigger("techlab::seg10", "gpio");
+	set_led_trigger("techlab::seg11", "gpio");
+	set_led_trigger("techlab::seg12", "gpio");
+	set_led_trigger("techlab::seg13", "gpio");
+	set_led_trigger("techlab::seg14", "gpio");
 	system("echo 117 > /sys/class/leds/techlab::seg8/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg8/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg9/trigger");
 	system("echo 117 > /sys/class/leds/techlab::seg9/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg9/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg10/trigger");
 	system("echo 117 > /sys/class/leds/techlab::seg10/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg10/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg11/trigger");
 	system("echo 117 > /sys/class/leds/techlab::seg11/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg11/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg12/trigger");
 	system("echo 117 > /sys/class/leds/techlab::seg12/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg12/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg13/trigger");
 	system("echo 117 > /sys/class/leds/techlab::seg13/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg13/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg14/trigger");
 	system("echo 117 > /sys/class/leds/techlab::seg14/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg14/brightness");
-	system("echo gpio > /sys/class/leds/techlab::seg15/trigger");
 	system("echo 117 > /sys/class/leds/techlab::seg15/gpio");
 	system("echo 255 > /sys/class/leds/techlab::seg15/brightness");
 
-	/* Tie left button to red LED */
-	//system("echo pwm > /sys/devices/platform/ocp/ocp:P1_33_pinmux/state");
-	//system("echo gpio > /sys/class/leds/techlab::red/trigger");
-	//system("echo 45 > /sys/class/leds/techlab::red/gpio");
-	//system("echo 255 > /sys/class/leds/techlab::red/brightness");
-
-	/* Tie right button to green LED */
-	//system("echo pwm > /sys/devices/platform/ocp/ocp:P2_01_pinmux/state");
-	//system("echo gpio > /sys/class/leds/techlab::green/trigger");
-	//system("echo 117 > /sys/class/leds/techlab::green/gpio");
-	//system("echo 255 > /sys/class/leds/techlab::green/brightness");
-
-	/* Blink blue LED */
-	//system("echo pwm > /sys/devices/platform/ocp/ocp:P1_36_pinmux/state");
-	//system("echo timer > /sys/class/leds/techlab::blue/trigger");
-	//system("echo 155 > /sys/class/leds/techlab::green/brightness");
-	
 	/* Make tone on buzzer */
 	// Make sure buzz.out is copied over to /lib/firmware/am335x-pru0-fw
 	beagle_notice("buzzer", "tone");
@@ -4498,21 +4480,21 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	/* Turn on red LED */
 	beagle_notice("led", "red");
 	system("echo pwm > /sys/devices/platform/ocp/ocp:P1_33_pinmux/state");
-	system("echo default-on > /sys/class/leds/techlab::red/trigger");
+	set_led_trigger("techlab::red", "default-on");
 	system(sleep);
-	system("echo none > /sys/class/leds/techlab::red/trigger");
+	set_led_trigger("techlab::red", "none");
 
 	/* Turn on green LED */
 	beagle_notice("led", "green");
-	system("echo default-on > /sys/class/leds/techlab::green/trigger");
+	set_led_trigger("techlab::green", "default-on");
 	system(sleep);
-	system("echo none > /sys/class/leds/techlab::green/trigger");
+	set_led_trigger("techlab::green", "none");
 
 	/* Turn on blue LED */
 	beagle_notice("led", "blue");
-	system("echo default-on > /sys/class/leds/techlab::blue/trigger");
+	set_led_trigger("techlab::blue", "default-on");
 	system(sleep);
-	system("echo none > /sys/class/leds/techlab::blue/trigger");
+	set_led_trigger("techlab::blue", "none");
 
 	/* Just a single light sensor reading */
 	fd_light = open("/sys/bus/iio/devices/iio:device0/in_voltage0_raw", O_RDWR);
@@ -4553,6 +4535,11 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	beagle_notice("serial", &str2[76]);
 	fail = memcmp(str, str2, 88) ? (fail+1) : fail;
 	beagle_notice("eeprom", fail ? "fail" : "pass");
+
+	if(fail)
+		set_led_trigger("techlab::red", "timer");
+	else
+		set_led_trigger("techlab::green", "timer");
 
 	/* Finish */
 	close(fd_sn);
