@@ -3414,7 +3414,7 @@ void beagle_test(const char *scan_value)
 {
 	int r;
 	int fd_sn;
-	char str[70];
+	char str[120];
 	char str2[50];
 	char wlan0_ap[50];
 	char wlan0_host[50];
@@ -3824,8 +3824,8 @@ int test_comms_cape(const char *scan_value, unsigned id)
 {
 	int r;
 	int fd_sn;
-	char str[90];
-	char str2[90];
+	char str[120];
+	char str2[120];
 
 	install_overlay(scan_value, capes[id].id_str);
 
@@ -3888,8 +3888,8 @@ int test_load_cape(const char *scan_value, unsigned id)
 {
 	int r;
 	int fd_sn;
-	char str[90];
-	char str2[90];
+	char str[120];
+	char str2[120];
 
 	install_overlay(scan_value, capes[id].id_str);
 
@@ -3938,8 +3938,8 @@ int test_motor_cape(const char *scan_value, unsigned id)
 {
 	int r;
 	int fd_sn;
-	char str[90];
-	char str2[90];
+	char str[120];
+	char str2[120];
 	const char *sleep = "sleep 1";
 
 	install_overlay(scan_value, capes[id].id_str);
@@ -4050,8 +4050,8 @@ int test_proto_cape(const char *scan_value, unsigned id)
 {
 	int r;
 	int fd_sn;
-	char str[90];
-	char str2[90];
+	char str[120];
+	char str2[120];
 
 	install_overlay(scan_value, capes[id].id_str);
 
@@ -4095,8 +4095,8 @@ int test_relay_cape(const char *scan_value, unsigned id)
 {
 	int r;
 	int fd_sn;
-	char str[90];
-	char str2[90];
+	char str[120];
+	char str2[120];
 
 	install_overlay(scan_value, capes[id].id_str);
 
@@ -4156,8 +4156,8 @@ int test_servo_cape(const char *scan_value, unsigned id)
 {
 	int r;
 	int fd_sn;
-	char str[90];
-	char str2[90];
+	char str[120];
+	char str2[120];
 	const char *sleep = "sleep 1";
 
 	install_overlay(scan_value, capes[id].id_str);
@@ -4334,8 +4334,8 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 {
 	int r;
 	int fd_sn;
-	char str[90];
-	char str2[90];
+	char str[120];
+	char str2[120];
 	const char *sleep = "sleep 1";
 
 	install_overlay(scan_value, capes[id].id_str);
@@ -4402,8 +4402,8 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	int r;
 	int fd_sn;
 	int fd_light;
-	char str[90];
-	char str2[90];
+	char str[120];
+	char str2[120];
 	char *ptr;
 	const char *sleep = "sleep 1";
 	int fd_accel;
