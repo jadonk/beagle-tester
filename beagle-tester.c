@@ -3704,6 +3704,8 @@ void do_colorbar()
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1360x768.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 1920)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1920x1080.raw.xz > /dev/fb0");
+		else if (fb_info.var.xres == 128)
+			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-128x160.raw.xz > /dev/fb0");
 		else
 			system("cat /dev/zero > /dev/fb0");
 		init = 1;
@@ -4352,8 +4354,8 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 	beagle_notice("name", &str[6]);
 
 	/* Light up LEDs */
-	system("echo timer > /sys/class/leds/gamepup::left/trigger");
-	system("echo timer > /sys/class/leds/gamepup::right/trigger");
+	set_led_trigger("gamepup::left", "default-on");
+	set_led_trigger("gamepup::right", "default-on");
 
 	/* Make tone on buzzer */
 	system("echo pwm > /sys/devices/platform/ocp/ocp:P1_33_pinmux/state");
@@ -4383,6 +4385,11 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 	beagle_notice("serial", &str2[76]);
 	fail = memcmp(str, str2, 88) ? 1 : 0;
 	beagle_notice("eeprom", fail ? "fail" : "pass");
+
+	if(fail) {
+		set_led_trigger("gamepup::left", "timer");
+		set_led_trigger("gamepup::right", "timer");
+	}
 
 	/* Finish */
 	close(fd_sn);
