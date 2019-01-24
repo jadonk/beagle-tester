@@ -35,22 +35,30 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
 
 Each board that has an on-board EEPROM should have an associated 16 digit serial number placed onto a barcode on the board.
 
-The first 4 ASCII characters indicate the board type:
+### The first 4 ASCII characters indicate the board type:
 
 * BeagleBone Black - 00C0
 * BeagleBone Black Wireless - BWA5
 * BeagleBone Blue - BLA2
+* PocketBeagle GamePup Cape - PC00
+* PocketBeagle TechLab Cape - PC01
 
-The second 4 characters should indicate the manufacturing week in the format YYWW, where YY is currently 16 and WW is currently 30.
 
-The next 4 characters should be a manufacturer-specific product code. If you are a new manufacturer, please choose something unique you can use to identify your boards.
+### The second 4 characters should: 
+* For non-capes, indicate the manufacturing week in the format YYWW, where YY is currently 19 and WW is currently 03.
+* For capes, indicate the revision level, such as 00A3.
 
-Allocations include, but are not limited to: 
+### The next 4 characters should:
+* For capes, indicate the manufacturing week in the format YYWW, where YY is currently 19 and WW is currently 03. Capes have exclusive manufacturers, so the manufaturer-specific product code can be left off.
+* For non-capes, be a manufacturer-specific product code. If you are a new manufacturer, please choose something unique you can use to identify your boards.
+
+Manuracturer-specific allocations include, but are not limited to: 
 
 * BBGW for GHI manufactured BeagleBone Black Wireless
 * ELnn for Embest manufactured BeagleBone Blue
 
-The final 4 characters are a sequential decimal number. If more than 10,000 boards are manufactured that week, roll over the top digit to an ASCII hex character.
+### The final 4 characters should:
+* Be a sequential decimal number. If more than 10,000 boards are manufactured that week, roll over the top digit to an ASCII hex character.
 
 # BeagleBone Black
 
