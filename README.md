@@ -18,9 +18,13 @@ Download the latest releases bundled in Buildroot at https://github.com/beaglebo
 * [Datalogic QuickScan L](http://www.datalogic.com/eng/products/automatic-data-capture/general-duty-handheld-scanners/quickscan-l-qd2300-pd-166.html) - VID:05f9 "PSC Scanning, Inc." PID:2204 
 * [Intermec SG20 General Duty 1D/2D Handheld Scanner](http://www.intermec.com/products/scansg20t/) - VID:067E PID: 0801
 
+## EEPROM jumper wire
+
+The step of connecting the EEPROM jumper wire is not mentioned in the steps below. The steps below may be followed by those who are not doing this in a production environment, but may instead simply be doing this to validate their hardware. Please connect the EEPROM jumper wire as needed for each board in production.
+
 ## Software setup
 
-For production, the boards should be flashed with an approved production image ahead of beginning this test. No additional software setup steps should be performed. The first 12 characters of the EEPROM should also be valid ahead of running this test, though the additional serial number characters need not and should not be programmed until this test is run.
+For production, the boards should be flashed with an approved production image ahead of beginning this test. No additional software setup steps should be performed. For non-capes, the first 12 characters of the EEPROM should also be valid ahead of running this test, though the additional serial number characters need not and should not be programmed until this test is run.
 
 If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleboard.org/latest-images), perform:
 
@@ -42,7 +46,6 @@ Each board that has an on-board EEPROM should have an associated 16 digit serial
 * BeagleBone Blue - BLA2
 * PocketBeagle GamePup Cape - PC00
 * PocketBeagle TechLab Cape - PC01
-
 
 ### The second 4 characters should: 
 * For non-capes, indicate the manufacturing week in the format YYWW, where YY is currently 19 and WW is currently 03.
@@ -214,7 +217,6 @@ Manuracturer-specific allocations include, but are not limited to:
 
 # TechLab
 
-
 ## Required equipment
 
 * _Host_: PocketBeagle used to execute the test with programmed microSD inserted
@@ -226,15 +228,17 @@ Manuracturer-specific allocations include, but are not limited to:
 
 1. Connect _host_ and _DUT_
 2. Connect _power_ to _host_
-3. Wait for "heartbeat" on _Host_ LEDs
+3. Wait for "heartbeat" on _host_ LED USR0
 4. Connect _scanner_ to _DUT_
-5. Scan barcode to begin the test
-.
-.
-.
-6. Observe tone played from _DUT_
-.
-.
-.
-11. Disconnect _power_
-12. Disconnect _host_
+5. Wait for all _host_ USRx LEDs to be on solid
+6. Scan barcode to begin the test
+7. Observe all 14 seven segment LEDs to turn on
+8. Observe tone played from _DUT_
+0. Observe RGB LED cycle through red-green-blue
+10. Observe all _host_ USRx LEDs to be on solid again
+11. Observe RGB LED to be flashing green (not red)
+12. Press the L button to observe the left seven segment display to turn off
+13. Press the R button to observe the right seven segment display to turn off
+14. Disconnect _scanner_
+15. Disconnect _power_
+16. Disconnect _host_
