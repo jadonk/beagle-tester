@@ -1,11 +1,17 @@
 # beagle-tester
 
+## Buildroot images
+
+Download the latest releases bundled in Buildroot at https://github.com/beagleboard/buildroot/releases
+
 ## Supported boards
 
 * [BeagleBone Black](#beaglebone-black)
 * [BeagleBone Black Wireless](#beaglebone-black-wireless)
 * [BeagleBone Blue](#beaglebone-blue)
 * [BeagleBoard-xM](#beagleboard-xm)
+* [PocketBeagle GamePup Cape](#gamepup)
+* [PocketBeagle TechLab Cape](#techlab)
 
 ## Supported scanners
 
@@ -159,3 +165,67 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 
 [cispr]: https://raw.githubusercontent.com/jadonk/beagle-tester/master/images/itu-r-bt1729-colorbar-3200x1800.png
 [xm-pass]: https://farm1.staticflickr.com/531/31402272653_86721d4fa5_o_d.png
+
+# GamePup
+
+## Required equipment
+
+* _Host_: PocketBeagle used to execute the test with programmed microSD inserted
+* _Scanner_: A supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
+* _Power_: Approved 5V power brick with microUSB cable
+* _DUT_: GapePup Cape (device) under test
+
+## Test steps
+
+1. Connect _host_ and _DUT_
+2. Connect _power_ to _host_
+3. Wait for "heartbeat" on _Host_ LEDs
+4. Connect _scanner_ to _DUT_
+5. Scan barcode to begin the test
+6. Observe tone played from _DUT_
+7. Pass or fail will be indicated by a respectively green or red box on the _DUT_
+8. Observe 2 red LEDs on _DUT_ lit steadily
+9. Disconnect _scanner_
+10. Press buttons to observe key presses sent to the console (needs updates for quality testing)
+11. Disconnect _power_
+12. Disconnect _host_
+
+## Buttons
+
+* Select: 5
+* Start: 1
+* Left-Up: up arrow, ^\[\[A
+* Left-Down: down arrow, ^\[\[B
+* Left-Right: right arrow, ^\[\[C
+* Left-Left: left arrow, ^\[\[D
+* Right-Up: ESC
+* Right-Right: TAB
+* Right-Left: p
+* Right-Down: ENTER
+
+# TechLab
+
+
+## Required equipment
+
+* _Host_: PocketBeagle used to execute the test with programmed microSD inserted
+* _Scanner_: A supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
+* _Power_: Approved 5V power brick with microUSB cable
+* _DUT_: TechLab Cape (device) under test
+
+## Test steps
+
+1. Connect _host_ and _DUT_
+2. Connect _power_ to _host_
+3. Wait for "heartbeat" on _Host_ LEDs
+4. Connect _scanner_ to _DUT_
+5. Scan barcode to begin the test
+.
+.
+.
+6. Observe tone played from _DUT_
+.
+.
+.
+11. Disconnect _power_
+12. Disconnect _host_
