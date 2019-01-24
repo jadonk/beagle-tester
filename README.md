@@ -187,16 +187,17 @@ Manuracturer-specific allocations include, but are not limited to:
 
 1. Connect _host_ and _DUT_
 2. Connect _power_ to _host_
-3. Wait for "heartbeat" on _Host_ LEDs
+3. Wait for the LCD on _DUT_ to turn on (should be under 30 seconds)
 4. Connect _scanner_ to _DUT_
-5. Scan barcode to begin the test
-6. Observe tone played from _DUT_
-7. Pass or fail will be indicated by a respectively green or red box on the _DUT_
-8. Observe 2 red LEDs on _DUT_ lit steadily
-9. Disconnect _scanner_
-10. Press buttons to observe key presses sent to the console (needs updates for quality testing)
-11. Disconnect _power_
-12. Disconnect _host_
+5. Wait for the CISPR test animation and audio playback (should be under 5 seconds) ![CISPR image][cispr]
+6. Scan barcode to begin the test
+7. Observe tone played from _DUT_
+8. Pass or fail will be indicated by a respectively green or red box on the LCD on _DUT_
+9. Observe 2 red LEDs on _DUT_ lit steadily
+10. Disconnect _scanner_
+11. Press buttons to observe key presses sent to the console (needs updates for quality testing)
+12. Disconnect _power_
+13. Disconnect _host_
 
 ## Buttons
 
