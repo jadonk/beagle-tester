@@ -18,10 +18,6 @@ Download the latest releases bundled in Buildroot at https://github.com/beaglebo
 * [Datalogic QuickScan L](http://www.datalogic.com/eng/products/automatic-data-capture/general-duty-handheld-scanners/quickscan-l-qd2300-pd-166.html) - VID:05f9 "PSC Scanning, Inc." PID:2204 
 * [Intermec SG20 General Duty 1D/2D Handheld Scanner](http://www.intermec.com/products/scansg20t/) - VID:067E PID: 0801
 
-## EEPROM jumper wire
-
-The step of connecting the EEPROM jumper wire is not mentioned in the steps below. The steps below may be followed by those who are not doing this in a production environment, but may instead simply be doing this to validate their hardware. Please connect the EEPROM jumper wire as needed for each board in production.
-
 ## Software setup
 
 For production, the boards should be flashed with an approved production image ahead of beginning this test. No additional software setup steps should be performed. For non-capes, the first 12 characters of the EEPROM should also be valid ahead of running this test, though the additional serial number characters need not and should not be programmed until this test is run.
@@ -189,18 +185,19 @@ Manuracturer-specific allocations include, but are not limited to:
 ## Test steps
 
 1. Connect _host_ and _DUT_
-2. Connect _power_ to _host_
-3. Wait for the LCD on _DUT_ to turn on (should be under 30 seconds)
-4. Connect _scanner_ to _DUT_
-5. Wait for the CISPR test animation and audio playback (should be under 5 seconds) ![CISPR image][cispr]
-6. Scan barcode to begin the test
-7. Observe tone played from _DUT_
-8. Pass or fail will be indicated by a respectively green or red box on the LCD on _DUT_
-9. Observe 2 red LEDs on _DUT_ lit steadily
-10. Disconnect _scanner_
-11. Press buttons to observe key presses sent to the console (needs updates for quality testing)
-12. Disconnect _power_
-13. Disconnect _host_
+2. Connect a wire across the EEPROM jumper to enable EEPROM writing of board revision and serial number
+3. Connect _power_ to _host_
+4. Wait for the LCD on _DUT_ to turn on (should be under 30 seconds)
+5. Connect _scanner_ to _DUT_
+6. Wait for the CISPR test animation and audio playback (should be under 5 seconds) ![CISPR image][cispr]
+7. Scan barcode to begin the test
+8. Observe tone played from _DUT_
+9. Pass or fail will be indicated by a respectively green or red box on the LCD on _DUT_
+10. Observe 2 red LEDs on _DUT_ lit steadily
+11. Disconnect _scanner_
+12. Press buttons to observe key presses sent to the console (needs updates for quality testing)
+13. Disconnect _power_
+14. Disconnect remaining devices
 
 ## Buttons
 
@@ -227,18 +224,19 @@ Manuracturer-specific allocations include, but are not limited to:
 ## Test steps
 
 1. Connect _host_ and _DUT_
-2. Connect _power_ to _host_
-3. Wait for "heartbeat" on _host_ LED USR0
-4. Connect _scanner_ to _DUT_
-5. Wait for all _host_ USRx LEDs to be on solid
-6. Scan barcode to begin the test
-7. Observe all 14 seven segment LEDs to turn on
-8. Observe tone played from _DUT_
-0. Observe RGB LED cycle through red-green-blue
-10. Observe all _host_ USRx LEDs to be on solid again
-11. Observe RGB LED to be flashing green (not red)
-12. Press the L button to observe the left seven segment display to turn off
-13. Press the R button to observe the right seven segment display to turn off
-14. Disconnect _scanner_
-15. Disconnect _power_
-16. Disconnect _host_
+2. Connect a wire across the EEPROM jumper to enable EEPROM writing of board revision and serial number
+3. Connect _power_ to _host_
+4. Wait for "heartbeat" on _host_ LED USR0
+5. Connect _scanner_ to _DUT_
+6. Wait for all _host_ USRx LEDs to be on solid
+7. Scan barcode to begin the test
+8. Observe all 14 seven segment LEDs to turn on
+9. Observe tone played from _DUT_
+10. Observe RGB LED cycle through red-green-blue
+11. Observe all _host_ USRx LEDs to be on solid again
+12. Observe RGB LED to be flashing green (not red)
+13. Press the L button to observe the left seven segment display to turn off
+14. Press the R button to observe the right seven segment display to turn off
+15. Disconnect _scanner_
+16. Disconnect _power_
+17. Disconnect remaining devices
