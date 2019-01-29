@@ -18,7 +18,7 @@ Download the latest releases bundled in Buildroot at https://github.com/beaglebo
 * [Datalogic QuickScan L](http://www.datalogic.com/eng/products/automatic-data-capture/general-duty-handheld-scanners/quickscan-l-qd2300-pd-166.html) - VID:05f9 "PSC Scanning, Inc." PID:2204 
 * [Intermec SG20 General Duty 1D/2D Handheld Scanner](http://www.intermec.com/products/scansg20t/) - VID:067E PID: 0801
 
-## Software setup
+## _DUT_ software setup
 
 For production, the boards should be flashed with an approved production image ahead of beginning this test. No additional software setup steps should be performed. For non-capes, the first 12 characters of the EEPROM should also be valid ahead of running this test, though the additional serial number characters need not and should not be programmed until this test is run.
 
@@ -30,7 +30,11 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
     git clone https://github.com/jadonk/beagle-tester
     cd beagle-tester
     make && make install
-    
+
+## _Host_ software setup
+
+If you are running Windows as the _host_, make sure you [disable the Windows Firewall for ICMPv4 packets](https://kb.iu.edu/d/aopy).
+
 ## Serial number barcode format
 
 Each board that has an on-board EEPROM should have an associated 16 digit serial number placed onto a barcode on the board.
