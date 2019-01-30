@@ -1,20 +1,26 @@
 # beagle-tester
 
+## Buildroot images
+
+Download the latest releases bundled in Buildroot at https://github.com/beagleboard/buildroot/releases
+
 ## Supported boards
 
 * [BeagleBone Black](#beaglebone-black)
 * [BeagleBone Black Wireless](#beaglebone-black-wireless)
 * [BeagleBone Blue](#beaglebone-blue)
 * [BeagleBoard-xM](#beagleboard-xm)
+* [PocketBeagle GamePup Cape](#gamepup)
+* [PocketBeagle TechLab Cape](#techlab)
 
 ## Supported scanners
 
 * [Datalogic QuickScan L](http://www.datalogic.com/eng/products/automatic-data-capture/general-duty-handheld-scanners/quickscan-l-qd2300-pd-166.html) - VID:05f9 "PSC Scanning, Inc." PID:2204 
 * [Intermec SG20 General Duty 1D/2D Handheld Scanner](http://www.intermec.com/products/scansg20t/) - VID:067E PID: 0801
 
-## Software setup
+## _DUT_ software setup
 
-For production, the boards should be flashed with an approved production image ahead of beginning this test. No additional software setup steps should be performed. The first 12 characters of the EEPROM should also be valid ahead of running this test, though the additional serial number characters need not and should not be programmed until this test is run.
+For production, the boards should be flashed with an approved production image ahead of beginning this test. No additional software setup steps should be performed. For non-capes, the first 12 characters of the EEPROM should also be valid ahead of running this test, though the additional serial number characters need not and should not be programmed until this test is run.
 
 If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleboard.org/latest-images), perform:
 
@@ -24,27 +30,38 @@ If not already setup, on a recent [BeagleBoard.org Debian image](https://beagleb
     git clone https://github.com/jadonk/beagle-tester
     cd beagle-tester
     make && make install
-    
+
+## _Host_ software setup
+
+If you are running Windows as the _host_, make sure you [disable the Windows Firewall for ICMPv4 packets](https://kb.iu.edu/d/aopy).
+
 ## Serial number barcode format
 
 Each board that has an on-board EEPROM should have an associated 16 digit serial number placed onto a barcode on the board.
 
-The first 4 ASCII characters indicate the board type:
+### The first 4 ASCII characters indicate the board type:
 
 * BeagleBone Black - 00C0
 * BeagleBone Black Wireless - BWA5
 * BeagleBone Blue - BLA2
+* PocketBeagle GamePup Cape - PC00
+* PocketBeagle TechLab Cape - PC01
 
-The second 4 characters should indicate the manufacturing week in the format YYWW, where YY is currently 16 and WW is currently 30.
+### The second 4 characters should: 
+* For non-capes, indicate the manufacturing week in the format YYWW, where YY is currently 19 and WW is currently 03.
+* For capes, indicate the revision level, such as 00A3.
 
-The next 4 characters should be a manufacturer-specific product code. If you are a new manufacturer, please choose something unique you can use to identify your boards.
+### The next 4 characters should:
+* For capes, indicate the manufacturing week in the format YYWW, where YY is currently 19 and WW is currently 03. Capes have exclusive manufacturers, so the manufaturer-specific product code can be left off.
+* For non-capes, be a manufacturer-specific product code. If you are a new manufacturer, please choose something unique you can use to identify your boards.
 
-Allocations include, but are not limited to: 
+Manuracturer-specific allocations include, but are not limited to: 
 
 * BBGW for GHI manufactured BeagleBone Black Wireless
 * ELnn for Embest manufactured BeagleBone Blue
 
-The final 4 characters are a sequential decimal number. If more than 10,000 boards are manufactured that week, roll over the top digit to an ASCII hex character.
+### The final 4 characters should:
+* Be a sequential decimal number. If more than 10,000 boards are manufactured that week, roll over the top digit to an ASCII hex character.
 
 # BeagleBone Black
 
@@ -159,3 +176,71 @@ The final 4 characters are a sequential decimal number. If more than 10,000 boar
 
 [cispr]: https://raw.githubusercontent.com/jadonk/beagle-tester/master/images/itu-r-bt1729-colorbar-3200x1800.png
 [xm-pass]: https://farm1.staticflickr.com/531/31402272653_86721d4fa5_o_d.png
+
+# GamePup
+
+## Required equipment
+
+* _Host_: PocketBeagle used to execute the test with programmed microSD inserted
+* _Scanner_: A supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
+* _Power_: Approved 5V power brick with microUSB cable
+* _DUT_: GapePup Cape (device) under test
+
+## Test steps
+
+1. Connect _host_ and _DUT_
+2. Connect a wire across the EEPROM jumper to enable EEPROM writing of board revision and serial number
+3. Connect _power_ to _host_
+4. Wait for the LCD on _DUT_ to turn on (should be under 30 seconds)
+5. Connect _scanner_ to _DUT_
+6. Wait for the CISPR test animation and audio playback (should be under 5 seconds) ![CISPR image][cispr]
+7. Scan barcode to begin the test
+8. Observe tone played from _DUT_
+9. Pass or fail will be indicated by a respectively green or red box on the LCD on _DUT_
+10. Observe 2 red LEDs on _DUT_ lit steadily
+11. Disconnect _scanner_
+12. Press buttons to observe key presses sent to the console (needs updates for quality testing)
+13. Disconnect _power_
+14. Disconnect remaining devices
+
+## Buttons
+
+* Select: 5
+* Start: 1
+* Left-Up: up arrow, ^\[\[A
+* Left-Down: down arrow, ^\[\[B
+* Left-Right: right arrow, ^\[\[C
+* Left-Left: left arrow, ^\[\[D
+* Right-Up: ESC
+* Right-Right: TAB
+* Right-Left: p
+* Right-Down: ENTER
+
+# TechLab
+
+## Required equipment
+
+* _Host_: PocketBeagle used to execute the test with programmed microSD inserted
+* _Scanner_: A supported barcode scanner (listed above) (along with a suitable 16 character barcode on the device under test)
+* _Power_: Approved 5V power brick with microUSB cable
+* _DUT_: TechLab Cape (device) under test
+
+## Test steps
+
+1. Connect _host_ and _DUT_
+2. Connect a wire across the EEPROM jumper to enable EEPROM writing of board revision and serial number
+3. Connect _power_ to _host_
+4. Wait for "heartbeat" on _host_ LED USR0
+5. Connect _scanner_ to _DUT_
+6. Wait for all _host_ USRx LEDs to be on solid
+7. Scan barcode to begin the test
+8. Observe all 14 seven segment LEDs to turn on
+9. Observe tone played from _DUT_
+10. Observe RGB LED cycle through red-green-blue
+11. Observe all _host_ USRx LEDs to be on solid again
+12. Observe RGB LED to be flashing green (not red)
+13. Press the L button to observe the left seven segment display to turn off
+14. Press the R button to observe the right seven segment display to turn off
+15. Disconnect _scanner_
+16. Disconnect _power_
+17. Disconnect remaining devices
