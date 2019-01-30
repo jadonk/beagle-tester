@@ -199,7 +199,7 @@ Manuracturer-specific allocations include, but are not limited to:
 9. Pass or fail will be indicated by a respectively green or red box on the LCD on _DUT_
 10. Observe 2 red LEDs on _DUT_ lit steadily
 11. Disconnect _scanner_
-12. Press buttons to observe key presses sent to the console (needs updates for quality testing)
+12. Press buttons to observe key presses sent to the console and different tone played per key
 13. Disconnect _power_
 14. Disconnect remaining devices
 
