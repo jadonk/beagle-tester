@@ -4354,6 +4354,7 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 	beagle_notice("name", &str[6]);
 
 	/* Light up LEDs */
+	beagle_notice("leds", "on");
 	set_led_trigger("gamepup::left", "default-on");
 	set_led_trigger("gamepup::right", "default-on");
 
@@ -4361,11 +4362,18 @@ int test_gamepup_cape(const char *scan_value, unsigned id)
 	system("echo pwm > /sys/devices/platform/ocp/ocp:P1_33_pinmux/state");
 	system("bash -c 'echo 1 > /sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip*/export'");
 	system(sleep);
+	beagle_notice("buzzer", "tone");
 	system("bash -c 'echo 1000000 > /sys/devices/platform/ocp/48300000.*/48300200.*/pwm/pwmchip*/pwm*1/period'");
 	system("bash -c 'echo 500000 > /sys/devices/platform/ocp/48300000.*/48300200.*/pwm/pwmchip*/pwm*1/duty_cycle'");
 	system("bash -c 'echo 1 > /sys/devices/platform/ocp/48300000.*/48300200.*/pwm/pwmchip*/pwm*1/enable'");
 	system(sleep);
 	system("bash -c 'echo 0 > /sys/devices/platform/ocp/48300000.*/48300200.*/pwm/pwmchip*/pwm*1/enable'");
+
+	/* Switch buzzer to PRU enabled via buttons */
+	system("echo pruout > /sys/devices/platform/ocp/ocp:P1_33_pinmux/state");
+	system("echo stop > /sys/class/remoteproc/remoteproc1/state");
+	system("echo gamepup-buzz-on-buttons.out > /sys/class/remoteproc/remoteproc1/firmware");
+	system("echo start > /sys/class/remoteproc/remoteproc1/state");
 
 	/* Write EEPROM */
 	memcpy(str, cape_eeprom, 88);
@@ -4478,10 +4486,10 @@ int test_techlab_cape(const char *scan_value, unsigned id)
 	system("echo 255 > /sys/class/leds/techlab::seg15/brightness");
 
 	/* Make tone on buzzer */
-	// Make sure buzz.out is copied over to /lib/firmware/am335x-pru0-fw
 	beagle_notice("buzzer", "tone");
 	system("bash -c 'echo pruout > /sys/devices/platform/ocp/ocp:P2_30_pinmux/state'");
 	system("bash -c 'echo stop > /sys/class/remoteproc/remoteproc1/state'");
+	system("echo techlab-buzz.out > /sys/class/remoteproc/remoteproc1/firmware");
 	system("bash -c 'echo start > /sys/class/remoteproc/remoteproc1/state'");
 
 	/* Turn on red LED */

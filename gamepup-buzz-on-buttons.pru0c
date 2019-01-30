@@ -1,0 +1,125 @@
+#include <stdint.h>
+#include <pru_cfg.h>
+#include <pru_ctrl.h>
+#include <stddef.h>
+#include <rsc_types.h>
+
+#define GPIO0 0x44E07000
+#define GPIO1 0x4804C000
+#define GPIO2 0x481AC000
+#define GPIO3 0x481AE000
+#define DATAIN       0x138
+#define CLEARDATAOUT 0x190
+#define SETDATAOUT   0x194
+unsigned int volatile * const GPIO0IN = (unsigned int *) (GPIO0 + DATAIN);
+unsigned int volatile * const GPIO1IN = (unsigned int *) (GPIO1 + DATAIN);
+unsigned int volatile * const GPIO2IN = (unsigned int *) (GPIO2 + DATAIN);
+unsigned int volatile * const GPIO3IN = (unsigned int *) (GPIO3 + DATAIN);
+
+#define LP_LT		(!(*GPIO1IN & (1<<28)))
+#define LP_RT		(!(*GPIO1IN & (1<<26)))
+#define LP_UP		(!(*GPIO1IN & (1<<25)))
+#define LP_DN		(!(*GPIO1IN & (1<<27)))
+#define RP_LT		(!(*GPIO1IN & (1<<12)))
+#define RP_RT		(!(*GPIO2IN & (1<<0)))
+#define RP_UP		(!(*GPIO1IN & (1<<14)))
+#define RP_DN		(!(*GPIO1IN & (1<<15)))
+#define SELECT		(!(*GPIO3IN & (1<<18)))
+#define START		(!(*GPIO2IN & (1<<24)))
+
+volatile register unsigned int __R30;
+volatile register unsigned int __R31;
+#define BUZZER (1<<1)
+
+#pragma DATA_SECTION(init_pins, ".init_pins")
+#pragma RETAIN(init_pins)
+const char init_pins[] =
+	"/sys/devices/platform/ocp/ocp:P1_33_pinmux/state\0pruout\0" \
+	"\0\0";
+
+void main(void) {
+	unsigned i, j;
+
+	/* Clear SYSCFG[STANDBY_INIT] to enable OCP master port */
+	CT_CFG.SYSCFG_bit.STANDBY_INIT = 0;
+
+        while(1) {
+		if(LP_LT) j=4545;
+		else if(LP_UP) j=4049;
+		else if(LP_RT) j=3822;
+		else if(LP_DN) j=3405;
+		else if(SELECT) j=3034;
+		else if(START) j=2863;
+		else if(RP_LT) j=2551;
+		else if(RP_UP) j=2273;
+		else if(RP_RT) j=2025;
+		else if(RP_DN) j=1911;
+		else j=0;
+	
+		if(j) {
+			__R30 &= ~BUZZER;
+	        	for(i=0; i<j; i++)
+	        		__delay_cycles(100);
+			__R30 |= BUZZER;
+	        	for(i=0; i<j; i++)
+	        		__delay_cycles(100);
+		}
+        }
+}
+
+struct my_resource_table {
+        struct resource_table base;
+
+        uint32_t offset[1]; /* Should match 'num' in actual definition */
+};
+
+#pragma DATA_SECTION(pru_remoteproc_ResourceTable, ".resource_table")
+#pragma RETAIN(pru_remoteproc_ResourceTable)
+struct my_resource_table pru_remoteproc_ResourceTable = {
+        1,      /* we're the first version that implements this */
+        0,      /* number of entries in the table */
+        0, 0,   /* reserved, must be zero */
+        0,      /* offset[0] */
+};
+
+/*
+ * Copyright (C) 2018 Jason Kridner <jdk@ti.com>, Texas Instruments Incorporated
+ *
+ * Source Modified by Zubeen Tolani < ZeekHuge - zeekhuge@gmail.com >
+ * Based on the examples distributed by TI
+ *
+ * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *      * Redistributions of source code must retain the above copyright
+ *        notice, this list of conditions and the following disclaimer.
+ *
+ *      * Redistributions in binary form must reproduce the above copyright
+ *        notice, this list of conditions and the following disclaimer in the
+ *        documentation and/or other materials provided with the
+ *        distribution.
+ *
+ *      * Neither the name of Texas Instruments Incorporated nor the names of
+ *        its contributors may be used to endorse or promote products derived
+ *        from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *
+ * This is designed for the keys and buzzer on the PocketBeagle GampePup Cape.
+ */
+ 

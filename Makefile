@@ -28,7 +28,8 @@ install:
 	$(INSTALL) -m 755 -d $(DESTDIR)/etc/udev/rules.d
 	$(INSTALL) -m 644 beagle-tester.rules $(DESTDIR)/etc/udev/rules.d
 	$(INSTALL) -m 755 -d $(DESTDIR)/lib/firmware
-	$(INSTALL) -m 644 buzz.out $(DESTDIR)/lib/firmware/am335x-pru0-fw
+	$(INSTALL) -m 644 techlab-buzz.out $(DESTDIR)/lib/firmware
+	$(INSTALL) -m 644 gamepup-buzz-on-buttons.out $(DESTDIR)/lib/firmware
 	$(MAKE) -C images -s install
 	#systemctl stop beagle-tester.service || true
 	#systemctl daemon-reload || true
