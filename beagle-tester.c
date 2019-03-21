@@ -3014,6 +3014,7 @@ char fontdata_8x8[] = {
 #define MODEL_BONE  "TI AM335x BeagleBone"
 #define MODEL_BLACK "TI AM335x BeagleBone Black"
 #define MODEL_WIFI  "TI AM335x BeagleBone Black Wireless"
+#define MODEL_AI    "TI AM5729 BeagleBone AI"
 #define MODEL_BLUE  "TI AM335x BeagleBone Blue"
 #define MODEL_OSD3358_BSM_REF "Octavo Systems OSD3358-SM-RED"
 #define COLOR_TEXT 0xffffffu
@@ -3144,6 +3145,7 @@ int main(int argc, char** argv)
 	set_led_trigger("beaglebone:green:usr1", "default-on");
 	set_led_trigger("beaglebone:green:usr2", "default-on");
 	set_led_trigger("beaglebone:green:usr3", "default-on");
+	set_led_trigger("beaglebone:green:usr4", "default-on");
 
 	if (access("/dev/fb0", W_OK)) {
 		fprintf(stderr, "Unable to write to /dev/fb0\n");
@@ -3638,21 +3640,17 @@ done:
 		}
 	}
 
-	if (!strcmp(model, MODEL_BLUE)) {
-		if (fail) {
-			set_led_trigger("red", "timer");
-			set_led_trigger("green", "none");
-		} else {
-			set_led_trigger("red", "none");
-			set_led_trigger("green", "timer");
-		}
-	}
-
-	if (!fail) {
+	if (fail) {
+		set_led_trigger("red", "timer");
+		set_led_trigger("green", "none");
+	} else {
 		set_led_trigger("beaglebone:green:usr0", "default-on");
 		set_led_trigger("beaglebone:green:usr1", "default-on");
 		set_led_trigger("beaglebone:green:usr2", "default-on");
 		set_led_trigger("beaglebone:green:usr3", "default-on");
+		set_led_trigger("beaglebone:green:usr4", "default-on");
+		set_led_trigger("red", "none");
+		set_led_trigger("green", "timer");
 	}
 }
 
@@ -3808,14 +3806,15 @@ void set_user_leds(int code)
 	if (code < 0) {
 		set_led_trigger("beaglebone:green:usr0", "heartbeat");
 		set_led_trigger("beaglebone:green:usr1", "mmc0");
-		//set_led_trigger("beaglebone:green:usr2", "cpu0"); -- seems to no longer exist
-		set_led_trigger("beaglebone:green:usr2", "none");
+		set_led_trigger("beaglebone:green:usr2", "cpu");
 		set_led_trigger("beaglebone:green:usr3", "mmc1");
+		set_led_trigger("beaglebone:green:usr4", "phy0assoc");
 	} else {
 		set_led_trigger("beaglebone:green:usr0", (code & 1) ? "timer" : "none");
 		set_led_trigger("beaglebone:green:usr1", (code & 2) ? "timer" : "none");
 		set_led_trigger("beaglebone:green:usr2", (code & 4) ? "timer" : "none");
 		set_led_trigger("beaglebone:green:usr3", (code & 8) ? "timer" : "none");
+		set_led_trigger("beaglebone:green:usr4", (code & 16) ? "timer" : "none");
 	}
 }
 
