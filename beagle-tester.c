@@ -3682,7 +3682,9 @@ void do_colorbar()
 	int x, y;
 
 	if (!init) {
-		if (fb_info.var.xres == 1280 && fb_info.var.bits_per_pixel == 32)
+		if (fb_info.var.xres == 1920 && fb_info.var.bits_per_pixel == 32)
+			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1920x1080-32.raw.xz > /dev/fb0");
+		else if (fb_info.var.xres == 1280 && fb_info.var.bits_per_pixel == 32)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1280x1024-32.raw.xz > /dev/fb0");
 		else if (fb_info.var.xres == 1024 && fb_info.var.bits_per_pixel == 32)
 			system("xzcat /usr/share/beagle-tester/itu-r-bt1729-colorbar-1024x768-32.raw.xz > /dev/fb0");
