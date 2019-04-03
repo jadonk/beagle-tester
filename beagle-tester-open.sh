@@ -43,4 +43,7 @@ export XAUTHORITY=~debian/.Xauthority
 #xrandr --display :0.0 --addmode default 1280720
 #xrandr --display :0.0 --output default --mode 1280720
 aplay /usr/share/sounds/alsa/Front_Center.wav
+/sbin/bb-connect-ap
+GW=$(ip route show default | awk '/dev wlan0 scope link/ {print $1}')
+ping -s 8184 -i 0.2 -q $GW &
 
