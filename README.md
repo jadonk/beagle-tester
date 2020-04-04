@@ -59,6 +59,7 @@ Manuracturer-specific allocations include, but are not limited to:
 
 * BBGW for GHI manufactured BeagleBone Black Wireless
 * ELnn for Embest manufactured BeagleBone Blue
+* SBB for Seeed BeagleBone Black
 
 ### The final 4 characters should:
 * Be a sequential decimal number. If more than 10,000 boards are manufactured that week, roll over the top digit to an ASCII hex character.
