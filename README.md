@@ -7,6 +7,7 @@ Download the latest releases bundled in Buildroot at https://github.com/beaglebo
 ## Supported boards
 
 * [BeagleBone Black](#beaglebone-black)
+* [BeagleBone Black Industrial](#beaglebone-black)
 * [BeagleBone Black Wireless](#beaglebone-black-wireless)
 * [BeagleBone Blue](#beaglebone-blue)
 * [BeagleBoard-xM](#beagleboard-xm)
@@ -42,6 +43,7 @@ Each board that has an on-board EEPROM should have an associated 16 digit serial
 ### The first 4 ASCII characters indicate the board type:
 
 * BeagleBone Black - 00C0
+* BeagleBone Black Industrial - EIA0
 * BeagleBone Black Wireless - BWA5
 * BeagleBone Blue - BLA2
 * PocketBeagle GamePup Cape - PC00
@@ -59,7 +61,8 @@ Manuracturer-specific allocations include, but are not limited to:
 
 * BBGW for GHI manufactured BeagleBone Black Wireless
 * ELnn for Embest manufactured BeagleBone Blue
-* SBB for Seeed BeagleBone Black
+* SBB for Seeed manufactured BeagleBone Black
+* SBI for Seeed manufactured BeagleBone Black Industrial
 
 ### The final 4 characters should:
 * Be a sequential decimal number. If more than 10,000 boards are manufactured that week, roll over the top digit to an ASCII hex character.
