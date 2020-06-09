@@ -3063,6 +3063,11 @@ int test_techlab_cape(const char *scan_value, unsigned id);
 int test_ppilot_cape(const char *scan_value, unsigned id);
 void install_overlay(const char *scan_value, const char *id_str);
 
+/********************************************/
+/** This structure matches the barcode     **/
+/** header with the test function and info **/
+/** needed to program the cape EEPROM      **/
+/********************************************/
 /* Per https://github.com/beagleboard/capes/blob/master/README.mediawiki */
 static struct cape capes[] = {
 	{ "BC00", "BBORG_COMMS", 0x56, "Industrial Comms Cape", test_comms_cape },
@@ -3159,6 +3164,9 @@ int main(int argc, char** argv)
 	signal(SIGINT, do_stop);
 	signal(SIGTERM, do_stop);
 
+	/********************************************/
+	/** This is the main execution loop        **/
+	/********************************************/
 #ifdef ENABLE_BLUE
 	while (rc_get_state()!=EXITING) {
 #else
@@ -3179,6 +3187,9 @@ int main(int argc, char** argv)
 			rd = read(barcode, ev, sizeof(ev));
 		}
 
+		/********************************************/
+		/** Handle barcode scanner raw input       **/
+		/********************************************/
 		for (i = 0; i < rd; i += (int)sizeof(struct input_event)) {
 			unsigned int type, code, value;
 
@@ -3360,15 +3371,24 @@ int main(int argc, char** argv)
 			//fprintf(stderr, "*"); fflush(stderr);
 		}
 
+		/********************************************/
+		/** Process command-line inputs            **/
+		/********************************************/
 		if(scan_i == 0 && argc > 1) {
 			strcpy(scan_value, argv[argc-1]);
 			run = 1;
 			argc--;
 		}
 
+		/********************************************/
+		/** Display CISPR colorbar while idle      **/
+		/********************************************/
 		if (run == 0) {
 			if (display) do_colorbar();
 		}
+		/********************************************/
+		/** Handle case where STOP is requested    **/
+		/********************************************/
 		if (!strcmp(scan_value, SCAN_VALUE_STOP)) {
 #ifdef ENABLE_BLUE
 			rc_set_state(EXITING);
@@ -3376,7 +3396,11 @@ int main(int argc, char** argv)
 			exiting = 1;
 #endif
 			break;
-		} else if (run == 1) {
+		}
+		/********************************************/
+		/** Handle a request to run a test         **/
+		/********************************************/
+		else if (run == 1) {
 			if (display) do_fill_screen(&fb_info, 0);
 			beagle_test(scan_value);
 			fprintf(stderr, "Test fails: %d\n", fail);
@@ -3435,6 +3459,10 @@ void beagle_test(const char *scan_value)
 	beagle_notice("tester", "$Id$");
 #endif
 
+	/********************************************/
+	/** Handle case test is on a cape          **/
+	/** Use the ID and cape array to call test **/
+	/********************************************/
 	if(!strncmp(scan_value, "BC", 2) || !strncmp(scan_value, "PC", 2)) {
 		for(x = 0; x < sizeof(capes) / sizeof(capes[0]); x++) {
 			if(!strncmp(scan_value, capes[x].prefix, 4)) {
@@ -3820,6 +3848,10 @@ void set_user_leds(int code)
 	}
 }
 
+/********************************************/
+/** Cape tests start here                  **/
+/********************************************/
+		
 /* BC0000A2yywwnnnnnnnn */
 int test_comms_cape(const char *scan_value, unsigned id)
 {
