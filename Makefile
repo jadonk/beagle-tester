@@ -4,12 +4,14 @@ MAKE := make
 RM := rm
 INSTALL := install
 GIT_VERSION := $(shell git describe --abbrev=6 --dirty --always --tags)
+INC_DIR = include
+# DEPS = $(INC_DIR)/common.h
 
 all: beagle-tester
 
 beagle-tester: beagle-tester.c
-	#$(CC) $(CFLAGS_FOR_BUILD) -W -Wall -Wwrite-strings -O3 -o beagle-tester beagle-tester.c -lroboticscape
-	$(CC) -DVERSION=\"${GIT_VERSION}\" $(CFLAGS_FOR_BUILD) -W -Wall -Wwrite-strings -O3 -o beagle-tester beagle-tester.c
+	#$(CC) $(CFLAGS_FOR_BUILD) -W -Wall -Wwrite-strings -O3 -o beagle-tester beagle-tester.c -lroboticscape 
+	$(CC) -DVERSION=\"${GIT_VERSION}\" $(CFLAGS_FOR_BUILD) -W -Wall -Wwrite-strings -O3 -o beagle-tester beagle-tester.c -I$(INC_DIR)
 
 images:
 	$(MAKE) -C images
