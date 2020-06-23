@@ -21,7 +21,25 @@
 #define __COMMON_H__
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <linux/fb.h>
+#include <inttypes.h>
+#include <ctype.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <getopt.h>
+#include <time.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
+#include <linux/input.h>
+#include <linux/kd.h>
+#include <linux/spi/spidev.h>
+#include <linux/i2c-dev.h>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
