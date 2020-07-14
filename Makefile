@@ -5,13 +5,17 @@ RM := rm
 INSTALL := install
 GIT_VERSION := $(shell git describe --abbrev=6 --dirty --always --tags)
 SRC := $(wildcard src/*.c)
-CFLAGS := -O3 -W -Wall $(SRC) -Wwrite-strings -I. -I./include
+INC := $(wildcard include/*.h)
+OBJS := ${patsubst %.c,%.o,${SRC}}
+CFLAGS := $(CFLAGS_FOR_BUILD) -O3 -W -Wall -Wwrite-strings -I./include
 
 all: beagle-tester
 
-beagle-tester: 
-	#$(CC) $(CFLAGS_FOR_BUILD) -W -Wall -Wwrite-strings -O3 -o beagle-tester beagle-tester.c -lroboticscape 
-	$(CC) -DVERSION=\"${GIT_VERSION}\" $(CFLAGS) $< -o $@
+beagle-tester: $(OBJS) $(INC)
+	$(CC) -DVERSION=\"${GIT_VERSION}\" $(CFLAGS) $(OBJS) -o $<
+
+%.o: %.c
+	$(CC) -DVERSION=\"${GIT_VERSION}\" $(CFLAGS) -c $<
 
 images:
 	$(MAKE) -C images
