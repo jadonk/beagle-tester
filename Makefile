@@ -11,11 +11,8 @@ CFLAGS := $(CFLAGS_FOR_BUILD) -O3 -W -Wall -Wwrite-strings -I./include
 
 all: beagle-tester
 
-beagle-tester: $(OBJS) $(INC)
-	$(CC) -DVERSION=\"${GIT_VERSION}\" $(CFLAGS) $(OBJS) -o $<
-
-%.o: %.c
-	$(CC) -DVERSION=\"${GIT_VERSION}\" $(CFLAGS) -c $<
+beagle-tester: $(SRC) $(INC)
+	$(CC) -DVERSION=\"${GIT_VERSION}\" $(CFLAGS) $(SRC) -o beagle-tester
 
 images:
 	$(MAKE) -C images
