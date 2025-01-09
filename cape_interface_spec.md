@@ -2,16 +2,20 @@
 
 ## I2C
 
-| Links           | DT symbol    | SCL   | SDA    |
-| --------------- | ------------ | ----- | ------ |
-| /dev/bone/i2c/0 | bone_i2c_0   | N/A   | N/A    |
-| /dev/bone/i2c/1 | bone_i2c_1   | P9.17 | P9.18  |
-| /dev/bone/i2c/2 | bone_i2c_2   | P9.19 | P9.20  |
-| /dev/bone/i2c/3 | bone_i2c_3   | P9.24 | P9.26  |
-| /dev/bone/i2c/4 | bone_i2c_4   | P9.21 | P9.22  |
-| /dev/bone/i2c/5 | bone_i2c_5   | P8.23 | P8.24  |
+Suggested Click: [Amient 2](https://www.mikroe.com/ambient-2-click)
+
+| Links           | DT symbol    | SCL   | SDA    | microBUS |
+| --------------- | ------------ | ----- | ------ | -------- |
+| /dev/bone/i2c/0 | bone_i2c_0   | N/A   | N/A    | N/A      |
+| /dev/bone/i2c/1 | bone_i2c_1   | P9.17 | P9.18  |          |
+| /dev/bone/i2c/2 | bone_i2c_2   | P9.19 | P9.20  | 1,2,3,4  |
+| /dev/bone/i2c/3 | bone_i2c_3   | P9.24 | P9.26  |          |
+| /dev/bone/i2c/4 | bone_i2c_4   | P9.21 | P9.22  |          |
+| /dev/bone/i2c/5 | bone_i2c_5   | P8.23 | P8.24  | 6        |
 
 ## SPI
+
+Suggested Click: [microSD](https://www.mikroe.com/microsd-click)
 
 | Bone bus           | DT symbol  | COPI  | CIPO  | CLK   | CS    |
 | ------------------ | ---------- | ----- | ----- | ----- | ----- |
@@ -23,6 +27,8 @@
 | /dev/bone/spi/2.0  | bone_spi_2 | P8.20 | P8.25 | P8.21 | P8.6  |
 
 ## UART
+
+Suggested Click: [GNSS 7](https://www.mikroe.com/gnss-7-click)
 
 | Bone bus          | DT symbol    | TX     | RX     |
 | ----------------- | ------------ | ------ | ------ |
@@ -38,7 +44,9 @@
 
 ## CAN
 
-Which pins on mikroBUS?
+Because CAN isn't a native interface on mikroBUS, we should just make our on mikroBUS add-on for this.
+
+Because we cannot support UART on all of these pins, it may be necessary to do a software UART implementation to support in some cases or simply not support UART on those mikroBUS sockets.
 
 | Link                     | TX    | RX    |
 | ------------------------ | ----- | ----- |
@@ -50,6 +58,8 @@ Which pins on mikroBUS?
 | /dev/bone/can/4          | P8.05 | P8.06 |
 
 ## ADC
+
+Suggested Click: [PIR 2](https://www.mikroe.com/pir-2-click)
 
 | Index  | Header pin  |
 | ------ | ----------- |
@@ -64,6 +74,8 @@ Which pins on mikroBUS?
 
 ## PWM
 
+Suggested Click: [Buzzer](https://www.mikroe.com/buzzer-click)
+
 | SYSFS link       | DT symbol  | A      | B      |
 | ---------------- | ---------- | ------ | ------ |
 | /dev/bone/pwm/0  | bone_pwm_0 | P9.22  | P9.21  |
@@ -71,6 +83,8 @@ Which pins on mikroBUS?
 | /dev/bone/pwm/2  | bone_pwm_2 | P8.19  | P8.13  |
 
 ## Counter
+
+We'll need to make our own here.
 
 Which pins on mikroBUS?
 
@@ -159,6 +173,8 @@ Which pins on mikroBUS?
 | P8.4        | DAT7         |
 
 ## mikroBUS
+
+0 is on-board, others on on the Cape, PocketCape or HAT
 
 ### By bus
 
